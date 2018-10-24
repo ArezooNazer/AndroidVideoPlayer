@@ -16,11 +16,14 @@ public class PlayerActivity extends AppCompatActivity {
     private VideoPlayer player;
 
     //other stream type 3
-    //private String uri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
+    //private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
     //hls stream type 2
-    //private String uri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
+    //private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
     //hls with 8 resolutions
-    private String uri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+//    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+
+    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
+    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +33,7 @@ public class PlayerActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         playerView = findViewById(R.id.demo_player_view);
-        player = new VideoPlayer(playerView, getApplicationContext(), uri);
+        player = new VideoPlayer(playerView, getApplicationContext(), videoUri , subtitleUri);
         player.initializePlayer();
 
         Button mute = findViewById(R.id.mute_button);

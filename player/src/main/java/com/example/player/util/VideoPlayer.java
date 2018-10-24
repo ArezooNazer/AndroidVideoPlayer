@@ -7,16 +7,26 @@ import android.util.Log;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MergingMediaSource;
+import com.google.android.exoplayer2.source.SingleSampleMediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+
+import javax.sql.DataSource;
 
 public class VideoPlayer {
 
@@ -27,20 +37,23 @@ public class VideoPlayer {
     private PlayerView playerView;
     private SimpleExoPlayer player;
     private Context context;
-    private MediaSource videoMediaSource, subtitleMediaSource;
+    private MediaSource mediaSource, subtitleSource;
     private boolean playWhenReady;
     private int currentWindow;
     private long playbackPosition;
-    private Uri uri;
+    private Uri uri, subtitleUri;
+    private MergingMediaSource mergedSource;
 
     private DefaultTrackSelector trackSelector;
     private com.google.android.exoplayer2.ControlDispatcher controlDispatcher;
 
 
-    public VideoPlayer(PlayerView playerView, Context context, String uri) {
+    public VideoPlayer(PlayerView playerView, Context context, String videoUri, @Nullable String subTitleUri) {
         this.playerView = playerView;
         this.context = context;
-        this.uri = Uri.parse(uri);
+        this.uri = Uri.parse(videoUri);
+        if (subTitleUri != null)
+            this.subtitleUri = Uri.parse(subTitleUri);
         this.controlDispatcher = new com.google.android.exoplayer2.DefaultControlDispatcher();
         this.trackSelector = new DefaultTrackSelector();
     }
@@ -53,13 +66,14 @@ public class VideoPlayer {
         if (player == null)
             player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
-        videoMediaSource = buildMediaSource(uri, null);
+        mediaSource = buildMediaSource(uri, subtitleUri, null);
 
         playerView.setPlayer(player);
         player.setPlayWhenReady(true);
         playerView.setKeepScreenOn(true);
-        player.prepare(videoMediaSource);
+        player.prepare(mediaSource);
 
+        setQuality(trackSelector);
 
     }
 
@@ -67,30 +81,84 @@ public class VideoPlayer {
      building mediaSource depend on stream type and caching
      ******************************************************************/
 
-    private MediaSource buildMediaSource(Uri uri, @Nullable String overrideExtension) {
+    private MediaSource buildMediaSource(Uri uri, Uri subtitleUri, @Nullable String overrideExtension) {
         @C.ContentType int type = Util.inferContentType(uri, overrideExtension);
+        boolean hasSubtitle = false;
 
         CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
                 context,
                 100 * 1024 * 1024,
                 5 * 1024 * 1024);
 
+
+        // Build the subtitle MediaSource.
+        Format subtitleFormat = Format.createTextSampleFormat(
+                null, // An identifier for the track. May be null.
+                MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
+                Format.NO_VALUE, // Selection flags for the track.
+                "fa"); // The subtitle language. May be null.
+
+        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
+                Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
+
+        if (subtitleUri != null) {
+            subtitleSource = new SingleSampleMediaSource
+                    .Factory(dataSourceFactory)
+                    .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
+            hasSubtitle = true;
+
+        }
+
         switch (type) {
             case C.TYPE_SS:
+
                 Log.d(TAG, "buildMediaSource() called with: type >> " + type + " C.TYPE_SS>> " + C.TYPE_SS);
-                return new SsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(uri);
+                mediaSource = new SsMediaSource
+                        .Factory(cacheDataSourceFactory)
+                        .createMediaSource(uri);
+                if (hasSubtitle) {
+                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
+                    return mergedSource;
+                } else
+                    return mediaSource;
 
             case C.TYPE_DASH:
+
                 Log.d(TAG, "buildMediaSource() called with: type >> " + type + " C.TYPE_DASH>> " + C.TYPE_DASH);
-                return new DashMediaSource.Factory(cacheDataSourceFactory).createMediaSource(uri);
+                mediaSource = new DashMediaSource
+                        .Factory(cacheDataSourceFactory)
+                        .createMediaSource(uri);
+                if (hasSubtitle) {
+                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
+                    return mergedSource;
+                } else
+                    return mediaSource;
 
             case C.TYPE_HLS:
+
                 Log.d(TAG, "buildMediaSource() called with: type >> " + type + " C.TYPE_HLS>> " + C.TYPE_HLS);
-                return new HlsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(uri);
+                mediaSource = new HlsMediaSource
+                        .Factory(cacheDataSourceFactory)
+                        .createMediaSource(uri);
+                if (hasSubtitle) {
+                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
+                    return mergedSource;
+                } else
+                    return mediaSource;
+
+//                return new HlsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(uri);
 
             case C.TYPE_OTHER:
                 Log.d(TAG, "buildMediaSource() called with: type >> " + type + " C.TYPE_OTHER>> " + C.TYPE_OTHER);
-                return new ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(uri);
+                mediaSource = new ExtractorMediaSource
+                        .Factory(cacheDataSourceFactory)
+                        .createMediaSource(uri);
+                if (hasSubtitle) {
+                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
+                    return mergedSource;
+                } else
+                    return mediaSource;
+
             default: {
                 throw new IllegalStateException("Unsupported type: " + type);
             }
@@ -162,6 +230,32 @@ public class VideoPlayer {
     public void updateRepeatIcon() {
     }
 
+    /***********************************************************
+     manually select stream quality
+     ***********************************************************/
 
+    public void setQuality(DefaultTrackSelector trackSelector) {
 
+        int videoRendererIndex;
+        TrackGroupArray trackGroups;
+        DefaultTrackSelector trackSelector1 = trackSelector;
+        MappingTrackSelector.MappedTrackInfo mappedTrackInfo =
+                trackSelector.getCurrentMappedTrackInfo();
+        Log.d(TAG, "trackSelector>> " + trackSelector + "mappedTrackInfo>>>  " + mappedTrackInfo);
+
+        if (mappedTrackInfo != null) {
+
+            for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
+                trackGroups = mappedTrackInfo.getTrackGroups(i);
+
+                if (trackGroups.length != 0) {
+                    switch (player.getRendererType(i)) {
+                        case C.TRACK_TYPE_VIDEO:
+                            videoRendererIndex = i;
+//                        return true;
+                    }
+                }
+            }
+        }
+    }
 }
