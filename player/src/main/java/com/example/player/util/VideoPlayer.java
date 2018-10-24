@@ -4,7 +4,10 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Button;
 
+import com.example.player.R;
+import com.example.player.ui.PlayerActivity;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
@@ -105,7 +108,6 @@ public class VideoPlayer {
                     .Factory(dataSourceFactory)
                     .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
             hasSubtitle = true;
-
         }
 
         switch (type) {
@@ -258,5 +260,40 @@ public class VideoPlayer {
         }
     }
 
+    /***********************************************************
+     manually select subtitle
+     ***********************************************************/
+    public void setSubtitle(Button button) {
+        MappingTrackSelector.MappedTrackInfo mappedTrackInfo =
+                trackSelector.getCurrentMappedTrackInfo();
 
+//         trackSelectionHelper = new TrackSelectionHelper(trackSelector, adaptiveTrackSelectionFactory);
+
+        if (mappedTrackInfo != null) {
+            for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
+                TrackGroupArray trackGroups = mappedTrackInfo.getTrackGroups(i);
+                if (trackGroups.length != 0) {
+                    int label;
+                    switch (player.getRendererType(i)) {
+                        case C.TRACK_TYPE_AUDIO:
+                            label = R.string.audio;
+                            break;
+                        case C.TRACK_TYPE_VIDEO:
+                            label = R.string.video;
+                            break;
+                        case C.TRACK_TYPE_TEXT:
+                            label = R.string.text;
+                            break;
+                        default:
+                            continue;
+                    }
+//                    button.setText(label);
+//                    button.setTag(i);
+//                    button.setOnClickListener(this);
+//                    debugRootView.addView(button, debugRootView.getChildCount() - 1);
+                }
+
+            }
+        }
+    }
 }
