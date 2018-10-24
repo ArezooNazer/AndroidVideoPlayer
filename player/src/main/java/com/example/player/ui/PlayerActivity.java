@@ -5,10 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.player.R;
 import com.example.player.util.VideoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -28,7 +32,7 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player);
+        setContentView(R.layout.custom_exoplayer_ui);
 
         getSupportActionBar().hide();
 
@@ -36,11 +40,14 @@ public class PlayerActivity extends AppCompatActivity {
         player = new VideoPlayer(playerView, getApplicationContext(), videoUri , subtitleUri);
         player.initializePlayer();
 
-        Button mute = findViewById(R.id.mute_button);
+        ImageButton mute = findViewById(R.id.btn_mute);
         mute.setOnClickListener(view -> player.setMute());
 
-        Button repeat = findViewById(R.id.repeat_button);
-        repeat.setOnClickListener(view -> player.setRepeatToggleModes());
+        ImageButton repeat = findViewById(R.id.btn_repeat);
+        repeat.setOnClickListener(view -> {
+            player.setRepeatToggleModes();
+            Toast.makeText(getApplicationContext(),"repeat",Toast.LENGTH_SHORT).show();
+        });
 
     }
 

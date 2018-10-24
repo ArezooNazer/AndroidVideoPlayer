@@ -73,7 +73,7 @@ public class VideoPlayer {
         playerView.setKeepScreenOn(true);
         player.prepare(mediaSource);
 
-        setQuality(trackSelector);
+//        setQuality(trackSelector);
 
     }
 
@@ -89,7 +89,6 @@ public class VideoPlayer {
                 context,
                 100 * 1024 * 1024,
                 5 * 1024 * 1024);
-
 
         // Build the subtitle MediaSource.
         Format subtitleFormat = Format.createTextSampleFormat(
@@ -258,4 +257,6 @@ public class VideoPlayer {
             }
         }
     }
+
+
 }
