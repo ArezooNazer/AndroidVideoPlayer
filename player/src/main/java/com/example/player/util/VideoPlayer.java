@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -59,10 +60,7 @@ public class VideoPlayer {
     private List<Uri> subtitleUriList;
 
     private ComponentListener componentListener;
-    @Player.RepeatMode
-    int currentMode;
     private ProgressBar progressBar;
-
 
 
     public VideoPlayer(PlayerView playerView, Context context, String videoPath, @Nullable List<String> subTitlePath) {
@@ -229,46 +227,35 @@ public class VideoPlayer {
     /************************************************************
      mute, unMute and update mute icon
      ***********************************************************/
-    public void setMute() {
+    public void setMute(boolean mute) {
         float currentVolume = player.getVolume();
         Log.d(TAG, "setMute() called" + currentVolume);
-        if (currentVolume > 0)
-            player.setVolume(0);
-        else
-            player.setVolume(1);
-    }
 
-    public void updateMuteIcon() {
+        if (currentVolume > 0 && mute)
+            player.setVolume(0);
+        else if (!mute && currentVolume == 0)
+            player.setVolume(1);
     }
 
     /***********************************************************
      repeat toggle and update repeat icon
      ***********************************************************/
-    public void setRepeatToggleModes() {
-
-        com.google.android.exoplayer2.ControlDispatcher controlDispatcher =
-                new com.google.android.exoplayer2.DefaultControlDispatcher();
-
+    public void setRepeatToggleModes(int repeatToggleModes) {
         if (player != null) {
-//            currentMode = player.getRepeatMode();
-            Log.d(TAG, "currentMode >>> [" + currentMode + "] ");
-            switch (currentMode) {
-                case Player.REPEAT_MODE_OFF:
-                    controlDispatcher.dispatchSetRepeatMode(player, Player.REPEAT_MODE_ONE);
+//            componentListener.onRepeatModeChanged(repeatToggleModes);
+
+            if (player != null) {
+
+                if (repeatToggleModes == Player.REPEAT_MODE_OFF)
                     player.setRepeatMode(Player.REPEAT_MODE_ONE);
 
-                case Player.REPEAT_MODE_ONE:
-                    controlDispatcher.dispatchSetRepeatMode(player, Player.REPEAT_MODE_ALL);
+                if (repeatToggleModes == Player.REPEAT_MODE_ONE)
                     player.setRepeatMode(Player.REPEAT_MODE_ALL);
 
-                case Player.REPEAT_MODE_ALL:
-                    controlDispatcher.dispatchSetRepeatMode(player, Player.REPEAT_MODE_OFF);
+                if (repeatToggleModes == Player.REPEAT_MODE_ALL)
                     player.setRepeatMode(Player.REPEAT_MODE_OFF);
             }
         }
-    }
-
-    public void updateRepeatIcon() {
     }
 
     /***********************************************************
@@ -295,7 +282,7 @@ public class VideoPlayer {
 
                 Pair<AlertDialog, TrackSelectionView> dialogPair =
                         TrackSelectionView.getDialog(activity, dialogTitle, trackSelector, rendererIndex);
-                dialogPair.second.setShowDisableOption(true);
+                dialogPair.second.setShowDisableOption(false);
                 dialogPair.second.setAllowAdaptiveSelections(allowAdaptiveSelections);
                 dialogPair.first.show();
 
@@ -307,8 +294,17 @@ public class VideoPlayer {
             }
 
         }
+    }
+
+    /***********************************************************
+     forward and backward
+     ***********************************************************/
+    public void seekToSelectedPosition(int playbackPosition) {
+
+        player.seekTo(player.getCurrentPosition() + playbackPosition);
 
     }
+
 
     /***********************************************************
      manually select subtitle
@@ -351,8 +347,6 @@ public class VideoPlayer {
     /***********************************************************
      Listeners
      ***********************************************************/
-
-
     private class ComponentListener implements EventListener {
 
         @Override
@@ -370,15 +364,9 @@ public class VideoPlayer {
                     case Player.STATE_ENDED:
                         progressBar.setVisibility(View.GONE);
                 }
-//            updateButtonVisibilities();
             }
         }
 
-        @Override
-        public void onRepeatModeChanged(int repeatMode) {
-            currentMode = repeatMode;
-            setRepeatToggleModes();
-        }
-
     }
+
 }
