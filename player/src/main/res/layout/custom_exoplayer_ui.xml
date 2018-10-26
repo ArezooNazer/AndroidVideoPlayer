@@ -82,7 +82,7 @@
                     android:src="@drawable/exo_lock_btn" />
 
                 <ImageButton
-                    android:id="@+id/btn_sub"
+                    android:id="@+id/btn_subtitle"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginLeft="20dp"

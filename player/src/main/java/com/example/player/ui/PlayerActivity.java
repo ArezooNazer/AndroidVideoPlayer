@@ -1,42 +1,42 @@
 package com.example.player.ui;
 
 import android.annotation.SuppressLint;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.player.R;
 import com.example.player.util.VideoPlayer;
-import com.google.android.exoplayer2.audio.AudioFocusManager;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
     private PlayerView playerView;
     private VideoPlayer player;
-    private ImageButton mute, unMute, repeatOff, repeatOne, repeatAll, subtitle, setting;
+    private ImageButton mute, unMute, repeatOff, repeatOne, repeatAll, subtitle, setting, lock, unLock;
     private ProgressBar progressBar;
 
     //other stream type 3
-    private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
+//    private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
     //hls stream type 2
     //private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
     //hls with 8 resolutions
 //    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+//     https://www.iandevlin.com/html5test/webvtt/upc-video-subtitles-en.vtt
 
-//    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
-//    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
+    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
+    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.custom_exoplayer_ui);
+        setContentView(R.layout.activity_player);
         getSupportActionBar().hide();
+
 
         playerView = findViewById(R.id.demo_player_view);
         progressBar = findViewById(R.id.progress_bar);
@@ -45,13 +45,14 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         repeatOff = findViewById(R.id.btn_repeat_off);
         repeatOne = findViewById(R.id.btn_repeat_one);
         repeatAll = findViewById(R.id.btn_repeat_all);
-        subtitle = findViewById(R.id.btn_sub);
+        subtitle = findViewById(R.id.btn_subtitle);
         setting = findViewById(R.id.btn_settings);
+        lock = findViewById(R.id.btn_lock);
+        unLock = findViewById(R.id.btn_unLock);
 
 
-        player = new VideoPlayer(playerView, getApplicationContext(), videoUri, null);
+        player = new VideoPlayer(playerView, getApplicationContext(), videoUri, null, subtitleUri);
         player.setProgressbar(progressBar);
-//        player.seekToSelectedPosition(300000);
         player.initializePlayer();
 
         mute.setOnClickListener(this);
@@ -61,6 +62,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         repeatOff.setOnClickListener(this);
         repeatOne.setOnClickListener(this);
         repeatAll.setOnClickListener(this);
+        lock.setOnClickListener(this);
+        unLock.setOnClickListener(this);
 
     }
 
@@ -100,6 +103,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        hideSystemUi();
+
+    }
+
+    @Override
     public void onClick(View view) {
 
         int controllerId = view.getId();
@@ -133,10 +143,32 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             player.setRepeatToggleModes(0);
             repeatAll.setVisibility(View.GONE);
             repeatOff.setVisibility(View.VISIBLE);
+
         }
 
         if (controllerId == R.id.btn_settings) {
             player.setQuality(this, "select quality");
         }
+
+        if (controllerId == R.id.btn_subtitle) {
+            if (playerView.getSubtitleView().getVisibility() == View.VISIBLE)
+                playerView.getSubtitleView().setVisibility(View.GONE);
+            else
+                playerView.getSubtitleView().setVisibility(View.VISIBLE);
+        }
+
+        if (controllerId == R.id.btn_lock) {
+            //TODO: disable controllers
+            lock.setVisibility(View.GONE);
+            unLock.setVisibility(View.VISIBLE);
+        }
+
+        if (controllerId == R.id.btn_unLock) {
+            //TODO: enable controllers
+            unLock.setVisibility(View.GONE);
+            lock.setVisibility(View.VISIBLE);
+        }
+
     }
+
 }

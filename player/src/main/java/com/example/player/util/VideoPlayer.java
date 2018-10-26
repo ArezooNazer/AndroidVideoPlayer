@@ -48,7 +48,7 @@ public class VideoPlayer {
 
     private PlayerView playerView;
     private SimpleExoPlayer player;
-    private MediaSource mediaSource;
+    private MediaSource mediaSource, subtitleSource;
     private List<MediaSource> subtitleSourceList;
     private DefaultTrackSelector trackSelector;
 
@@ -56,17 +56,17 @@ public class VideoPlayer {
     private boolean playWhenReady;
     private int currentWindow;
     private long playbackPosition;
-    private Uri videoUri;
+    private Uri videoUri, subtitleUri;
     private List<Uri> subtitleUriList;
 
     private ComponentListener componentListener;
     private ProgressBar progressBar;
 
 
-    public VideoPlayer(PlayerView playerView, Context context, String videoPath, @Nullable List<String> subTitlePath) {
+    public VideoPlayer(PlayerView playerView, Context context, String videoPath, @Nullable List<String> subTitlePath, @Nullable String subtitle) {
         this.playerView = playerView;
         this.context = context;
-        parseStringToUri(videoPath, subTitlePath);
+        parseStringToUri(videoPath, subTitlePath, subtitle);
 
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
         componentListener = new ComponentListener();
@@ -76,13 +76,16 @@ public class VideoPlayer {
         playbackPosition = 0;
     }
 
-    private void parseStringToUri(String videoPath, @Nullable List<String> subTitlePath) {
+    private void parseStringToUri(String videoPath, @Nullable List<String> subTitlePath, @Nullable String subtitle) {
         this.videoUri = Uri.parse(videoPath);
         if (subTitlePath != null) {
             for (int i = 0; i < subTitlePath.size(); i++) {
                 this.subtitleUriList.set(i, Uri.parse(subTitlePath.get(i)));
             }
         }
+
+        if (subtitle != null)
+            this.subtitleUri = Uri.parse(subtitle);
 
     }
 
@@ -116,7 +119,6 @@ public class VideoPlayer {
         @C.ContentType int type = Util.inferContentType(videoUri, overrideExtension);
         boolean hasSubtitle = false;
         MergingMediaSource mergedSource;
-
         CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
                 context,
                 100 * 1024 * 1024,
@@ -142,6 +144,26 @@ public class VideoPlayer {
 
         }
 
+
+        if (subtitleUri != null) {
+            hasSubtitle = true;
+            Format subtitleFormat = Format.createTextSampleFormat(
+                    null, // An identifier for the track. May be null.
+                    MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
+                    Format.NO_VALUE, // Selection flags for the track.
+                    "en"); // The subtitle language. May be null.
+
+            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
+                    Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
+
+
+            subtitleSource = new SingleSampleMediaSource
+                    .Factory(dataSourceFactory)
+                    .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
+
+        }
+
+
         switch (type) {
             case C.TYPE_SS:
 
@@ -150,7 +172,8 @@ public class VideoPlayer {
                         .Factory(cacheDataSourceFactory)
                         .createMediaSource(videoUri);
                 if (hasSubtitle) {
-                    mergedSource = new MergingMediaSource(mediaSource, subtitleSourceList.get(0));
+
+                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
                     return mergedSource;
                 } else
                     return mediaSource;
@@ -162,7 +185,8 @@ public class VideoPlayer {
                         .Factory(cacheDataSourceFactory)
                         .createMediaSource(videoUri);
                 if (hasSubtitle) {
-                    mergedSource = new MergingMediaSource(mediaSource, subtitleSourceList.get(0));
+                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
+
                     return mergedSource;
                 } else
                     return mediaSource;
@@ -174,7 +198,7 @@ public class VideoPlayer {
                         .Factory(cacheDataSourceFactory)
                         .createMediaSource(videoUri);
                 if (hasSubtitle) {
-                    mergedSource = new MergingMediaSource(mediaSource, subtitleSourceList.get(0));
+                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
                     return mergedSource;
                 } else
                     return mediaSource;
@@ -185,7 +209,7 @@ public class VideoPlayer {
                         .Factory(cacheDataSourceFactory)
                         .createMediaSource(videoUri);
                 if (hasSubtitle) {
-                    mergedSource = new MergingMediaSource(mediaSource, subtitleSourceList.get(0));
+                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
                     return mergedSource;
                 } else
                     return mediaSource;
@@ -309,39 +333,10 @@ public class VideoPlayer {
     /***********************************************************
      manually select subtitle
      ***********************************************************/
-    public void setSubtitle(Button button) {
-        MappingTrackSelector.MappedTrackInfo mappedTrackInfo =
-                trackSelector.getCurrentMappedTrackInfo();
+    public void setSubtitle(Activity activity, CharSequence dialogTitle) {
 
-//         trackSelectionHelper = new TrackSelectionHelper(trackSelector, adaptiveTrackSelectionFactory);
-
-        if (mappedTrackInfo != null) {
-            for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
-                TrackGroupArray trackGroups = mappedTrackInfo.getTrackGroups(i);
-                if (trackGroups.length != 0) {
-                    int label;
-                    switch (player.getRendererType(i)) {
-                        case C.TRACK_TYPE_AUDIO:
-                            label = R.string.audio;
-                            break;
-                        case C.TRACK_TYPE_VIDEO:
-                            label = R.string.video;
-                            break;
-                        case C.TRACK_TYPE_TEXT:
-                            label = R.string.text;
-                            break;
-                        default:
-                            continue;
-                    }
-//                    button.setText(label);
-//                    button.setTag(i);
-//                    button.setOnClickListener(this);
-//                    debugRootView.addView(button, debugRootView.getChildCount() - 1);
-                }
-
-            }
-        }
     }
+
 
 
     /***********************************************************
