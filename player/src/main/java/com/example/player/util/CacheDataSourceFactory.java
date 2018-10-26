@@ -20,7 +20,7 @@ import java.io.File;
 public class CacheDataSourceFactory implements DataSource.Factory {
     private static final String TAG = "CacheDataSourceFactory";
     private final Context context;
-    private final DefaultDataSourceFactory defaultDatasourceFactory;
+    private final DataSource.Factory defaultDataSourceFactory;
     private final long maxFileSize, maxCacheSize;
 
     private static SimpleCache simpleCache;
@@ -31,8 +31,9 @@ public class CacheDataSourceFactory implements DataSource.Factory {
         this.maxCacheSize = maxCacheSize;
         this.maxFileSize = maxFileSize;
         String userAgent = Util.getUserAgent(context, context.getString(R.string.app_name));
+
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        defaultDatasourceFactory = new DefaultDataSourceFactory(this.context,
+        defaultDataSourceFactory = new DefaultDataSourceFactory(this.context,
                 bandwidthMeter,
                 new DefaultHttpDataSourceFactory(userAgent, bandwidthMeter));
     }
@@ -44,13 +45,12 @@ public class CacheDataSourceFactory implements DataSource.Factory {
 
         Log.d(TAG, "createDataSource() called" + context.getCacheDir());
 
-        return new CacheDataSource(simpleCache, defaultDatasourceFactory.createDataSource(),
+        return new CacheDataSource(simpleCache, defaultDataSourceFactory.createDataSource(),
                 new FileDataSource(), new CacheDataSink(simpleCache, maxFileSize),
                 CacheDataSource.FLAG_BLOCK_ON_CACHE | CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR, null);
     }
 
     public SimpleCache getInstance(LeastRecentlyUsedCacheEvictor evictor) {
-
         if (simpleCache == null)
             simpleCache = new SimpleCache(new File(context.getCacheDir(), "media"), evictor);
         return simpleCache;

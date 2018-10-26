@@ -1,26 +1,16 @@
 package com.example.player.ui;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.player.R;
 import com.example.player.util.VideoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
-
-import static android.widget.Toast.LENGTH_LONG;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -32,10 +22,10 @@ public class PlayerActivity extends AppCompatActivity {
     //hls stream type 2
     //private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
     //hls with 8 resolutions
-    // private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+     private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
 
-    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
-    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
+//    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
+//    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
 
     private String SELECTED_SUBTITLE = null;
 
@@ -44,9 +34,11 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_exoplayer_ui);
         getSupportActionBar().hide();
+        ProgressBar progressBar = findViewById(R.id.progress_bar);
 
         playerView = findViewById(R.id.demo_player_view);
         player = new VideoPlayer(playerView, getApplicationContext(), videoUri, null);
+        player.setProgressbar(progressBar);
         player.initializePlayer();
 
         ImageButton mute = findViewById(R.id.btn_mute);
@@ -60,9 +52,13 @@ public class PlayerActivity extends AppCompatActivity {
 
         ImageButton subtitle = findViewById(R.id.btn_sub);
         subtitle.setOnClickListener(view -> {
-            showSubDialog();
+//            showSubDialog();
         });
 
+        ImageButton setting = findViewById(R.id.btn_settings);
+        setting.setOnClickListener(view -> {
+            player.setQuality(this, "select quality");
+        });
 
     }
 
@@ -101,69 +97,69 @@ public class PlayerActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
-    public void showSubDialog() {
-        //Some Stuff About AlertDialog
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.movie_sub_dialog, null);
-        dialogBuilder.setView(dialogView);
-        final AlertDialog alertDialog = dialogBuilder.create();
-        alertDialog.show();
-
-        //Some Listeners
-        alertDialog.setOnDismissListener(dialog -> alertDialog.dismiss());
-        Button cancel = dialogView.findViewById(R.id.movie_sub_dialog_cancel);
-        cancel.setOnClickListener(v -> alertDialog.dismiss());
-
-//        final Switch mSwitch = dialogView.findViewById(R.id.movie_sub_dialog_switch);
-//        if (getSubActivated()) {
-//            mSwitch.setChecked(true);
-//        } else {
-//            mSwitch.setChecked(false);
-//        }
-
-        TextView sub_en = findViewById(R.id.subtitle1_text_view);
-        sub_en.setOnClickListener(view -> {
-            SELECTED_SUBTITLE = "en";
-        });
-
-        TextView sub_fa = findViewById(R.id.subtitle2_text_view);
-        sub_en.setOnClickListener(view -> {
-            SELECTED_SUBTITLE = "fa";
-        });
-
-//        Button done = dialogView.findViewById(R.id.movie_sub_dialog_done);
-//        done.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mSwitch.isChecked()) {
-//                    //Show Subtitles View
-//                    playerView.getSubtitleView().setVisibility(View.VISIBLE);
-//                    setSubActivated(true);
+//    public void showSubDialog() {
+//        //Some Stuff About AlertDialog
+//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+//        final LayoutInflater inflater = this.getLayoutInflater();
+//        View dialogView = inflater.inflate(R.layout.movie_sub_dialog, null);
+//        dialogBuilder.setView(dialogView);
+//        final AlertDialog alertDialog = dialogBuilder.create();
+//        alertDialog.show();
 //
-//                } else {
-//                    //Hide Subtitles View
-//                    playerView.getSubtitleView().setVisibility(View.GONE);
-//                    setSubActivated(false);
-//                }
-//                alertDialog.dismiss();
-//            }
+//        //Some Listeners
+//        alertDialog.setOnDismissListener(dialog -> alertDialog.dismiss());
+//        Button cancel = dialogView.findViewById(R.id.movie_sub_dialog_cancel);
+//        cancel.setOnClickListener(v -> alertDialog.dismiss());
+//
+////        final Switch mSwitch = dialogView.findViewById(R.id.movie_sub_dialog_switch);
+////        if (getSubActivated()) {
+////            mSwitch.setChecked(true);
+////        } else {
+////            mSwitch.setChecked(false);
+////        }
+//
+//        TextView sub_en = findViewById(R.id.subtitle1_text_view);
+//        sub_en.setOnClickListener(view -> {
+//            SELECTED_SUBTITLE = "en";
 //        });
 //
-//        TextView currentLang = dialogView.findViewById(R.id.movie_sub_dialog_currentLang);
-//        currentLang.setText(getSubLanguage());
-//
-//        //Subtitles Switch Button
-//        RelativeLayout language = dialogView.findViewById(R.id.movie_sub_dialog_language);
-//        language.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //Subtitles Language Switching
-//                showLanguageDialog();
-//                alertDialog.dismiss();
-//            }
+//        TextView sub_fa = findViewById(R.id.subtitle2_text_view);
+//        sub_en.setOnClickListener(view -> {
+//            SELECTED_SUBTITLE = "fa";
 //        });
-    }
+//
+////        Button done = dialogView.findViewById(R.id.movie_sub_dialog_done);
+////        done.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View v) {
+////                if (mSwitch.isChecked()) {
+////                    //Show Subtitles View
+////                    playerView.getSubtitleView().setVisibility(View.VISIBLE);
+////                    setSubActivated(true);
+////
+////                } else {
+////                    //Hide Subtitles View
+////                    playerView.getSubtitleView().setVisibility(View.GONE);
+////                    setSubActivated(false);
+////                }
+////                alertDialog.dismiss();
+////            }
+////        });
+////
+////        TextView currentLang = dialogView.findViewById(R.id.movie_sub_dialog_currentLang);
+////        currentLang.setText(getSubLanguage());
+////
+////        //Subtitles Switch Button
+////        RelativeLayout language = dialogView.findViewById(R.id.movie_sub_dialog_language);
+////        language.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View v) {
+////                //Subtitles Language Switching
+////                showLanguageDialog();
+////                alertDialog.dismiss();
+////            }
+////        });
+//    }
 
 
 }
