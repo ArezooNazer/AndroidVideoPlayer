@@ -3,10 +3,13 @@ package com.example.player.util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -55,7 +58,6 @@ public class VideoPlayer {
     private Uri videoUri, subtitleUri;
     private ComponentListener componentListener;
     private ProgressBar progressBar;
-    private AlertDialog alertDialog;
 
 
     public VideoPlayer(PlayerView playerView, Context context, String videoPath) {
@@ -71,11 +73,9 @@ public class VideoPlayer {
         playbackPosition = 0;
     }
 
-
     /******************************************************************
      initialize ExoPlayer
      ******************************************************************/
-
     public void initializePlayer() {
         playerView.requestFocus();
 
@@ -97,7 +97,6 @@ public class VideoPlayer {
     /******************************************************************
      building mediaSource depend on stream type and caching
      ******************************************************************/
-
     private MediaSource buildMediaSource(@Nullable String overrideExtension) {
         @C.ContentType int type = Util.inferContentType(videoUri, overrideExtension);
 
@@ -154,7 +153,7 @@ public class VideoPlayer {
     }
 
     /************************************************************
-     mute, unMute and update mute icon
+     mute, unMute
      ***********************************************************/
     public void setMute(boolean mute) {
         float currentVolume = player.getVolume();
@@ -167,11 +166,10 @@ public class VideoPlayer {
     }
 
     /***********************************************************
-     repeat toggle and update repeat icon
+     repeat toggle
      ***********************************************************/
     public void setRepeatToggleModes(int repeatToggleModes) {
         if (player != null) {
-//            componentListener.onRepeatModeChanged(repeatToggleModes);
 
             if (player != null) {
 
@@ -190,7 +188,6 @@ public class VideoPlayer {
     /***********************************************************
      manually select stream quality
      ***********************************************************/
-
     public void setSelectedQuality(Activity activity, CharSequence dialogTitle) {
 
         player.setPlayWhenReady(false);
@@ -228,12 +225,43 @@ public class VideoPlayer {
     }
 
     /***********************************************************
-     forward and backward
+     double tap event
      ***********************************************************/
-    public void seekToSelectedPosition(int playbackPosition) {
+//    public void seekToSelectedPosition(int playbackPosition , boolean isForward) {
+//        long videoDuration = player.getDuration();
+//
+//        long upperBound = player.getCurrentPosition() + playbackPosition;
+//        long lowerBound = player.getCurrentPosition() - playbackPosition;
+//
+//        if(isForward && upperBound < videoDuration )
+//            player.seekTo(upperBound);
+//        if(!isForward && lowerBound >0)
+//            player.seekTo(lowerBound);
+//
+//    }
+    public void seekToSelectedPosition(int hour, int minute, int second) {
+        long playbackPosition = (hour * 3600 + minute * 60 + second) * 1000;
+        long videoDuration = player.getDuration();
 
-        player.seekTo(player.getCurrentPosition() + playbackPosition);
+        Log.d(TAG, "seekToSelectedPosition() called with: playbackPosition = [" + playbackPosition + "], videoDuration = [" + videoDuration + "]");
 
+        if (playbackPosition <= videoDuration) {
+            player.seekTo(playbackPosition);
+        }
+    }
+
+    public void seekForwardOnDoubleTap() {
+
+        final GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                Log.d("tap", "onDoubleTap() called with: e = [" + e + "]");
+                player.seekTo(player.getCurrentPosition() + 5000);
+                return true;
+            }
+        });
+
+        playerView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
     }
 
 
@@ -284,12 +312,16 @@ public class VideoPlayer {
                 switch (playbackState) {
                     case Player.STATE_IDLE:
                         progressBar.setVisibility(View.VISIBLE);
+
                     case Player.STATE_BUFFERING:
                         progressBar.setVisibility(View.VISIBLE);
+
                     case Player.STATE_READY:
-                        progressBar.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+
                     case Player.STATE_ENDED:
                         progressBar.setVisibility(View.GONE);
+
                 }
             }
         }

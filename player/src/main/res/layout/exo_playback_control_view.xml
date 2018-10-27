@@ -1,17 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -38,7 +26,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="0"
             android:background="@null"
-            android:src="@drawable/exo_lock_btn" />
+            android:src="@drawable/exo_unlock_btn" />
 
         <ImageButton
             android:id="@+id/btn_unLock"
@@ -48,7 +36,7 @@
             android:layout_weight="0"
             android:background="@null"
             android:visibility="gone"
-            android:src="@drawable/exo_unlock_btn" />
+            android:src="@drawable/exo_lock_btn" />
 
         <ImageButton
             android:id="@+id/btn_subtitle"
@@ -57,9 +45,7 @@
             android:layout_marginLeft="20dp"
             android:layout_weight="0"
             style="@style/ExoMediaButton.Play"
-
             android:src="@drawable/exo_subtitle_btn" />
-
 
         <ImageButton
             android:id="@id/exo_prev"
@@ -101,7 +87,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="0"
             android:background="@null"
-            android:src="@drawable/exo_mute_btn" />
+            android:src="@drawable/exo_unmute_btn" />
 
         <ImageButton
             android:id="@+id/btn_unMute"
@@ -110,7 +96,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="0"
             android:background="@null"
-            android:src="@drawable/exo_unmute_btn"
+            android:src="@drawable/exo_mute_btn"
             android:visibility="gone" />
 
         <ImageButton

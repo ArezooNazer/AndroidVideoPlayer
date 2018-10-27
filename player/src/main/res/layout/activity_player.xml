@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.PlayerActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.PlayerActivity">
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/demo_player_view"
@@ -13,8 +13,8 @@
 
         <ProgressBar
             android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="600dp"
             android:layout_gravity="center" />
 
     </com.google.android.exoplayer2.ui.PlayerView>

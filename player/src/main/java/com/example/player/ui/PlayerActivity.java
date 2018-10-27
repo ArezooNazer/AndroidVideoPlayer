@@ -5,14 +5,17 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.player.R;
 import com.example.player.util.VideoPlayer;
@@ -30,17 +33,19 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private int REPEAT_ALL = 2;
 
     //other stream type 3
-//    private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
+    //private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
     //hls stream type 2
     //private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
     //hls with 8 resolutions
-//    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
-//     https://www.iandevlin.com/html5test/webvtt/upc-video-subtitles-en.vtt
+    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+    //private  String videoUri = "https://hw20.cdn.asset.aparat.com/aparat-video/b1a82edf9f71b969f8ddd0c0ce24dfd912382539-144p__28538.mp4";
+    //https://www.iandevlin.com/html5test/webvtt/upc-video-subtitles-en.vtt
 
-    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
+    //private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
     private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +69,10 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
         playerView.getSubtitleView().setVisibility(View.GONE);
         player.setProgressbar(progressBar);
+        player.seekForwardOnDoubleTap();
         player.initializePlayer();
+        player.seekToSelectedPosition(0, 1, 0);
+
 
         mute.setOnClickListener(this);
         unMute.setOnClickListener(this);
@@ -75,6 +83,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         repeatAll.setOnClickListener(this);
         lock.setOnClickListener(this);
         unLock.setOnClickListener(this);
+
     }
 
     @Override
