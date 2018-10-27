@@ -18,6 +18,9 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private VideoPlayer player;
     private ImageButton mute, unMute, repeatOff, repeatOne, repeatAll, subtitle, setting, lock, unLock;
     private ProgressBar progressBar;
+    private int REPEAT_OFF = 0;
+    private int REPEAT_ONE = 1;
+    private int REPEAT_ALL = 2;
 
     //other stream type 3
 //    private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
@@ -51,7 +54,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         unLock = findViewById(R.id.btn_unLock);
 
 
-        player = new VideoPlayer(playerView, getApplicationContext(), videoUri, null, subtitleUri);
+        player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
         player.setProgressbar(progressBar);
         player.initializePlayer();
 
@@ -64,7 +67,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         repeatAll.setOnClickListener(this);
         lock.setOnClickListener(this);
         unLock.setOnClickListener(this);
-
     }
 
     @Override
@@ -92,16 +94,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         player.releasePlayer();
     }
 
-    @SuppressLint("InlinedApi")
-    private void hideSystemUi() {
-        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    }
-
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -116,59 +108,119 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         Log.d("id", "onClick() called with: view = [" + view + "]" + controllerId);
 
         if (controllerId == R.id.btn_mute) {
-            player.setMute(true);
-            mute.setVisibility(View.GONE);
-            unMute.setVisibility(View.VISIBLE);
+            updateMuteMode(true);
         }
 
         if (controllerId == R.id.btn_unMute) {
-            player.setMute(false);
-            unMute.setVisibility(View.GONE);
-            mute.setVisibility(View.VISIBLE);
+            updateMuteMode(false);
         }
 
         if (controllerId == R.id.btn_repeat_off) {
-            player.setRepeatToggleModes(1);
-            repeatOff.setVisibility(View.GONE);
-            repeatOne.setVisibility(View.VISIBLE);
+            updateRepeatToggleMode(REPEAT_OFF);
         }
 
         if (controllerId == R.id.btn_repeat_one) {
-            player.setRepeatToggleModes(2);
-            repeatOne.setVisibility(View.GONE);
-            repeatAll.setVisibility(View.VISIBLE);
+            updateRepeatToggleMode(REPEAT_ONE);
         }
 
         if (controllerId == R.id.btn_repeat_all) {
-            player.setRepeatToggleModes(0);
-            repeatAll.setVisibility(View.GONE);
-            repeatOff.setVisibility(View.VISIBLE);
-
+            updateRepeatToggleMode(REPEAT_ALL);
         }
 
         if (controllerId == R.id.btn_settings) {
-            player.setQuality(this, "select quality");
+            player.setSelectedQuality(this, "select quality");
         }
 
         if (controllerId == R.id.btn_subtitle) {
             if (playerView.getSubtitleView().getVisibility() == View.VISIBLE)
-                playerView.getSubtitleView().setVisibility(View.GONE);
+                showSubtitle(false);
             else
-                playerView.getSubtitleView().setVisibility(View.VISIBLE);
+                showSubtitle(true);
         }
 
         if (controllerId == R.id.btn_lock) {
-            //TODO: disable controllers
-            lock.setVisibility(View.GONE);
-            unLock.setVisibility(View.VISIBLE);
+            updateLockMode(true);
         }
 
         if (controllerId == R.id.btn_unLock) {
-            //TODO: enable controllers
-            unLock.setVisibility(View.GONE);
-            lock.setVisibility(View.VISIBLE);
+            updateLockMode(false);
         }
 
+    }
+
+    /***********************************************************
+     UI config
+     ***********************************************************/
+
+    @SuppressLint("InlinedApi")
+    private void hideSystemUi() {
+        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+    private void showSubtitle(boolean show) {
+        if (player != null && playerView.getSubtitleView() != null) {
+            if (show) {
+                player.setSelectedSubtitle(subtitleUri);
+                playerView.getSubtitleView().setVisibility(View.VISIBLE);
+            } else
+                playerView.getSubtitleView().setVisibility(View.GONE);
+        }
+    }
+
+    private void updateMuteMode(boolean isMute) {
+        if (player != null && playerView != null) {
+            if (isMute) {
+                player.setMute(true);
+                mute.setVisibility(View.GONE);
+                unMute.setVisibility(View.VISIBLE);
+            } else {
+                player.setMute(false);
+                unMute.setVisibility(View.GONE);
+                mute.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void updateRepeatToggleMode(int repeatState) {
+
+        if (player != null && playerView != null) {
+            if (repeatState == REPEAT_OFF) {
+                player.setRepeatToggleModes(1);
+                repeatOff.setVisibility(View.GONE);
+                repeatOne.setVisibility(View.VISIBLE);
+            }
+
+            if (repeatState == REPEAT_ONE) {
+                player.setRepeatToggleModes(2);
+                repeatOne.setVisibility(View.GONE);
+                repeatAll.setVisibility(View.VISIBLE);
+            }
+
+            if (repeatState == REPEAT_ALL) {
+                player.setRepeatToggleModes(0);
+                repeatAll.setVisibility(View.GONE);
+                repeatOff.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void updateLockMode(boolean isLock) {
+        if (player != null && playerView != null) {
+            if (isLock) {
+                //TODO: disable controllers
+                lock.setVisibility(View.GONE);
+                unLock.setVisibility(View.VISIBLE);
+            } else {
+                //TODO: enable controllers
+                unLock.setVisibility(View.GONE);
+                lock.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
 }

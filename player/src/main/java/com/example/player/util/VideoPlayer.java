@@ -8,9 +8,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.player.R;
 import com.google.android.exoplayer2.C;
@@ -57,16 +61,15 @@ public class VideoPlayer {
     private int currentWindow;
     private long playbackPosition;
     private Uri videoUri, subtitleUri;
-    private List<Uri> subtitleUriList;
-
     private ComponentListener componentListener;
     private ProgressBar progressBar;
+    private AlertDialog alertDialog;
 
 
-    public VideoPlayer(PlayerView playerView, Context context, String videoPath, @Nullable List<String> subTitlePath, @Nullable String subtitle) {
+    public VideoPlayer(PlayerView playerView, Context context, String videoPath) {
         this.playerView = playerView;
         this.context = context;
-        parseStringToUri(videoPath, subTitlePath, subtitle);
+        this.videoUri = Uri.parse(videoPath);
 
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
         componentListener = new ComponentListener();
@@ -76,18 +79,6 @@ public class VideoPlayer {
         playbackPosition = 0;
     }
 
-    private void parseStringToUri(String videoPath, @Nullable List<String> subTitlePath, @Nullable String subtitle) {
-        this.videoUri = Uri.parse(videoPath);
-        if (subTitlePath != null) {
-            for (int i = 0; i < subTitlePath.size(); i++) {
-                this.subtitleUriList.set(i, Uri.parse(subTitlePath.get(i)));
-            }
-        }
-
-        if (subtitle != null)
-            this.subtitleUri = Uri.parse(subtitle);
-
-    }
 
     /******************************************************************
      initialize ExoPlayer
@@ -117,102 +108,24 @@ public class VideoPlayer {
 
     private MediaSource buildMediaSource(@Nullable String overrideExtension) {
         @C.ContentType int type = Util.inferContentType(videoUri, overrideExtension);
-        boolean hasSubtitle = false;
-        MergingMediaSource mergedSource;
+
         CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
                 context,
                 100 * 1024 * 1024,
                 5 * 1024 * 1024);
 
-        if (subtitleUriList != null) {
-            hasSubtitle = true;
-            Format subtitleFormat = Format.createTextSampleFormat(
-                    null, // An identifier for the track. May be null.
-                    MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
-                    Format.NO_VALUE, // Selection flags for the track.
-                    "en"); // The subtitle language. May be null.
-
-            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
-                    Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
-
-            for (int i = 0; i < subtitleUriList.size(); i++) {
-                subtitleSourceList.set(i,
-                        new SingleSampleMediaSource
-                                .Factory(dataSourceFactory)
-                                .createMediaSource(subtitleUriList.get(i), subtitleFormat, C.TIME_UNSET));
-            }
-
-        }
-
-
-        if (subtitleUri != null) {
-            hasSubtitle = true;
-            Format subtitleFormat = Format.createTextSampleFormat(
-                    null, // An identifier for the track. May be null.
-                    MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
-                    Format.NO_VALUE, // Selection flags for the track.
-                    "en"); // The subtitle language. May be null.
-
-            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
-                    Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
-
-
-            subtitleSource = new SingleSampleMediaSource
-                    .Factory(dataSourceFactory)
-                    .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
-
-        }
-
-
         switch (type) {
             case C.TYPE_SS:
-
-                Log.d(TAG, "buildMediaSource() called with: type >> " + type + " C.TYPE_SS>> " + C.TYPE_SS);
-                mediaSource = new SsMediaSource
-                        .Factory(cacheDataSourceFactory)
-                        .createMediaSource(videoUri);
-                if (hasSubtitle) {
-
-                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
-                    return mergedSource;
-                } else
-                    return mediaSource;
+                return new SsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
 
             case C.TYPE_DASH:
-
-                Log.d(TAG, "buildMediaSource() called with: type >> " + type + " C.TYPE_DASH>> " + C.TYPE_DASH);
-                mediaSource = new DashMediaSource
-                        .Factory(cacheDataSourceFactory)
-                        .createMediaSource(videoUri);
-                if (hasSubtitle) {
-                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
-
-                    return mergedSource;
-                } else
-                    return mediaSource;
+                return new DashMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
 
             case C.TYPE_HLS:
-
-                Log.d(TAG, "buildMediaSource() called with: type >> " + type + " C.TYPE_HLS>> " + C.TYPE_HLS);
-                mediaSource = new HlsMediaSource
-                        .Factory(cacheDataSourceFactory)
-                        .createMediaSource(videoUri);
-                if (hasSubtitle) {
-                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
-                    return mergedSource;
-                } else
-                    return mediaSource;
+                return new HlsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
 
             case C.TYPE_OTHER:
-                Log.d(TAG, "buildMediaSource() called with: type >> " + type + " C.TYPE_OTHER>> " + C.TYPE_OTHER);
-                mediaSource = new ExtractorMediaSource
-                        .Factory(cacheDataSourceFactory)
-                        .createMediaSource(videoUri);
-                if (hasSubtitle) {
-                    mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
-                    return mergedSource;
-                } else
-                    return mediaSource;
+                return new ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
 
             default: {
                 throw new IllegalStateException("Unsupported type: " + type);
@@ -286,8 +199,9 @@ public class VideoPlayer {
      manually select stream quality
      ***********************************************************/
 
-    public void setQuality(Activity activity, CharSequence dialogTitle) {
+    public void setSelectedQuality(Activity activity, CharSequence dialogTitle) {
 
+        player.setPlayWhenReady(false);
         MappingTrackSelector.MappedTrackInfo mappedTrackInfo;
 
         if (trackSelector != null) {
@@ -310,7 +224,7 @@ public class VideoPlayer {
                 dialogPair.second.setAllowAdaptiveSelections(allowAdaptiveSelections);
                 dialogPair.first.show();
 
-                Log.d(TAG, "setQuality(): " +
+                Log.d(TAG, "setSelectedQuality(): " +
                         " mappedTrackInfo >> " + mappedTrackInfo +
                         " rendererType >> " + rendererType +
                         " C.TRACK_TYPE_VIDEO >> " + C.TRACK_TYPE_VIDEO +
@@ -318,6 +232,7 @@ public class VideoPlayer {
             }
 
         }
+        player.setPlayWhenReady(true);
     }
 
     /***********************************************************
@@ -333,10 +248,35 @@ public class VideoPlayer {
     /***********************************************************
      manually select subtitle
      ***********************************************************/
-    public void setSubtitle(Activity activity, CharSequence dialogTitle) {
+    public void setSelectedSubtitle(String subtitle) {
 
+        MergingMediaSource mergedSource;
+
+        if (subtitle != null) {
+            this.subtitleUri = Uri.parse(subtitle);
+
+            Format subtitleFormat = Format.createTextSampleFormat(
+                    null, // An identifier for the track. May be null.
+                    MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
+                    Format.NO_VALUE, // Selection flags for the track.
+                    "en"); // The subtitle language. May be null.
+
+            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
+                    Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
+
+
+            subtitleSource = new SingleSampleMediaSource
+                    .Factory(dataSourceFactory)
+                    .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
+
+
+            mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
+            player.prepare(mergedSource, false, false);
+            Toast.makeText(context, "there is subtitle", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "there is no subtitle", Toast.LENGTH_SHORT).show();
+        }
     }
-
 
 
     /***********************************************************
