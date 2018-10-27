@@ -3,25 +3,25 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/darker_gray"
+    android:background="#fff"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/track_selection_dialog_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#696969"
+        android:background="#fff"
         android:padding="8dp"
         android:text="Subtitles"
         android:textAlignment="center"
-        android:textColor="#ffa500"
+        android:textColor="#00bfff"
         android:textSize="20sp" />
 
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="#ffa500"
+        android:background="#00bfff"
         android:padding="4dp" />
 
     <!--TODO : recyclerview for list of subtitles-->
@@ -31,7 +31,8 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"
         android:padding="10dp"
-        android:text="persian subtitle"/>
+        android:text="persian subtitle"
+        android:textColor="#000"/>
 
     <TextView
         android:id="@+id/subtitle_en"
@@ -39,7 +40,8 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"
         android:padding="10dp"
-        android:text="English subtitle"/>
+        android:text="English subtitle"
+        android:textColor="#000"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +53,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#696969"
+            android:background="#fff"
+            android:textColor="#00bfff"
             android:padding="4dp"
             android:text="Cancel"
             android:textSize="14dp" />
