@@ -2,11 +2,17 @@ package com.example.player.ui;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.player.R;
 import com.example.player.util.VideoPlayer;
@@ -18,6 +24,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private VideoPlayer player;
     private ImageButton mute, unMute, repeatOff, repeatOne, repeatAll, subtitle, setting, lock, unLock;
     private ProgressBar progressBar;
+    private AlertDialog alertDialog;
     private int REPEAT_OFF = 0;
     private int REPEAT_ONE = 1;
     private int REPEAT_ALL = 2;
@@ -55,6 +62,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
 
         player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
+        playerView.getSubtitleView().setVisibility(View.GONE);
         player.setProgressbar(progressBar);
         player.initializePlayer();
 
@@ -162,11 +170,57 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
+    private void showSubtitleDialog() {
+        if (player != null && playerView.getSubtitleView() != null) {
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
+
+            LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+            View view = inflater.inflate(R.layout.track_selection_dialog, null);
+            builder.setView(view);
+
+            alertDialog = builder.create();
+
+            // set the height and width of dialog
+            WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+            layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
+            layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+            layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            layoutParams.gravity = Gravity.CENTER;
+
+            alertDialog.getWindow().setAttributes(layoutParams);
+
+            // to prevent dialog box from getting dismissed on outside touch
+            alertDialog.setCanceledOnTouchOutside(false);
+
+            alertDialog.show();
+
+            TextView persianSub = view.findViewById(R.id.subtitle_fa);
+            TextView englishSub = view.findViewById(R.id.subtitle_en);
+            Button cancelDialog = view.findViewById(R.id.cancel_dialog_btn);
+
+            persianSub.setOnClickListener(view1 -> {
+                player.setSelectedSubtitle(subtitleUri);
+                playerView.getSubtitleView().setVisibility(View.VISIBLE);
+                alertDialog.dismiss();
+            });
+
+            englishSub.setOnClickListener(view1 -> {
+                player.setSelectedSubtitle(subtitleUri);
+                playerView.getSubtitleView().setVisibility(View.VISIBLE);
+                alertDialog.dismiss();
+            });
+
+            cancelDialog.setOnClickListener(view1 -> {
+                alertDialog.dismiss();
+            });
+        }
+    }
+
     private void showSubtitle(boolean show) {
         if (player != null && playerView.getSubtitleView() != null) {
             if (show) {
-                player.setSelectedSubtitle(subtitleUri);
-                playerView.getSubtitleView().setVisibility(View.VISIBLE);
+                showSubtitleDialog();
             } else
                 playerView.getSubtitleView().setVisibility(View.GONE);
         }

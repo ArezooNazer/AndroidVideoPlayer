@@ -24,11 +24,22 @@
         android:background="#ffa500"
         android:padding="4dp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <!--TODO : recyclerview for list of subtitles-->
+    <TextView
+        android:id="@+id/subtitle_fa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical" />
+        android:textSize="20dp"
+        android:padding="10dp"
+        android:text="persian subtitle"/>
+
+    <TextView
+        android:id="@+id/subtitle_en"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:padding="10dp"
+        android:text="English subtitle"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,23 +47,13 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/subtitle_settings"
+            android:id="@+id/cancel_dialog_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#696969"
             android:padding="4dp"
-            android:text="Subs Settings"
-            android:textSize="14dp" />
-
-        <Button
-            android:id="@+id/btnOk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="#696969"
-            android:padding="4dp"
-            android:text="OK"
+            android:text="Cancel"
             android:textSize="14dp" />
 
     </LinearLayout>
