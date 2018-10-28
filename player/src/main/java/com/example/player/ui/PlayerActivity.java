@@ -5,20 +5,19 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.player.R;
 import com.example.player.util.VideoPlayer;
+import com.google.android.exoplayer2.ui.DefaultTimeBar;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
@@ -34,15 +33,14 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     //other stream type 3
     //private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
-    //hls stream type 2
-    //private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
-    //hls with 8 resolutions
-    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
     //private  String videoUri = "https://hw20.cdn.asset.aparat.com/aparat-video/b1a82edf9f71b969f8ddd0c0ce24dfd912382539-144p__28538.mp4";
-    //https://www.iandevlin.com/html5test/webvtt/upc-video-subtitles-en.vtt
-
-    //private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
-    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
+    //hls stream type 2
+    private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
+    //hls with 8 resolutions
+//    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+    private String subtitleUri = "";
+//    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
+//    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -66,10 +64,11 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         unLock = findViewById(R.id.btn_unLock);
 
 
+
         player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
         playerView.getSubtitleView().setVisibility(View.GONE);
         player.setProgressbar(progressBar);
-        player.seekForwardOnDoubleTap();
+        player.seekToOnDoubleTap();
         player.initializePlayer();
         player.seekToSelectedPosition(0, 1, 0);
 
@@ -273,13 +272,38 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void updateLockMode(boolean isLock) {
+        PlayerControlView playerControlView = new PlayerControlView(this);
+//        playerView.setClickable(false);
         if (player != null && playerView != null) {
             if (isLock) {
                 //TODO: disable controllers
+//                playerView.hideController();
+//                playerView.setClickable(false);
+//                playerControlView.setVisibility(View.GONE);
+//                playerControlView.setClickable(false);
+
+
+                mute.setClickable(false);
+                unMute.setClickable(false);
+                subtitle.setClickable(false);
+                repeatAll.setClickable(false);
+                repeatOff.setClickable(false);
+                repeatOne.setClickable(false);
+                setting.setClickable(false);
                 lock.setVisibility(View.GONE);
                 unLock.setVisibility(View.VISIBLE);
             } else {
                 //TODO: enable controllers
+                playerControlView.setVisibility(View.VISIBLE);
+                mute.setClickable(true);
+                unMute.setClickable(true);
+                subtitle.setClickable(true);
+                repeatAll.setClickable(true);
+                repeatOff.setClickable(true);
+                repeatOne.setClickable(true);
+                setting.setClickable(true);
+
+                playerView.showController();
                 unLock.setVisibility(View.GONE);
                 lock.setVisibility(View.VISIBLE);
             }

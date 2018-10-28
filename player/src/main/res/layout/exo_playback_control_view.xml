@@ -107,7 +107,7 @@
             android:layout_marginRight="20dp"
             android:layout_weight="0"
             android:background="@null"
-            android:src="@drawable/exo_controls_repeat_off" />
+            android:src="@drawable/exo_controls_repeat_all" />
 
         <ImageButton
             android:id="@+id/btn_repeat_one"
@@ -128,7 +128,7 @@
             android:layout_marginRight="20dp"
             android:layout_weight="0"
             android:background="@null"
-            android:src="@drawable/exo_controls_repeat_all"
+            android:src="@drawable/exo_controls_repeat_off"
             android:visibility="gone" />
 
     </LinearLayout>

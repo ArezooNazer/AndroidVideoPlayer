@@ -6,11 +6,15 @@ import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -30,6 +34,7 @@ import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.TrackSelectionView;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -53,12 +58,11 @@ public class VideoPlayer {
 
 
     private boolean playWhenReady;
-    private int currentWindow;
+    private int currentWindow, widthOfScreen;
     private long playbackPosition;
     private Uri videoUri, subtitleUri;
     private ComponentListener componentListener;
     private ProgressBar progressBar;
-
 
     public VideoPlayer(PlayerView playerView, Context context, String videoPath) {
         this.playerView = playerView;
@@ -71,6 +75,7 @@ public class VideoPlayer {
         playWhenReady = false;
         currentWindow = 0;
         playbackPosition = 0;
+
     }
 
     /******************************************************************
@@ -78,7 +83,6 @@ public class VideoPlayer {
      ******************************************************************/
     public void initializePlayer() {
         playerView.requestFocus();
-
 
         if (player == null)
             player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
@@ -90,6 +94,7 @@ public class VideoPlayer {
 
         player.setPlayWhenReady(true);
         player.addListener(componentListener);
+        progressBar.setVisibility(View.VISIBLE);
         player.prepare(mediaSource);
 
     }
@@ -225,20 +230,8 @@ public class VideoPlayer {
     }
 
     /***********************************************************
-     double tap event
+     double tap event and seekTo
      ***********************************************************/
-//    public void seekToSelectedPosition(int playbackPosition , boolean isForward) {
-//        long videoDuration = player.getDuration();
-//
-//        long upperBound = player.getCurrentPosition() + playbackPosition;
-//        long lowerBound = player.getCurrentPosition() - playbackPosition;
-//
-//        if(isForward && upperBound < videoDuration )
-//            player.seekTo(upperBound);
-//        if(!isForward && lowerBound >0)
-//            player.seekTo(lowerBound);
-//
-//    }
     public void seekToSelectedPosition(int hour, int minute, int second) {
         long playbackPosition = (hour * 3600 + minute * 60 + second) * 1000;
         long videoDuration = player.getDuration();
@@ -250,13 +243,20 @@ public class VideoPlayer {
         }
     }
 
-    public void seekForwardOnDoubleTap() {
-
+    public void seekToOnDoubleTap() {
+        getWidthOfScreen();
         final GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                Log.d("tap", "onDoubleTap() called with: e = [" + e + "]");
-                player.seekTo(player.getCurrentPosition() + 5000);
+
+                float positionOfDoubleTapX = e.getX();
+
+                if (positionOfDoubleTapX < widthOfScreen / 2)
+                    player.seekTo(player.getCurrentPosition() - 5000);
+                else
+                    player.seekTo(player.getCurrentPosition() + 5000);
+
+                Log.d(TAG, "onDoubleTap(): widthOfScreen >> " + widthOfScreen + " positionOfDoubleTapX >>" + positionOfDoubleTapX);
                 return true;
             }
         });
@@ -264,12 +264,18 @@ public class VideoPlayer {
         playerView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
     }
 
+    private void getWidthOfScreen() {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        widthOfScreen = metrics.widthPixels;
+    }
 
     /***********************************************************
      manually select subtitle
      ***********************************************************/
     public void setSelectedSubtitle(String subtitle) {
-
         MergingMediaSource mergedSource;
 
         if (subtitle != null) {
@@ -308,19 +314,23 @@ public class VideoPlayer {
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
             if (progressBar != null) {
-
+                Log.d(TAG, "onPlayerStateChanged() called with: playWhenReady = [" + playWhenReady + "], playbackState = [" + playbackState + "]");
                 switch (playbackState) {
                     case Player.STATE_IDLE:
                         progressBar.setVisibility(View.VISIBLE);
+                        Toast.makeText(context,"STATE_IDLE",Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_BUFFERING:
                         progressBar.setVisibility(View.VISIBLE);
+                        Toast.makeText(context,"STATE_BUFFERING",Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_READY:
-                        progressBar.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(context,"STATE_READY",Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_ENDED:
                         progressBar.setVisibility(View.GONE);
+                        Toast.makeText(context,"STATE_ENDED",Toast.LENGTH_SHORT).show();
 
                 }
             }
