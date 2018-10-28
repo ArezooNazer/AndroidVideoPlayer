@@ -304,6 +304,17 @@ public class VideoPlayer {
         }
     }
 
+    /***********************************************************
+     playerView listener for lock and unlock screen
+     ***********************************************************/
+    public void setPlayerViewListener(boolean isLock){
+        playerView.setControllerVisibilityListener(visibility -> {
+            if(isLock)
+              playerView.hideController();
+            else
+                playerView.showController();
+        });
+    }
 
     /***********************************************************
      Listeners
@@ -331,7 +342,6 @@ public class VideoPlayer {
                     case Player.STATE_ENDED:
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(context,"STATE_ENDED",Toast.LENGTH_SHORT).show();
-
                 }
             }
         }

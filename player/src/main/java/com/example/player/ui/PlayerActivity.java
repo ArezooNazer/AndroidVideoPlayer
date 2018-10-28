@@ -64,7 +64,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         unLock = findViewById(R.id.btn_unLock);
 
 
-
         player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
         playerView.getSubtitleView().setVisibility(View.GONE);
         player.setProgressbar(progressBar);
@@ -272,40 +271,17 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void updateLockMode(boolean isLock) {
-        PlayerControlView playerControlView = new PlayerControlView(this);
-//        playerView.setClickable(false);
         if (player != null && playerView != null) {
+            player.setPlayerViewListener(isLock);
             if (isLock) {
-                //TODO: disable controllers
-//                playerView.hideController();
-//                playerView.setClickable(false);
-//                playerControlView.setVisibility(View.GONE);
-//                playerControlView.setClickable(false);
-
-
-                mute.setClickable(false);
-                unMute.setClickable(false);
-                subtitle.setClickable(false);
-                repeatAll.setClickable(false);
-                repeatOff.setClickable(false);
-                repeatOne.setClickable(false);
-                setting.setClickable(false);
-                lock.setVisibility(View.GONE);
+                playerView.hideController();
+//                lock.setVisibility(View.GONE);
                 unLock.setVisibility(View.VISIBLE);
-            } else {
-                //TODO: enable controllers
-                playerControlView.setVisibility(View.VISIBLE);
-                mute.setClickable(true);
-                unMute.setClickable(true);
-                subtitle.setClickable(true);
-                repeatAll.setClickable(true);
-                repeatOff.setClickable(true);
-                repeatOne.setClickable(true);
-                setting.setClickable(true);
 
+            } else {
                 playerView.showController();
                 unLock.setVisibility(View.GONE);
-                lock.setVisibility(View.VISIBLE);
+//                lock.setVisibility(View.VISIBLE);
             }
         }
     }
