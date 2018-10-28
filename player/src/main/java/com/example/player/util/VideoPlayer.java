@@ -44,6 +44,8 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.List;
 
+import wseemann.media.FFmpegMediaMetadataRetriever;
+
 public class VideoPlayer {
 
     private final String CLASS_NAME = VideoPlayer.class.getName();
@@ -61,6 +63,7 @@ public class VideoPlayer {
     private int currentWindow, widthOfScreen;
     private long playbackPosition;
     private Uri videoUri, subtitleUri;
+    private String videoUrl;
     private ComponentListener componentListener;
     private ProgressBar progressBar;
 
@@ -68,6 +71,7 @@ public class VideoPlayer {
         this.playerView = playerView;
         this.context = context;
         this.videoUri = Uri.parse(videoPath);
+        this.videoUrl = videoPath;
 
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
         componentListener = new ComponentListener();
@@ -234,18 +238,31 @@ public class VideoPlayer {
      ***********************************************************/
     public void seekToSelectedPosition(int hour, int minute, int second) {
         long playbackPosition = (hour * 3600 + minute * 60 + second) * 1000;
-        long videoDuration = player.getDuration();
-
-        Log.d(TAG, "seekToSelectedPosition() called with: playbackPosition = [" + playbackPosition + "], videoDuration = [" + videoDuration + "]");
+        long videoDuration = getVideoDuration();
 
         if (playbackPosition <= videoDuration) {
+            Toast.makeText(context,"seek to :" + playbackPosition , Toast.LENGTH_SHORT).show();
             player.seekTo(playbackPosition);
+        }else{
+            Toast.makeText(context,"playbackPosition <= mTimeInMilliseconds" , Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private long getVideoDuration(){
+
+        FFmpegMediaMetadataRetriever mFFmpegMediaMetadataRetriever = new FFmpegMediaMetadataRetriever();
+        mFFmpegMediaMetadataRetriever
+                .setDataSource(videoUrl);
+        String mVideoDuration =  mFFmpegMediaMetadataRetriever
+                .extractMetadata(FFmpegMediaMetadataRetriever .METADATA_KEY_DURATION);
+
+        return Long.parseLong(mVideoDuration);
     }
 
     public void seekToOnDoubleTap() {
         getWidthOfScreen();
-        final GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+        final GestureDetector gestureDetector = new GestureDetector(context,
+                new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
 
@@ -256,7 +273,8 @@ public class VideoPlayer {
                 else
                     player.seekTo(player.getCurrentPosition() + 5000);
 
-                Log.d(TAG, "onDoubleTap(): widthOfScreen >> " + widthOfScreen + " positionOfDoubleTapX >>" + positionOfDoubleTapX);
+                Log.d(TAG, "onDoubleTap(): widthOfScreen >> " + widthOfScreen +
+                        " positionOfDoubleTapX >>" + positionOfDoubleTapX);
                 return true;
             }
         });
@@ -329,19 +347,19 @@ public class VideoPlayer {
                 switch (playbackState) {
                     case Player.STATE_IDLE:
                         progressBar.setVisibility(View.VISIBLE);
-                        Toast.makeText(context,"STATE_IDLE",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context,"STATE_IDLE",Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_BUFFERING:
                         progressBar.setVisibility(View.VISIBLE);
-                        Toast.makeText(context,"STATE_BUFFERING",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context,"STATE_BUFFERING",Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_READY:
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(context,"STATE_READY",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context,"STATE_READY",Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_ENDED:
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(context,"STATE_ENDED",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context,"STATE_ENDED",Toast.LENGTH_SHORT).show();
                 }
             }
         }
