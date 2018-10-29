@@ -43,9 +43,9 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 //    hls with 8 resolutions
 //    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
 //    private String videoUri = "http://trailers.divx.com/divx_prod/divx_plus_hd_showcase/Sintel_DivXPlus_6500kbps.mkv";
-//    private String subtitleUri = "";
+    private String subtitleUri = "";
     private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
-    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
+//    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -75,7 +75,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         player.setProgressbar(progressBar);
         player.seekToOnDoubleTap();
         player.initializePlayer();
-        //optional setting : start video from selected time
+
+        //start video from selected time
         player.seekToSelectedPosition(0, 0, 10);
 
         mute.setOnClickListener(this);
@@ -206,13 +207,11 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
             // to prevent dialog box from getting dismissed on outside touch
             alertDialog.setCanceledOnTouchOutside(false);
-
             alertDialog.show();
 
             TextView persianSub = view.findViewById(R.id.subtitle_fa);
             TextView englishSub = view.findViewById(R.id.subtitle_en);
             Button cancelDialog = view.findViewById(R.id.cancel_dialog_btn);
-
 
             //you can use recyclerView for list of subtitles
             persianSub.setOnClickListener(view1 -> {

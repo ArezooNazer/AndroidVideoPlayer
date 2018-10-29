@@ -58,7 +58,6 @@ public class VideoPlayer {
     private List<MediaSource> subtitleSourceList;
     private DefaultTrackSelector trackSelector;
 
-
     private boolean playWhenReady;
     private int currentWindow, widthOfScreen;
     private long playbackPosition;
@@ -256,10 +255,12 @@ public class VideoPlayer {
     private long getVideoDuration() {
 
         FFmpegMediaMetadataRetriever mFFmpegMediaMetadataRetriever = new FFmpegMediaMetadataRetriever();
-        mFFmpegMediaMetadataRetriever
-                .setDataSource(videoUrl);
+        mFFmpegMediaMetadataRetriever.setDataSource(videoUrl);
         String mVideoDuration = mFFmpegMediaMetadataRetriever
                 .extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
+
+        Log.d(TAG, " Long.parseLong(mVideoDuration) >> " + Long.parseLong(mVideoDuration) +
+                " mVideoDuration >> " + mVideoDuration + " player.getDuration() >> " + player.getDuration()/1000);
 
         return Long.parseLong(mVideoDuration);
     }
@@ -354,22 +355,22 @@ public class VideoPlayer {
                     case Player.STATE_IDLE:
                         //The player does not have any media to play.
                         progressBar.setVisibility(View.VISIBLE);
-                        Toast.makeText(context, "STATE_IDLE", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "STATE_IDLE", Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_BUFFERING:
                         //The player is not able to immediately play from its current position.
                         progressBar.setVisibility(View.VISIBLE);
-                        Toast.makeText(context, "STATE_BUFFERING", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "STATE_BUFFERING", Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_READY:
                         //The player is able to immediately play from its current position.
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(context, "STATE_READY", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.INVISIBLE);
+//                        Toast.makeText(context, "STATE_READY", Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_ENDED:
                         //The player has finished playing the media.
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(context, "STATE_ENDED", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.INVISIBLE);
+//                        Toast.makeText(context, "STATE_ENDED", Toast.LENGTH_SHORT).show();
                 }
             }
         }
