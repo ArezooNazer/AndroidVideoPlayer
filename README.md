@@ -28,7 +28,7 @@ A video player based on Exoplayer
   </li>
  </ul>
  
- # Get start
+ # Get started
  Every thing you need is in Player Module. just follow the instructions.
  
  ## Add dependency
