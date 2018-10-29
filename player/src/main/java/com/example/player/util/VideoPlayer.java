@@ -112,7 +112,7 @@ public class VideoPlayer {
         @C.ContentType int type = Util.inferContentType(videoUri, overrideExtension);
 
         CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
-                context,
+                 context,
                 100 * 1024 * 1024,
                 5 * 1024 * 1024);
 
