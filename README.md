@@ -62,14 +62,15 @@ You can use PlayerActivity.java class and extend the features you want but if yo
  Initialize your player as follow :
  
  ```java
-        player = new VideoPlayer(playerView, getApplicationContext(), videoUrl);
-        player.initializePlayer();
-        
-        //these are optional 
+        player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
+        //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
         player.setProgressbar(progressBar);
         player.seekToOnDoubleTap();
-        player.seekToSelectedPosition(0, 0, 30);     
+        player.initializePlayer();
+
+        //optional setting : start video from selected time
+        player.seekToSelectedPosition(0, 0, 10);  
 ```
 ## 4. Add listener
 Add listener implementations for ImageButtons in your activity.
