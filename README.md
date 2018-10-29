@@ -44,7 +44,7 @@ A video player based on Exoplayer
 
 ## 2. Create a VideoPlayer instance
 You can use PlayerActivity.java class and extend the features you want but if you want to use this player in another activity, create an instance of VideoPlayer class in your activity.
-```android
+```java
     VideoPlayer player;
     
     //as you can see in activity_player.xml you have to use PlayerView for exoplayer content to be played
@@ -57,7 +57,7 @@ You can use PlayerActivity.java class and extend the features you want but if yo
 ## 3. Initialize your player
  Initialize your player as follow :
  
- ```android
+ ```java
         player = new VideoPlayer(playerView, getApplicationContext(), videoUrl);
         player.initializePlayer();
         
