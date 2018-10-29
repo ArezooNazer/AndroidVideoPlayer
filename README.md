@@ -34,7 +34,7 @@ A video player based on Exoplayer
  ## 1. Add dependency
  In this project we use Exoplayer v.2.9.0 
  
-```android
+```java
  //Exoplayer
  implementation 'com.google.android.exoplayer:exoplayer:2.9.0'
  
