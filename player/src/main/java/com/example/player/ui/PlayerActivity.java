@@ -31,13 +31,18 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private int REPEAT_ONE = 1;
     private int REPEAT_ALL = 2;
 
-    //other stream type 3
-    //private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
-    //private  String videoUri = "https://hw20.cdn.asset.aparat.com/aparat-video/b1a82edf9f71b969f8ddd0c0ce24dfd912382539-144p__28538.mp4";
-    //hls stream type 2
-    //private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
-    //hls with 8 resolutions
-//private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+    /***********************************************************
+     sample video and subtitles
+     ***********************************************************/
+
+//    other stream type 3
+//    private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
+//    private  String videoUri = "https://hw20.cdn.asset.aparat.com/aparat-video/b1a82edf9f71b969f8ddd0c0ce24dfd912382539-144p__28538.mp4";
+//    hls stream type 2
+//    private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
+//    hls with 8 resolutions
+//    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+//    private String videoUri = "http://trailers.divx.com/divx_prod/divx_plus_hd_showcase/Sintel_DivXPlus_6500kbps.mkv";
 //    private String subtitleUri = "";
     private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
     private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
@@ -65,12 +70,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
 
         player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
+        //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
         player.setProgressbar(progressBar);
         player.seekToOnDoubleTap();
         player.initializePlayer();
-        player.seekToSelectedPosition(0, 0, 30);
-
+        //optional setting : start video from selected time
+        player.seekToSelectedPosition(0, 0, 10);
 
         mute.setOnClickListener(this);
         unMute.setOnClickListener(this);
@@ -180,6 +186,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private void showSubtitleDialog() {
         if (player != null && playerView.getSubtitleView() != null) {
 
+            player.pausePlayer();
             final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
 
             LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
@@ -206,6 +213,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             TextView englishSub = view.findViewById(R.id.subtitle_en);
             Button cancelDialog = view.findViewById(R.id.cancel_dialog_btn);
 
+
+            //you can use recyclerView for list of subtitles
             persianSub.setOnClickListener(view1 -> {
                 player.setSelectedSubtitle(subtitleUri);
                 playerView.getSubtitleView().setVisibility(View.VISIBLE);
@@ -220,6 +229,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
             cancelDialog.setOnClickListener(view1 -> {
                 alertDialog.dismiss();
+                player.resumePlayer();
             });
         }
     }
@@ -275,13 +285,11 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             player.setPlayerViewListener(isLock);
             if (isLock) {
                 playerView.hideController();
-//                lock.setVisibility(View.GONE);
                 unLock.setVisibility(View.VISIBLE);
 
             } else {
                 playerView.showController();
                 unLock.setVisibility(View.GONE);
-//                lock.setVisibility(View.VISIBLE);
             }
         }
     }

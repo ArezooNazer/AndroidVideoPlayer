@@ -74,7 +74,8 @@ public class VideoPlayer {
         this.videoUrl = videoPath;
 
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
-        componentListener = new ComponentListener();
+        if(componentListener == null)
+            componentListener = new ComponentListener();
 
         playWhenReady = false;
         currentWindow = 0;
@@ -98,7 +99,8 @@ public class VideoPlayer {
 
         player.setPlayWhenReady(true);
         player.addListener(componentListener);
-        progressBar.setVisibility(View.VISIBLE);
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
         player.prepare(mediaSource);
 
     }
@@ -116,15 +118,19 @@ public class VideoPlayer {
 
         switch (type) {
             case C.TYPE_SS:
+                Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_SS + "]");
                 return new SsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
 
             case C.TYPE_DASH:
+                Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_DASH + "]");
                 return new DashMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
 
             case C.TYPE_HLS:
+                Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_HLS + "]");
                 return new HlsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
 
             case C.TYPE_OTHER:
+                Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_OTHER + "]");
                 return new ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
 
             default: {
@@ -199,7 +205,6 @@ public class VideoPlayer {
      ***********************************************************/
     public void setSelectedQuality(Activity activity, CharSequence dialogTitle) {
 
-        player.setPlayWhenReady(false);
         MappingTrackSelector.MappedTrackInfo mappedTrackInfo;
 
         if (trackSelector != null) {
@@ -222,15 +227,15 @@ public class VideoPlayer {
                 dialogPair.second.setAllowAdaptiveSelections(allowAdaptiveSelections);
                 dialogPair.first.show();
 
+
                 Log.d(TAG, "setSelectedQuality(): " +
                         " mappedTrackInfo >> " + mappedTrackInfo +
                         " rendererType >> " + rendererType +
                         " C.TRACK_TYPE_VIDEO >> " + C.TRACK_TYPE_VIDEO +
                         " C.TRACK_TYPE_AUDIO >> " + C.TRACK_TYPE_AUDIO);
-            }
 
+            }
         }
-        player.setPlayWhenReady(true);
     }
 
     /***********************************************************
@@ -239,22 +244,22 @@ public class VideoPlayer {
     public void seekToSelectedPosition(int hour, int minute, int second) {
         long playbackPosition = (hour * 3600 + minute * 60 + second) * 1000;
         long videoDuration = getVideoDuration();
-
-        if (playbackPosition <= videoDuration) {
-            Toast.makeText(context,"seek to :" + playbackPosition , Toast.LENGTH_SHORT).show();
-            player.seekTo(playbackPosition);
-        }else{
-            Toast.makeText(context,"playbackPosition <= mTimeInMilliseconds" , Toast.LENGTH_SHORT).show();
+        if (player != null) {
+            if (playbackPosition <= videoDuration) {
+                player.seekTo(playbackPosition);
+            } else {
+                Toast.makeText(context, "playbackPosition <= mTimeInMilliseconds", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
-    private long getVideoDuration(){
+    private long getVideoDuration() {
 
         FFmpegMediaMetadataRetriever mFFmpegMediaMetadataRetriever = new FFmpegMediaMetadataRetriever();
         mFFmpegMediaMetadataRetriever
                 .setDataSource(videoUrl);
-        String mVideoDuration =  mFFmpegMediaMetadataRetriever
-                .extractMetadata(FFmpegMediaMetadataRetriever .METADATA_KEY_DURATION);
+        String mVideoDuration = mFFmpegMediaMetadataRetriever
+                .extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
 
         return Long.parseLong(mVideoDuration);
     }
@@ -263,21 +268,21 @@ public class VideoPlayer {
         getWidthOfScreen();
         final GestureDetector gestureDetector = new GestureDetector(context,
                 new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
+                    @Override
+                    public boolean onDoubleTap(MotionEvent e) {
 
-                float positionOfDoubleTapX = e.getX();
+                        float positionOfDoubleTapX = e.getX();
 
-                if (positionOfDoubleTapX < widthOfScreen / 2)
-                    player.seekTo(player.getCurrentPosition() - 5000);
-                else
-                    player.seekTo(player.getCurrentPosition() + 5000);
+                        if (positionOfDoubleTapX < widthOfScreen / 2)
+                            player.seekTo(player.getCurrentPosition() - 5000);
+                        else
+                            player.seekTo(player.getCurrentPosition() + 5000);
 
-                Log.d(TAG, "onDoubleTap(): widthOfScreen >> " + widthOfScreen +
-                        " positionOfDoubleTapX >>" + positionOfDoubleTapX);
-                return true;
-            }
-        });
+                        Log.d(TAG, "onDoubleTap(): widthOfScreen >> " + widthOfScreen +
+                                " positionOfDoubleTapX >>" + positionOfDoubleTapX);
+                        return true;
+                    }
+                });
 
         playerView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
     }
@@ -295,7 +300,6 @@ public class VideoPlayer {
      ***********************************************************/
     public void setSelectedSubtitle(String subtitle) {
         MergingMediaSource mergedSource;
-
         if (subtitle != null) {
             this.subtitleUri = Uri.parse(subtitle);
 
@@ -316,7 +320,8 @@ public class VideoPlayer {
 
             mergedSource = new MergingMediaSource(mediaSource, subtitleSource);
             player.prepare(mergedSource, false, false);
-            Toast.makeText(context, "there is subtitle", Toast.LENGTH_SHORT).show();
+            resumePlayer();
+
         } else {
             Toast.makeText(context, "there is no subtitle", Toast.LENGTH_SHORT).show();
         }
@@ -325,10 +330,10 @@ public class VideoPlayer {
     /***********************************************************
      playerView listener for lock and unlock screen
      ***********************************************************/
-    public void setPlayerViewListener(boolean isLock){
+    public void setPlayerViewListener(boolean isLock) {
         playerView.setControllerVisibilityListener(visibility -> {
-            if(isLock)
-              playerView.hideController();
+            if (isLock)
+                playerView.hideController();
             else
                 playerView.showController();
         });
@@ -343,23 +348,28 @@ public class VideoPlayer {
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
             if (progressBar != null) {
-                Log.d(TAG, "onPlayerStateChanged() called with: playWhenReady = [" + playWhenReady + "], playbackState = [" + playbackState + "]");
+                Log.d(TAG, "onPlayerStateChanged() called with: playWhenReady = [" + playWhenReady + "]," +
+                        " playbackState = [" + playbackState + "]");
                 switch (playbackState) {
                     case Player.STATE_IDLE:
+                        //The player does not have any media to play.
                         progressBar.setVisibility(View.VISIBLE);
-//                        Toast.makeText(context,"STATE_IDLE",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "STATE_IDLE", Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_BUFFERING:
+                        //The player is not able to immediately play from its current position.
                         progressBar.setVisibility(View.VISIBLE);
-//                        Toast.makeText(context,"STATE_BUFFERING",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "STATE_BUFFERING", Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_READY:
+                        //The player is able to immediately play from its current position.
                         progressBar.setVisibility(View.GONE);
-//                        Toast.makeText(context,"STATE_READY",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "STATE_READY", Toast.LENGTH_SHORT).show();
 
                     case Player.STATE_ENDED:
+                        //The player has finished playing the media.
                         progressBar.setVisibility(View.GONE);
-//                        Toast.makeText(context,"STATE_ENDED",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "STATE_ENDED", Toast.LENGTH_SHORT).show();
                 }
             }
         }
