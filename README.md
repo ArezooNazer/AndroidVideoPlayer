@@ -29,9 +29,9 @@ A video player based on Exoplayer
  </ul>
  
  # Get started
- Every thing you need is in Player Module. just follow the instructions.
+ Everything you need is in Player Module. just follow the instructions.
  
- ## Add dependency
+ ## 1. Add dependency
  In this project we use Exoplayer v.2.9.0 
  
 ```android
@@ -42,7 +42,7 @@ A video player based on Exoplayer
  implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
 ```
 
-## Create a VideoPlayer instance
+## 2. Create a VideoPlayer instance
 You can use PlayerActivity.java class and extend the features you want but if you want to use this player in another activity, create an instance of VideoPlayer class in your activity.
 ```android
     VideoPlayer player;
@@ -54,7 +54,7 @@ You can use PlayerActivity.java class and extend the features you want but if yo
     ImageButton mute, unMute, repeatOff, repeatOne, repeatAll, subtitle, setting, lock, unLock;
 ```
     
-## Initialize your player
+## 3. Initialize your player
  Initialize your player as follow :
  
  ```android
@@ -67,6 +67,6 @@ You can use PlayerActivity.java class and extend the features you want but if yo
         player.seekToOnDoubleTap();
         player.seekToSelectedPosition(0, 0, 30);     
 ```
-## Add listener
+## 4. Add listener
 Add listener implementations for ImageButtons in your activity.
 
