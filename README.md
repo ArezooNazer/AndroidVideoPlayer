@@ -1,5 +1,9 @@
 # AndroidVideoPlayer
 A video player based on Exoplayer 
+
+customised playerView            |  quality options
+:-------------------------:|:-------------------------:
+![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/playerModule/demoImage/ExoplayerDemo.png)  |  ![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/playerModule/demoImage/ExoQuality.png)
 # Features
  <ul>
   <li>
@@ -54,7 +58,7 @@ You can use PlayerActivity.java class and extend the features you want but if yo
     ImageButton mute, unMute, repeatOff, repeatOne, repeatAll, subtitle, setting, lock, unLock;
 ```
     
-## 3. Initialize your player
+## 3. Initialize player
  Initialize your player as follow :
  
  ```java
