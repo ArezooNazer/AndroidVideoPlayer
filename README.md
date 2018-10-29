@@ -1,7 +1,7 @@
 # AndroidVideoPlayer
 A video player based on Exoplayer 
 
-customised playerView            |  quality options
+customized playerView            |  quality options
 :-------------------------:|:-------------------------:
 ![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/playerModule/demoImage/ExoplayerDemo.png)  |  ![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/playerModule/demoImage/ExoQuality.png)
 # Features
