@@ -73,7 +73,7 @@ public class VideoPlayer {
         this.videoUrl = videoPath;
 
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
-        if(componentListener == null)
+        if (componentListener == null)
             componentListener = new ComponentListener();
 
         playWhenReady = false;
@@ -111,7 +111,7 @@ public class VideoPlayer {
         @C.ContentType int type = Util.inferContentType(videoUri, overrideExtension);
 
         CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
-                 context,
+                context,
                 100 * 1024 * 1024,
                 5 * 1024 * 1024);
 
@@ -232,7 +232,6 @@ public class VideoPlayer {
                         " rendererType >> " + rendererType +
                         " C.TRACK_TYPE_VIDEO >> " + C.TRACK_TYPE_VIDEO +
                         " C.TRACK_TYPE_AUDIO >> " + C.TRACK_TYPE_AUDIO);
-
             }
         }
     }
@@ -260,7 +259,7 @@ public class VideoPlayer {
                 .extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
 
         Log.d(TAG, " Long.parseLong(mVideoDuration) >> " + Long.parseLong(mVideoDuration) +
-                " mVideoDuration >> " + mVideoDuration + " player.getDuration() >> " + player.getDuration()/1000);
+                " mVideoDuration >> " + mVideoDuration + " player.getDuration() >> " + player.getDuration() / 1000);
 
         return Long.parseLong(mVideoDuration);
     }
@@ -351,30 +350,13 @@ public class VideoPlayer {
             if (progressBar != null) {
                 Log.d(TAG, "onPlayerStateChanged() called with: playWhenReady = [" + playWhenReady + "]," +
                         " playbackState = [" + playbackState + "]");
-                switch (playbackState) {
-                    case Player.STATE_IDLE:
-                        //The player does not have any media to play.
-                        progressBar.setVisibility(View.VISIBLE);
-//                        Toast.makeText(context, "STATE_IDLE", Toast.LENGTH_SHORT).show();
-
-                    case Player.STATE_BUFFERING:
-                        //The player is not able to immediately play from its current position.
-                        progressBar.setVisibility(View.VISIBLE);
-//                        Toast.makeText(context, "STATE_BUFFERING", Toast.LENGTH_SHORT).show();
-
-                    case Player.STATE_READY:
-                        //The player is able to immediately play from its current position.
-                        progressBar.setVisibility(View.INVISIBLE);
-//                        Toast.makeText(context, "STATE_READY", Toast.LENGTH_SHORT).show();
-
-                    case Player.STATE_ENDED:
-                        //The player has finished playing the media.
-                        progressBar.setVisibility(View.INVISIBLE);
-//                        Toast.makeText(context, "STATE_ENDED", Toast.LENGTH_SHORT).show();
+                if (playbackState == Player.STATE_BUFFERING) {
+                    progressBar.setVisibility(View.VISIBLE);
+                } else {
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
             }
         }
-
     }
 
 }

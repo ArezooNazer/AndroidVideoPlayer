@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.player.R;
+import com.example.player.util.Url;
 import com.example.player.util.VideoPlayer;
 import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.PlayerControlView;
@@ -35,18 +36,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
      sample video and subtitles
      ***********************************************************/
 
-//    other stream type 3
-//    private String videoUri = "https://hw6.cdn.asset.aparat.com/aparat-video/22800e8c8e34bc7b232f1139e236e35c12202710-144p__53462.mp4";
-//    private  String videoUri = "https://hw20.cdn.asset.aparat.com/aparat-video/b1a82edf9f71b969f8ddd0c0ce24dfd912382539-144p__28538.mp4";
-//    hls stream type 2
-//    private String videoUri = " http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
-//    hls with 8 resolutions
-//    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
-//    private String videoUri = "http://trailers.divx.com/divx_prod/divx_plus_hd_showcase/Sintel_DivXPlus_6500kbps.mkv";
-    private String subtitleUri = "";
-    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
-//    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
-
+    private String videoUri = Url.getVideoUri();
+    private String subtitleUri = Url.getSubtitleUri();
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -77,7 +68,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         player.initializePlayer();
 
         //start video from selected time
-        player.seekToSelectedPosition(0, 0, 10);
+//        player.seekToSelectedPosition(0, 0, 30);
 
         mute.setOnClickListener(this);
         unMute.setOnClickListener(this);
