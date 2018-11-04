@@ -3,13 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ui.PlayerActivity">
 
-    <com.google.android.exoplayer2.ui.PlayerView
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
         android:id="@+id/demo_player_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:repeat_toggle_modes="none|one|all"
+        app:controller_layout_id="@layout/exo_playback_control_view">
 
         <ImageButton
             android:id="@+id/btn_unLock"
@@ -28,5 +31,5 @@
             android:layout_height="600dp"
             android:layout_gravity="center" />
 
-    </com.google.android.exoplayer2.ui.PlayerView>
+    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
 </LinearLayout>

@@ -21,6 +21,9 @@ import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
     private PlayerView playerView;
@@ -39,6 +42,14 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private String videoUri = Url.getVideoUri();
     private String subtitleUri = Url.getSubtitleUri();
 
+    private List<String> videoUriList = new ArrayList<>();
+
+    private void makeListOfUri(){
+
+        videoUriList.add("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8");
+        videoUriList.add("http://www.storiesinflight.com/js_videosub/jellies.mp4");
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,32 +62,37 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         progressBar = findViewById(R.id.progress_bar);
         mute = findViewById(R.id.btn_mute);
         unMute = findViewById(R.id.btn_unMute);
-        repeatOff = findViewById(R.id.btn_repeat_off);
-        repeatOne = findViewById(R.id.btn_repeat_one);
-        repeatAll = findViewById(R.id.btn_repeat_all);
+//        repeatOff = findViewById(R.id.btn_repeat_off);
+//        repeatOne = findViewById(R.id.btn_repeat_one);
+//        repeatAll = findViewById(R.id.btn_repeat_all);
         subtitle = findViewById(R.id.btn_subtitle);
         setting = findViewById(R.id.btn_settings);
         lock = findViewById(R.id.btn_lock);
         unLock = findViewById(R.id.btn_unLock);
 
 
-        player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
+//        player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
+
+        makeListOfUri();
+        player = new VideoPlayer(playerView, getApplicationContext(), videoUriList);
+
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
         player.setProgressbar(progressBar);
         player.seekToOnDoubleTap();
-        player.initializePlayer();
 
         //start video from selected time
-//        player.seekToSelectedPosition(0, 0, 30);
+        player.seekToSelectedPosition(0, 0, 0);
+
+        Log.d("duration", "video duration >> " + player.getPlayer().getDuration());
 
         mute.setOnClickListener(this);
         unMute.setOnClickListener(this);
         subtitle.setOnClickListener(this);
         setting.setOnClickListener(this);
-        repeatOff.setOnClickListener(this);
-        repeatOne.setOnClickListener(this);
-        repeatAll.setOnClickListener(this);
+//        repeatOff.setOnClickListener(this);
+//        repeatOne.setOnClickListener(this);
+//        repeatAll.setOnClickListener(this);
         lock.setOnClickListener(this);
         unLock.setOnClickListener(this);
 
@@ -85,6 +101,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onStart() {
         super.onStart();
+        hideSystemUi();
         player.resumePlayer();
     }
 
@@ -127,18 +144,18 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         if (controllerId == R.id.btn_unMute) {
             updateMuteMode(false);
         }
-
-        if (controllerId == R.id.btn_repeat_off) {
-            updateRepeatToggleMode(REPEAT_OFF);
-        }
-
-        if (controllerId == R.id.btn_repeat_one) {
-            updateRepeatToggleMode(REPEAT_ONE);
-        }
-
-        if (controllerId == R.id.btn_repeat_all) {
-            updateRepeatToggleMode(REPEAT_ALL);
-        }
+//
+//        if (controllerId == R.id.btn_repeat_off) {
+//            updateRepeatToggleMode(REPEAT_OFF);
+//        }
+//
+//        if (controllerId == R.id.btn_repeat_one) {
+//            updateRepeatToggleMode(REPEAT_ONE);
+//        }
+//
+//        if (controllerId == R.id.btn_repeat_all) {
+//            updateRepeatToggleMode(REPEAT_ALL);
+//        }
 
         if (controllerId == R.id.btn_settings) {
             player.setSelectedQuality(this, "select quality");
@@ -164,7 +181,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     /***********************************************************
      UI config
      ***********************************************************/
-
     @SuppressLint("InlinedApi")
     private void hideSystemUi() {
         playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE

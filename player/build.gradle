@@ -42,8 +42,4 @@ dependencies {
     //ExoPlayer
     implementation 'com.google.android.exoplayer:exoplayer:2.9.0'
 
-    implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
-
-
-
 }

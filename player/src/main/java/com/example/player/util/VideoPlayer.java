@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
@@ -13,7 +12,6 @@ import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -24,6 +22,7 @@ import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
@@ -34,17 +33,16 @@ import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
-import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.exoplayer2.ui.MyTrackSelectionView;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.ui.TrackSelectionView;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class VideoPlayer {
 
@@ -55,13 +53,14 @@ public class VideoPlayer {
     private PlayerView playerView;
     private SimpleExoPlayer player;
     private MediaSource mediaSource, subtitleSource;
-    private List<MediaSource> subtitleSourceList;
     private DefaultTrackSelector trackSelector;
 
     private boolean playWhenReady;
     private int currentWindow, widthOfScreen;
     private long playbackPosition;
+
     private Uri videoUri, subtitleUri;
+    private List<Uri> videoUriList;
     private String videoUrl;
     private ComponentListener componentListener;
     private ProgressBar progressBar;
@@ -80,6 +79,31 @@ public class VideoPlayer {
         currentWindow = 0;
         playbackPosition = 0;
 
+        initializePlayer();
+
+    }
+
+
+    public VideoPlayer(PlayerView playerView, Context context, List<String> videoPathList) {
+        this.playerView = playerView;
+        this.context = context;
+        this.videoUriList = new ArrayList<>();
+
+        for (int i = 0; i < videoPathList.size(); i++) {
+            Log.e(TAG, "VideoPlayer: " + videoPathList.get(i) + " " + videoUriList);
+            videoUriList.add(Uri.parse(videoPathList.get(i)));
+        }
+
+        this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
+        if (componentListener == null)
+            componentListener = new ComponentListener();
+
+        playWhenReady = false;
+        currentWindow = 0;
+        playbackPosition = 0;
+
+        initializePlayer();
+
     }
 
     /******************************************************************
@@ -87,11 +111,16 @@ public class VideoPlayer {
      ******************************************************************/
     public void initializePlayer() {
         playerView.requestFocus();
+        List<MediaSource> mediaSourceList = new ArrayList<>();
+        ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();
+        CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
+                context,
+                100 * 1024 * 1024,
+                5 * 1024 * 1024);
 
         if (player == null)
             player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
-        mediaSource = buildMediaSource(null);
 
         playerView.setPlayer(player);
         playerView.setKeepScreenOn(true);
@@ -100,20 +129,26 @@ public class VideoPlayer {
         player.addListener(componentListener);
         if (progressBar != null)
             progressBar.setVisibility(View.VISIBLE);
-        player.prepare(mediaSource);
 
+
+        if (videoUri != null) {
+            mediaSource = buildMediaSource(videoUri, cacheDataSourceFactory);
+            player.prepare(mediaSource);
+        } else if (videoUriList != null) {
+            for (int i = 0; i < videoUriList.size(); i++) {
+                mediaSourceList.add(buildMediaSource(videoUriList.get(i), cacheDataSourceFactory));
+                concatenatingMediaSource.addMediaSource(mediaSourceList.get(i));
+            }
+            this.mediaSource = concatenatingMediaSource;
+            player.prepare(concatenatingMediaSource);
+        }
     }
 
     /******************************************************************
      building mediaSource depend on stream type and caching
      ******************************************************************/
-    private MediaSource buildMediaSource(@Nullable String overrideExtension) {
-        @C.ContentType int type = Util.inferContentType(videoUri, overrideExtension);
-
-        CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
-                context,
-                100 * 1024 * 1024,
-                5 * 1024 * 1024);
+    private MediaSource buildMediaSource(Uri videoUri, CacheDataSourceFactory cacheDataSourceFactory) {
+        @C.ContentType int type = Util.inferContentType(videoUri);
 
         switch (type) {
             case C.TYPE_SS:
@@ -220,19 +255,16 @@ public class VideoPlayer {
                                 == MappingTrackSelector.MappedTrackInfo.RENDERER_SUPPORT_NO_TRACKS);
 
 
-                Pair<AlertDialog, TrackSelectionView> dialogPair =
-                        TrackSelectionView.getDialog(activity, dialogTitle, trackSelector, rendererIndex);
+                Pair<AlertDialog, MyTrackSelectionView> dialogPair =
+                        MyTrackSelectionView.getDialog(activity, dialogTitle, trackSelector, rendererIndex);
                 dialogPair.second.setShowDisableOption(false);
                 dialogPair.second.setAllowAdaptiveSelections(allowAdaptiveSelections);
+                dialogPair.second.animate();
+                Log.d(TAG, "dialogPair.first.getListView()" + dialogPair.first.getListView());
                 dialogPair.first.show();
 
-
-                Log.d(TAG, "setSelectedQuality(): " +
-                        " mappedTrackInfo >> " + mappedTrackInfo +
-                        " rendererType >> " + rendererType +
-                        " C.TRACK_TYPE_VIDEO >> " + C.TRACK_TYPE_VIDEO +
-                        " C.TRACK_TYPE_AUDIO >> " + C.TRACK_TYPE_AUDIO);
             }
+
         }
     }
 
@@ -241,25 +273,28 @@ public class VideoPlayer {
      ***********************************************************/
     public void seekToSelectedPosition(int hour, int minute, int second) {
         long playbackPosition = (hour * 3600 + minute * 60 + second) * 1000;
-        long videoDuration = getVideoDuration();
-        if (player != null) {
-            if (playbackPosition <= videoDuration) {
-                player.seekTo(playbackPosition);
-            } else {
-                Toast.makeText(context, "playbackPosition <= mTimeInMilliseconds", Toast.LENGTH_SHORT).show();
-            }
-        }
+        player.seekTo(playbackPosition);
+
+//        long videoDuration = getVideoDuration();
+//        if (player != null) {
+//            if (playbackPosition <= videoDuration) {
+//                player.seekTo(playbackPosition);
+//            } else {
+//                Toast.makeText(context, "playbackPosition <= mTimeInMilliseconds", Toast.LENGTH_SHORT).show();
+//            }
+//        }
     }
 
     private long getVideoDuration() {
 
-        FFmpegMediaMetadataRetriever mFFmpegMediaMetadataRetriever = new FFmpegMediaMetadataRetriever();
-        mFFmpegMediaMetadataRetriever.setDataSource(videoUrl);
-        String mVideoDuration = mFFmpegMediaMetadataRetriever
-                .extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(videoUrl, new HashMap<>());
+        String mVideoDuration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
 
-        Log.d(TAG, " Long.parseLong(mVideoDuration) >> " + Long.parseLong(mVideoDuration) +
-                " mVideoDuration >> " + mVideoDuration + " player.getDuration() >> " + player.getDuration() / 1000);
+        Log.d(TAG, "videoDuration >>  " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        Log.d(TAG, "ARTIST >>  " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+        Log.d(TAG, "TITLE >>  " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+        Log.d(TAG, "BITRATE >>  " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
 
         return Long.parseLong(mVideoDuration);
     }
@@ -348,8 +383,6 @@ public class VideoPlayer {
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
             if (progressBar != null) {
-                Log.d(TAG, "onPlayerStateChanged() called with: playWhenReady = [" + playWhenReady + "]," +
-                        " playbackState = [" + playbackState + "]");
                 if (playbackState == Player.STATE_BUFFERING) {
                     progressBar.setVisibility(View.VISIBLE);
                 } else {
