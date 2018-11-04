@@ -60,6 +60,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         playerView = findViewById(R.id.demo_player_view);
         progressBar = findViewById(R.id.progress_bar);
+
         mute = findViewById(R.id.btn_mute);
         unMute = findViewById(R.id.btn_unMute);
 //        repeatOff = findViewById(R.id.btn_repeat_off);
@@ -90,9 +91,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         unMute.setOnClickListener(this);
         subtitle.setOnClickListener(this);
         setting.setOnClickListener(this);
-//        repeatOff.setOnClickListener(this);
-//        repeatOne.setOnClickListener(this);
-//        repeatAll.setOnClickListener(this);
         lock.setOnClickListener(this);
         unLock.setOnClickListener(this);
 
@@ -144,18 +142,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         if (controllerId == R.id.btn_unMute) {
             updateMuteMode(false);
         }
-//
-//        if (controllerId == R.id.btn_repeat_off) {
-//            updateRepeatToggleMode(REPEAT_OFF);
-//        }
-//
-//        if (controllerId == R.id.btn_repeat_one) {
-//            updateRepeatToggleMode(REPEAT_ONE);
-//        }
-//
-//        if (controllerId == R.id.btn_repeat_all) {
-//            updateRepeatToggleMode(REPEAT_ALL);
-//        }
 
         if (controllerId == R.id.btn_settings) {
             player.setSelectedQuality(this, "select quality");
@@ -259,29 +245,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 player.setMute(false);
                 unMute.setVisibility(View.GONE);
                 mute.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    private void updateRepeatToggleMode(int repeatState) {
-
-        if (player != null && playerView != null) {
-            if (repeatState == REPEAT_OFF) {
-                player.setRepeatToggleModes(1);
-                repeatOff.setVisibility(View.GONE);
-                repeatOne.setVisibility(View.VISIBLE);
-            }
-
-            if (repeatState == REPEAT_ONE) {
-                player.setRepeatToggleModes(2);
-                repeatOne.setVisibility(View.GONE);
-                repeatAll.setVisibility(View.VISIBLE);
-            }
-
-            if (repeatState == REPEAT_ALL) {
-                player.setRepeatToggleModes(0);
-                repeatAll.setVisibility(View.GONE);
-                repeatOff.setVisibility(View.VISIBLE);
             }
         }
     }

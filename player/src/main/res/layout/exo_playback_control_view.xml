@@ -71,13 +71,13 @@
 
 
         <ImageButton
-        android:id="@+id/btn_mute"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginLeft="10dp"
-        android:layout_weight="0"
-        android:background="@null"
-        android:src="@drawable/exo_unmute_btn" />
+            android:id="@+id/btn_mute"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0"
+            android:background="@null"
+            android:src="@drawable/exo_unmute_btn" />
 
         <ImageButton
             android:id="@+id/btn_unMute"
@@ -90,37 +90,37 @@
             android:visibility="gone" />
 
         <!--<ImageButton-->
-            <!--android:id="@+id/btn_repeat_off"-->
-            <!--android:layout_width="32dp"-->
-            <!--android:layout_height="32dp"-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:layout_marginRight="20dp"-->
-            <!--android:layout_weight="0"-->
-            <!--android:background="@null"-->
-            <!--android:src="@drawable/exo_controls_repeat_off"-->
-            <!--android:visibility="visible"/>-->
+        <!--android:id="@+id/btn_repeat_off"-->
+        <!--android:layout_width="32dp"-->
+        <!--android:layout_height="32dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="20dp"-->
+        <!--android:layout_weight="0"-->
+        <!--android:background="@null"-->
+        <!--android:src="@drawable/exo_controls_repeat_off"-->
+        <!--android:visibility="visible"/>-->
 
         <!--<ImageButton-->
-            <!--android:id="@+id/btn_repeat_one"-->
-            <!--android:layout_width="32dp"-->
-            <!--android:layout_height="32dp"-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:layout_marginRight="20dp"-->
-            <!--android:layout_weight="0"-->
-            <!--android:background="@null"-->
-            <!--android:src="@drawable/exo_controls_repeat_one"-->
-            <!--android:visibility="gone" />-->
+        <!--android:id="@+id/btn_repeat_one"-->
+        <!--android:layout_width="32dp"-->
+        <!--android:layout_height="32dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="20dp"-->
+        <!--android:layout_weight="0"-->
+        <!--android:background="@null"-->
+        <!--android:src="@drawable/exo_controls_repeat_one"-->
+        <!--android:visibility="gone" />-->
 
         <!--<ImageButton-->
-            <!--android:id="@+id/btn_repeat_all"-->
-            <!--android:layout_width="32dp"-->
-            <!--android:layout_height="32dp"-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:layout_marginRight="20dp"-->
-            <!--android:layout_weight="0"-->
-            <!--android:background="@null"-->
-            <!--android:src="@drawable/exo_controls_repeat_all"-->
-            <!--android:visibility="gone" />-->
+        <!--android:id="@+id/btn_repeat_all"-->
+        <!--android:layout_width="32dp"-->
+        <!--android:layout_height="32dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="20dp"-->
+        <!--android:layout_weight="0"-->
+        <!--android:background="@null"-->
+        <!--android:src="@drawable/exo_controls_repeat_all"-->
+        <!--android:visibility="gone" />-->
 
     </LinearLayout>
 

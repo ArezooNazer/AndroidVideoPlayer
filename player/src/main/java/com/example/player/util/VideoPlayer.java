@@ -215,26 +215,6 @@ public class VideoPlayer {
     }
 
     /***********************************************************
-     repeat toggle
-     ***********************************************************/
-    public void setRepeatToggleModes(int repeatToggleModes) {
-        if (player != null) {
-
-            if (player != null) {
-
-                if (repeatToggleModes == Player.REPEAT_MODE_OFF)
-                    player.setRepeatMode(Player.REPEAT_MODE_ONE);
-
-                if (repeatToggleModes == Player.REPEAT_MODE_ONE)
-                    player.setRepeatMode(Player.REPEAT_MODE_ALL);
-
-                if (repeatToggleModes == Player.REPEAT_MODE_ALL)
-                    player.setRepeatMode(Player.REPEAT_MODE_OFF);
-            }
-        }
-    }
-
-    /***********************************************************
      manually select stream quality
      ***********************************************************/
     public void setSelectedQuality(Activity activity, CharSequence dialogTitle) {
