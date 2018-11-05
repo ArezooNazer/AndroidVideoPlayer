@@ -29,15 +29,6 @@
             android:src="@drawable/exo_unlock_btn" />
 
         <ImageButton
-            android:id="@+id/btn_subtitle"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginLeft="20dp"
-            android:layout_weight="0"
-            style="@style/ExoMediaButton.Play"
-            android:src="@drawable/exo_subtitle_btn" />
-
-        <ImageButton
             android:id="@id/exo_prev"
             style="@style/ExoMediaButton.Previous" />
 
@@ -69,7 +60,6 @@
             android:id="@id/exo_next"
             style="@style/ExoMediaButton.Next" />
 
-
         <ImageButton
             android:id="@+id/btn_mute"
             android:layout_width="32dp"
@@ -88,40 +78,6 @@
             android:background="@null"
             android:src="@drawable/exo_mute_btn"
             android:visibility="gone" />
-
-        <!--<ImageButton-->
-        <!--android:id="@+id/btn_repeat_off"-->
-        <!--android:layout_width="32dp"-->
-        <!--android:layout_height="32dp"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginRight="20dp"-->
-        <!--android:layout_weight="0"-->
-        <!--android:background="@null"-->
-        <!--android:src="@drawable/exo_controls_repeat_off"-->
-        <!--android:visibility="visible"/>-->
-
-        <!--<ImageButton-->
-        <!--android:id="@+id/btn_repeat_one"-->
-        <!--android:layout_width="32dp"-->
-        <!--android:layout_height="32dp"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginRight="20dp"-->
-        <!--android:layout_weight="0"-->
-        <!--android:background="@null"-->
-        <!--android:src="@drawable/exo_controls_repeat_one"-->
-        <!--android:visibility="gone" />-->
-
-        <!--<ImageButton-->
-        <!--android:id="@+id/btn_repeat_all"-->
-        <!--android:layout_width="32dp"-->
-        <!--android:layout_height="32dp"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginRight="20dp"-->
-        <!--android:layout_weight="0"-->
-        <!--android:background="@null"-->
-        <!--android:src="@drawable/exo_controls_repeat_all"-->
-        <!--android:visibility="gone" />-->
-
     </LinearLayout>
 
     <LinearLayout
@@ -160,12 +116,21 @@
             android:textStyle="bold" />
 
         <ImageButton
+            android:id="@+id/btn_subtitle"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0"
+            style="@style/ExoMediaButton.Play"
+            android:src="@drawable/exo_subtitle_btn" />
+
+        <ImageButton
             android:id="@+id/btn_settings"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_weight="0"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="30dp"
             android:background="@null"
             android:src="@drawable/exo_setting_btn" />
 

@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 public class VideoPlayer {
 
     private final String CLASS_NAME = VideoPlayer.class.getName();
@@ -322,7 +323,7 @@ public class VideoPlayer {
                     null, // An identifier for the track. May be null.
                     MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
                     Format.NO_VALUE, // Selection flags for the track.
-                    "en"); // The subtitle language. May be null.
+                    null); // The subtitle language. May be null.
 
             DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
                     Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
@@ -341,6 +342,7 @@ public class VideoPlayer {
             Toast.makeText(context, "there is no subtitle", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     /***********************************************************
      playerView listener for lock and unlock screen

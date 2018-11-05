@@ -1,9 +1,11 @@
 package com.example.player.ui;
 
 import android.annotation.SuppressLint;
+import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,13 +14,15 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.player.R;
-import com.example.player.util.Url;
+import com.example.player.db.SubtitleUrl;
+import com.example.player.db.UrlDatabase;
+import com.example.player.db.VideoUrl;
+import com.example.player.util.SubtitleAdapter;
 import com.example.player.util.VideoPlayer;
-import com.google.android.exoplayer2.ui.DefaultTimeBar;
-import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.ArrayList;
@@ -26,29 +30,24 @@ import java.util.List;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final String TAG = "PlayerActivity";
     private PlayerView playerView;
     private VideoPlayer player;
-    private ImageButton mute, unMute, repeatOff, repeatOne, repeatAll, subtitle, setting, lock, unLock;
+    private ImageButton mute, unMute, subtitle, setting, lock, unLock;
     private ProgressBar progressBar;
     private AlertDialog alertDialog;
-    private int REPEAT_OFF = 0;
-    private int REPEAT_ONE = 1;
-    private int REPEAT_ALL = 2;
+    public static UrlDatabase urlDatabase;
+
 
     /***********************************************************
      sample video and subtitles
      ***********************************************************/
 
-    private String videoUri = Url.getVideoUri();
-    private String subtitleUri = Url.getSubtitleUri();
+    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+    private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
 
-    private List<String> videoUriList = new ArrayList<>();
-
-    private void makeListOfUri(){
-
-        videoUriList.add("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8");
-        videoUriList.add("http://www.storiesinflight.com/js_videosub/jellies.mp4");
-    }
+    private List<VideoUrl> videoUriList;
+    private List<SubtitleUrl> subtitleList;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -57,15 +56,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_player);
         getSupportActionBar().hide();
 
+        initializeDb();
 
         playerView = findViewById(R.id.demo_player_view);
         progressBar = findViewById(R.id.progress_bar);
 
         mute = findViewById(R.id.btn_mute);
         unMute = findViewById(R.id.btn_unMute);
-//        repeatOff = findViewById(R.id.btn_repeat_off);
-//        repeatOne = findViewById(R.id.btn_repeat_one);
-//        repeatAll = findViewById(R.id.btn_repeat_all);
         subtitle = findViewById(R.id.btn_subtitle);
         setting = findViewById(R.id.btn_settings);
         lock = findViewById(R.id.btn_lock);
@@ -74,8 +71,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
 //        player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
 
-        makeListOfUri();
-        player = new VideoPlayer(playerView, getApplicationContext(), videoUriList);
+        player = new VideoPlayer(playerView, getApplicationContext(), urlDatabase.urlDao().getAllUrls());
 
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
@@ -85,7 +81,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         //start video from selected time
         player.seekToSelectedPosition(0, 0, 0);
 
-        Log.d("duration", "video duration >> " + player.getPlayer().getDuration());
 
         mute.setOnClickListener(this);
         unMute.setOnClickListener(this);
@@ -128,6 +123,31 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         hideSystemUi();
 
     }
+
+    private void initializeDb() {
+        urlDatabase = Room.databaseBuilder(getApplicationContext(), UrlDatabase.class, "URL_DB")
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
+                .build();
+
+//        urls added before
+        makeListOfUri();
+    }
+
+    private void makeListOfUri() {
+        videoUriList = new ArrayList<>();
+        subtitleList = new ArrayList<>();
+
+        videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
+        videoUriList.add(new VideoUrl("http://www.storiesinflight.com/js_videosub/jellies.mp4"));
+
+        subtitleList.add(new SubtitleUrl(2, "Fa", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
+        subtitleList.add(new SubtitleUrl(2, "En", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
+
+        urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
+        urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -177,14 +197,32 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
-    private void showSubtitleDialog() {
+    private void showSubtitle(boolean show) {
+        if (player != null && playerView.getSubtitleView() != null) {
+            if (show) {
+                if (player != null && player.getPlayer().getCurrentTimeline() != null) {
+                    Timeline.Window window = new Timeline.Window();
+                    int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
+                    List<SubtitleUrl> subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
+                    if(subtitleUrlList != null)
+                      showSubtitleDialog(subtitleUrlList);
+                    else
+                        Toast.makeText(this, "there is no subtitle", Toast.LENGTH_SHORT).show();
+                }
+
+            } else
+                playerView.getSubtitleView().setVisibility(View.GONE);
+        }
+    }
+
+    private void showSubtitleDialog(List<SubtitleUrl> subtitleList) {
         if (player != null && playerView.getSubtitleView() != null) {
 
             player.pausePlayer();
             final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
 
             LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
-            View view = inflater.inflate(R.layout.track_selection_dialog, null);
+            View view = inflater.inflate(R.layout.subtitle_selection_dialog, null);
             builder.setView(view);
 
             alertDialog = builder.create();
@@ -198,40 +236,18 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
             alertDialog.getWindow().setAttributes(layoutParams);
 
-            // to prevent dialog box from getting dismissed on outside touch
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.show();
+            RecyclerView recyclerView = view.findViewById(R.id.subtitle_recycler_view);
+            recyclerView.setAdapter(new SubtitleAdapter(subtitleList, player, playerView, alertDialog));
 
-            TextView persianSub = view.findViewById(R.id.subtitle_fa);
-            TextView englishSub = view.findViewById(R.id.subtitle_en);
             Button cancelDialog = view.findViewById(R.id.cancel_dialog_btn);
-
-            //you can use recyclerView for list of subtitles
-            persianSub.setOnClickListener(view1 -> {
-                player.setSelectedSubtitle(subtitleUri);
-                playerView.getSubtitleView().setVisibility(View.VISIBLE);
-                alertDialog.dismiss();
-            });
-
-            englishSub.setOnClickListener(view1 -> {
-                player.setSelectedSubtitle(subtitleUri);
-                playerView.getSubtitleView().setVisibility(View.VISIBLE);
-                alertDialog.dismiss();
-            });
-
             cancelDialog.setOnClickListener(view1 -> {
                 alertDialog.dismiss();
                 player.resumePlayer();
             });
-        }
-    }
 
-    private void showSubtitle(boolean show) {
-        if (player != null && playerView.getSubtitleView() != null) {
-            if (show) {
-                showSubtitleDialog();
-            } else
-                playerView.getSubtitleView().setVisibility(View.GONE);
+            // to prevent dialog box from getting dismissed on outside touch
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
         }
     }
 

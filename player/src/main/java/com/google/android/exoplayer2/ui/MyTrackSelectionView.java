@@ -264,8 +264,7 @@ public class MyTrackSelectionView extends LinearLayout {
         defaultView.setChecked(!isDisabled && override == null);
         for (int i = 0; i < trackViews.length; i++) {
             for (int j = 0; j < trackViews[i].length; j++) {
-                trackViews[i][j].setChecked(
-                        override != null && override.groupIndex == i && override.containsTrack(j));
+                trackViews[i][j].setChecked(override != null && override.groupIndex == i && override.containsTrack(j));
 //                Log.d(TAG, "override.groupIndex" + override.groupIndex + " override.containsTrack(j) " + override.containsTrack(j));
             }
         }
@@ -317,6 +316,7 @@ public class MyTrackSelectionView extends LinearLayout {
             // An existing override is being modified.
             int overrideLength = override.length;
             int[] overrideTracks = override.tracks;
+            Log.d(TAG, "onTrackViewClicked: "+overrideTracks);
             if (((CheckedTextView) view).isChecked()) {
                 // Remove the track from the override.
                 if (overrideLength == 1) {
