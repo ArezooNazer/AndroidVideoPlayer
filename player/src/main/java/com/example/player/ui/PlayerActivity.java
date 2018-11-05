@@ -131,7 +131,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 .build();
 
 //        urls added before
-        makeListOfUri();
+//        makeListOfUri();
     }
 
     private void makeListOfUri() {
@@ -201,11 +201,10 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         if (player != null && playerView.getSubtitleView() != null) {
             if (show) {
                 if (player != null && player.getPlayer().getCurrentTimeline() != null) {
-                    Timeline.Window window = new Timeline.Window();
                     int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
                     List<SubtitleUrl> subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
                     if(subtitleUrlList != null)
-                      showSubtitleDialog(subtitleUrlList);
+                      showSubtitleDialog(subtitleUrlList,currentVideoId );
                     else
                         Toast.makeText(this, "there is no subtitle", Toast.LENGTH_SHORT).show();
                 }
@@ -215,7 +214,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void showSubtitleDialog(List<SubtitleUrl> subtitleList) {
+    private void showSubtitleDialog(List<SubtitleUrl> subtitleList, int videoId) {
         if (player != null && playerView.getSubtitleView() != null) {
 
             player.pausePlayer();
@@ -237,7 +236,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             alertDialog.getWindow().setAttributes(layoutParams);
 
             RecyclerView recyclerView = view.findViewById(R.id.subtitle_recycler_view);
-            recyclerView.setAdapter(new SubtitleAdapter(subtitleList, player, playerView, alertDialog));
+            recyclerView.setAdapter(new SubtitleAdapter(subtitleList, player, playerView, alertDialog, videoId));
 
             Button cancelDialog = view.findViewById(R.id.cancel_dialog_btn);
             cancelDialog.setOnClickListener(view1 -> {
