@@ -20,6 +20,7 @@ import com.example.player.R;
 import com.example.player.db.SubtitleUrl;
 import com.example.player.db.UrlDatabase;
 import com.example.player.db.VideoUrl;
+import com.example.player.util.PlayerUiController;
 import com.example.player.util.SubtitleAdapter;
 import com.example.player.util.VideoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -27,7 +28,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
+public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerUiController {
 
     private static final String TAG = "PlayerActivity";
     private PlayerView playerView;
@@ -42,7 +43,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
      sample video and subtitles
      ***********************************************************/
 
-    private String videoUri = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+    private String videoUri = "http://www.storiesinflight.com/js_videosub/jellies.mp4";
     private String subtitleUri = "http://www.storiesinflight.com/js_videosub/jellies.srt";
 
     private List<VideoUrl> videoUriList;
@@ -70,11 +71,10 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
 //        player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
 
-        player = new VideoPlayer(playerView, getApplicationContext(), urlDatabase.urlDao().getAllUrls());
+        player = new VideoPlayer(playerView, getApplicationContext(), urlDatabase.urlDao().getAllUrls(), this);
 
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
-        player.setProgressbar(progressBar);
         player.seekToOnDoubleTap();
 
         //start video from selected time
@@ -130,7 +130,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 .build();
 
 //        urls added before
-//        makeListOfUri();
+        makeListOfUri();
     }
 
     private void makeListOfUri() {
@@ -138,14 +138,14 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         subtitleList = new ArrayList<>();
 
         videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
+        videoUriList.add(new VideoUrl("http://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny_metadata.m3u8"));
         videoUriList.add(new VideoUrl("http://www.storiesinflight.com/js_videosub/jellies.mp4"));
 
-        subtitleList.add(new SubtitleUrl(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
-//        subtitleList.add(new SubtitleUrl(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
-        subtitleList.add(new SubtitleUrl(1, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
-        subtitleList.add(new SubtitleUrl(1, "Arabic", "https://download.blender.org/durian/subs/sintel_ar.srt"));
+        subtitleList.add(new SubtitleUrl(2, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
+        subtitleList.add(new SubtitleUrl(2, "English", "https://bitdash-a.akamaihd.net/content/sintel/hls/subtitles_en.vtt"));
+        subtitleList.add(new SubtitleUrl(2, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
 
-        subtitleList.add(new SubtitleUrl(2, "English", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
+        subtitleList.add(new SubtitleUrl(3, "English", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
 
         urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
         urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
@@ -159,11 +159,11 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         Log.d("id", "onClick() called with: view = [" + view + "]" + controllerId);
 
         if (controllerId == R.id.btn_mute) {
-            updateMuteMode(true);
+            player.setMute(true);
         }
 
         if (controllerId == R.id.btn_unMute) {
-            updateMuteMode(false);
+            player.setMute(false);
         }
 
         if (controllerId == R.id.btn_settings) {
@@ -207,15 +207,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                     int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
                     long currentPosition = player.getPlayer().getCurrentPosition();
                     List<SubtitleUrl> subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
-                    Log.d(TAG, "currentVideoId >> " + currentVideoId +
-                            "\n subtitleUrlList >> " + subtitleUrlList +
-                    "\n currentposition >> " + currentPosition);
+
                     if (subtitleUrlList.size() != 0)
                         showSubtitleDialog(subtitleUrlList, currentVideoId, currentPosition);
                     else
-                        Toast.makeText(this, "there is no subtitle", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "برای این ویدیو زیرنویسی وجود ندارد", Toast.LENGTH_SHORT).show();
                 }
-
             } else
                 playerView.getSubtitleView().setVisibility(View.GONE);
         }
@@ -257,23 +254,21 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void updateMuteMode(boolean isMute) {
+    public void setMuteMode(boolean mute) {
         if (player != null && playerView != null) {
-            if (isMute) {
-                player.setMute(true);
-                mute.setVisibility(View.GONE);
+            if (mute) {
+                this.mute.setVisibility(View.GONE);
                 unMute.setVisibility(View.VISIBLE);
             } else {
-                player.setMute(false);
                 unMute.setVisibility(View.GONE);
-                mute.setVisibility(View.VISIBLE);
+                this.mute.setVisibility(View.VISIBLE);
             }
         }
     }
 
     private void updateLockMode(boolean isLock) {
         if (player != null && playerView != null) {
-            player.setPlayerViewListener(isLock);
+            player.lockScreen(isLock);
             if (isLock) {
                 playerView.hideController();
                 unLock.setVisibility(View.VISIBLE);
@@ -283,6 +278,14 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 unLock.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    public void showProgressBar(boolean visible) {
+        if (visible)
+            progressBar.setVisibility(View.VISIBLE);
+        else
+            progressBar.setVisibility(View.GONE);
     }
 
 }

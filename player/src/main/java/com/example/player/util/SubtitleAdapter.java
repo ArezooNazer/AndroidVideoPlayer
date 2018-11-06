@@ -25,7 +25,12 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
 
     private int videoId;
 
-    public SubtitleAdapter(List<SubtitleUrl> subtitleUrlList, VideoPlayer player, PlayerView playerView, AlertDialog alertDialog, int videoId, long currentPosition) {
+    public SubtitleAdapter(List<SubtitleUrl> subtitleUrlList,
+                           VideoPlayer player,
+                           PlayerView playerView,
+                           AlertDialog alertDialog,
+                           int videoId,
+                           long currentPosition) {
         this.subtitleUrlList = subtitleUrlList;
         this.player = player;
         this.playerView = playerView;
@@ -68,7 +73,5 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
                 alertDialog.dismiss();
             });
         }
-
-
     }
 }

@@ -5,23 +5,15 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 import android.view.GestureDetector;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.player.R;
-import com.example.player.db.SubtitleUrl;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
@@ -56,6 +48,8 @@ public class VideoPlayer {
     private final String CLASS_NAME = VideoPlayer.class.getName();
     private static final String TAG = "VideoPlayer";
     private Context context;
+    private PlayerUiController playerUiController;
+
 
     private PlayerView playerView;
     private SimpleExoPlayer player;
@@ -71,7 +65,6 @@ public class VideoPlayer {
     private List<Uri> videoUriList;
     private String videoUrl;
     private ComponentListener componentListener;
-    private ProgressBar progressBar;
 
     public VideoPlayer(PlayerView playerView, Context context, String videoPath) {
         this.playerView = playerView;
@@ -91,11 +84,11 @@ public class VideoPlayer {
 
     }
 
-
-    public VideoPlayer(PlayerView playerView, Context context, List<String> videoPathList) {
+    public VideoPlayer(PlayerView playerView, Context context, List<String> videoPathList, PlayerUiController mView) {
         this.playerView = playerView;
         this.context = context;
         this.videoUriList = new ArrayList<>();
+        this.playerUiController = mView;
 
         for (int i = 0; i < videoPathList.size(); i++) {
             Log.e(TAG, "VideoPlayer: " + videoPathList.get(i) + " " + videoUriList);
@@ -133,9 +126,6 @@ public class VideoPlayer {
 
         player.setPlayWhenReady(true);
         player.addListener(componentListener);
-        if (progressBar != null)
-            progressBar.setVisibility(View.VISIBLE);
-
 
         if (videoUri != null) {
             mediaSource = buildMediaSource(videoUri, cacheDataSourceFactory);
@@ -146,7 +136,6 @@ public class VideoPlayer {
 
             for (int i = 0; i < videoUriList.size(); i++) {
                 mediaSourceList.add(buildMediaSource(videoUriList.get(i), cacheDataSourceFactory));
-                Log.d(TAG, "mediaSourceList.get(" + i + ") >> " + mediaSourceList.get(i) + "\n");
                 concatenatingMediaSource.addMediaSource(mediaSourceList.get(i));
             }
             player.prepare(concatenatingMediaSource);
@@ -206,21 +195,18 @@ public class VideoPlayer {
         return player;
     }
 
-    public ProgressBar setProgressbar(ProgressBar progressBar) {
-        return this.progressBar = progressBar;
-    }
-
     /************************************************************
      mute, unMute
      ***********************************************************/
     public void setMute(boolean mute) {
         float currentVolume = player.getVolume();
-        Log.d(TAG, "setMute() called" + currentVolume);
-
-        if (currentVolume > 0 && mute)
+        if (currentVolume > 0 && mute) {
             player.setVolume(0);
-        else if (!mute && currentVolume == 0)
+            playerUiController.setMuteMode(true);
+        } else if (!mute && currentVolume == 0) {
             player.setVolume(1);
+            playerUiController.setMuteMode(false);
+        }
     }
 
     /***********************************************************
@@ -326,7 +312,8 @@ public class VideoPlayer {
         MergingMediaSource mergedSource;
         if (subtitle != null) {
             this.subtitleUri = Uri.parse(subtitle);
-
+            Log.d(TAG, "subtitleUri.toString() " + subtitleUri.toString() +
+                    "subtitle >> " + subtitle);
             Format subtitleFormat = Format.createTextSampleFormat(
                     null, // An identifier for the track. May be null.
                     MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
@@ -343,7 +330,7 @@ public class VideoPlayer {
             if (concatenatingMediaSource != null) {
                 mergedSource = new MergingMediaSource(concatenatingMediaSource.getMediaSource(videoId - 1), subtitleSource);
                 concatenatingMediaSource.removeMediaSource(videoId - 1);
-                concatenatingMediaSource.addMediaSource( videoId - 1,mergedSource);
+                concatenatingMediaSource.addMediaSource(videoId - 1, mergedSource);
 
                 player.prepare(concatenatingMediaSource, false, true);
 
@@ -352,7 +339,6 @@ public class VideoPlayer {
             } else {
                 player.prepare(new MergingMediaSource(mediaSource, subtitleSource), false, false);
             }
-
             resumePlayer();
 
         } else {
@@ -360,11 +346,10 @@ public class VideoPlayer {
         }
     }
 
-
     /***********************************************************
      playerView listener for lock and unlock screen
      ***********************************************************/
-    public void setPlayerViewListener(boolean isLock) {
+    public void lockScreen(boolean isLock) {
         playerView.setControllerVisibilityListener(visibility -> {
             if (isLock)
                 playerView.hideController();
@@ -381,12 +366,10 @@ public class VideoPlayer {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-            if (progressBar != null) {
-                if (playbackState == Player.STATE_BUFFERING) {
-                    progressBar.setVisibility(View.VISIBLE);
-                } else {
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
+            if (playbackState == Player.STATE_BUFFERING) {
+                playerUiController.showProgressBar(true);
+            } else {
+                playerUiController.showProgressBar(false);
             }
         }
     }
