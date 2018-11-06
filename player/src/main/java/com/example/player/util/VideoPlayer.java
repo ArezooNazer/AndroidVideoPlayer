@@ -5,17 +5,23 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 import android.view.GestureDetector;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.player.R;
+import com.example.player.db.SubtitleUrl;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
@@ -55,7 +61,7 @@ public class VideoPlayer {
     private SimpleExoPlayer player;
     private MediaSource mediaSource, subtitleSource;
     private DefaultTrackSelector trackSelector;
-    private ConcatenatingMediaSource concatenatingMediaSource;
+    private ConcatenatingMediaSource concatenatingMediaSource = null;
 
     private boolean playWhenReady;
     private int currentWindow, widthOfScreen;
@@ -113,8 +119,6 @@ public class VideoPlayer {
      ******************************************************************/
     public void initializePlayer() {
         playerView.requestFocus();
-        List<MediaSource> mediaSourceList = new ArrayList<>();
-        concatenatingMediaSource = new ConcatenatingMediaSource();
         CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
                 context,
                 100 * 1024 * 1024,
@@ -137,6 +141,9 @@ public class VideoPlayer {
             mediaSource = buildMediaSource(videoUri, cacheDataSourceFactory);
             player.prepare(mediaSource);
         } else if (videoUriList != null) {
+            List<MediaSource> mediaSourceList = new ArrayList<>();
+            concatenatingMediaSource = new ConcatenatingMediaSource();
+
             for (int i = 0; i < videoUriList.size(); i++) {
                 mediaSourceList.add(buildMediaSource(videoUriList.get(i), cacheDataSourceFactory));
                 Log.d(TAG, "mediaSourceList.get(" + i + ") >> " + mediaSourceList.get(i) + "\n");
@@ -315,7 +322,7 @@ public class VideoPlayer {
     /***********************************************************
      manually select subtitle
      ***********************************************************/
-    public void setSelectedSubtitle(String subtitle, int videoId) {
+    public void setSelectedSubtitle(String subtitle, int videoId, long currentPosition) {
         MergingMediaSource mergedSource;
         if (subtitle != null) {
             this.subtitleUri = Uri.parse(subtitle);
@@ -329,20 +336,23 @@ public class VideoPlayer {
             DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
                     Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
 
-
             subtitleSource = new SingleSampleMediaSource
                     .Factory(dataSourceFactory)
                     .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
 
-            Log.d(TAG, "concat.size " + concatenatingMediaSource.getSize() +
-                    "\n index0 >> " + concatenatingMediaSource.getMediaSource(0) +
-                    "\n index1 >> " + concatenatingMediaSource.getMediaSource(1)
-            );
+            if (concatenatingMediaSource != null) {
+                mergedSource = new MergingMediaSource(concatenatingMediaSource.getMediaSource(videoId - 1), subtitleSource);
+                concatenatingMediaSource.removeMediaSource(videoId - 1);
+                concatenatingMediaSource.addMediaSource( videoId - 1,mergedSource);
 
-            mergedSource = new MergingMediaSource(concatenatingMediaSource.getMediaSource(videoId-1),subtitleSource);
-            player.prepare(new MergingMediaSource(mergedSource),
-                    false,
-                    false);
+                player.prepare(concatenatingMediaSource, false, true);
+
+                player.seekTo(videoId - 1, currentPosition);
+
+            } else {
+                player.prepare(new MergingMediaSource(mediaSource, subtitleSource), false, false);
+            }
+
             resumePlayer();
 
         } else {

@@ -21,15 +21,17 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
     private VideoPlayer player;
     private PlayerView playerView;
     private AlertDialog alertDialog;
+    private long currentPosition;
 
     private int videoId;
 
-    public SubtitleAdapter(List<SubtitleUrl> subtitleUrlList, VideoPlayer player, PlayerView playerView, AlertDialog alertDialog, int videoId) {
+    public SubtitleAdapter(List<SubtitleUrl> subtitleUrlList, VideoPlayer player, PlayerView playerView, AlertDialog alertDialog, int videoId, long currentPosition) {
         this.subtitleUrlList = subtitleUrlList;
         this.player = player;
         this.playerView = playerView;
         this.alertDialog = alertDialog;
         this.videoId = videoId;
+        this.currentPosition = currentPosition;
     }
 
     @NonNull
@@ -61,7 +63,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
             subtitleName.setText(subtitleUrl.getTitle());
             Log.d("title", "subtitleUrl.getTitle() >> " + subtitleUrl.getTitle());
             itemView.setOnClickListener(view -> {
-                player.setSelectedSubtitle(subtitleUrl.getSubtitleUrl(), videoId);
+                player.setSelectedSubtitle(subtitleUrl.getSubtitleUrl(), videoId, currentPosition);
                 playerView.getSubtitleView().setVisibility(View.VISIBLE);
                 alertDialog.dismiss();
             });

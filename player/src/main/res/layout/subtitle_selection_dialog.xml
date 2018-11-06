@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="#fff"
     android:orientation="vertical">
 
@@ -24,26 +24,6 @@
         android:layout_height="2dp"
         android:background="#00bfff"
         android:padding="4dp" />
-
-    <!--TODO : recyclerview for list of subtitles-->
-    <!--<TextView-->
-        <!--android:id="@+id/subtitle_fa"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:padding="10dp"-->
-        <!--android:text="persian subtitle"-->
-        <!--android:textColor="#000"-->
-        <!--android:textSize="20dp" />-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/subtitle_en"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:padding="10dp"-->
-        <!--android:text="English subtitle"-->
-        <!--android:textColor="#000"-->
-        <!--android:textSize="20dp" />-->
-
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/subtitle_recycler_view"

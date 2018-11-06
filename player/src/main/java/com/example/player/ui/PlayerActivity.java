@@ -22,7 +22,6 @@ import com.example.player.db.UrlDatabase;
 import com.example.player.db.VideoUrl;
 import com.example.player.util.SubtitleAdapter;
 import com.example.player.util.VideoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.ArrayList;
@@ -141,8 +140,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
         videoUriList.add(new VideoUrl("http://www.storiesinflight.com/js_videosub/jellies.mp4"));
 
-        subtitleList.add(new SubtitleUrl(2, "Fa", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
-        subtitleList.add(new SubtitleUrl(2, "En", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
+        subtitleList.add(new SubtitleUrl(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
+//        subtitleList.add(new SubtitleUrl(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
+        subtitleList.add(new SubtitleUrl(1, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
+        subtitleList.add(new SubtitleUrl(1, "Arabic", "https://download.blender.org/durian/subs/sintel_ar.srt"));
+
+        subtitleList.add(new SubtitleUrl(2, "English", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
 
         urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
         urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
@@ -202,9 +205,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             if (show) {
                 if (player != null && player.getPlayer().getCurrentTimeline() != null) {
                     int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
+                    long currentPosition = player.getPlayer().getCurrentPosition();
                     List<SubtitleUrl> subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
-                    if(subtitleUrlList != null)
-                      showSubtitleDialog(subtitleUrlList,currentVideoId );
+                    Log.d(TAG, "currentVideoId >> " + currentVideoId +
+                            "\n subtitleUrlList >> " + subtitleUrlList +
+                    "\n currentposition >> " + currentPosition);
+                    if (subtitleUrlList.size() != 0)
+                        showSubtitleDialog(subtitleUrlList, currentVideoId, currentPosition);
                     else
                         Toast.makeText(this, "there is no subtitle", Toast.LENGTH_SHORT).show();
                 }
@@ -214,7 +221,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void showSubtitleDialog(List<SubtitleUrl> subtitleList, int videoId) {
+    private void showSubtitleDialog(List<SubtitleUrl> subtitleList, int videoId, long currentPosition) {
         if (player != null && playerView.getSubtitleView() != null) {
 
             player.pausePlayer();
@@ -236,7 +243,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             alertDialog.getWindow().setAttributes(layoutParams);
 
             RecyclerView recyclerView = view.findViewById(R.id.subtitle_recycler_view);
-            recyclerView.setAdapter(new SubtitleAdapter(subtitleList, player, playerView, alertDialog, videoId));
+            recyclerView.setAdapter(new SubtitleAdapter(subtitleList, player, playerView, alertDialog, videoId, currentPosition));
 
             Button cancelDialog = view.findViewById(R.id.cancel_dialog_btn);
             cancelDialog.setOnClickListener(view1 -> {

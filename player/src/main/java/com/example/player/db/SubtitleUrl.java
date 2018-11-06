@@ -11,7 +11,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
         @ForeignKey(
                 entity = VideoUrl.class,
                 parentColumns = "id",
-                childColumns = "id",
+                childColumns = "videoId",
                 onDelete = CASCADE
         )
 })
