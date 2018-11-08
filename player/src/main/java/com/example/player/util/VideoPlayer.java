@@ -323,10 +323,14 @@ public class VideoPlayer {
             concatenatingMediaSource.removeMediaSource(videoId - 1);
             concatenatingMediaSource.addMediaSource(videoId - 1, mergedSource);
 
+            //optional
+            playerUiController.changeSubtitleBackground();
             player.prepare(concatenatingMediaSource, false, true);
             player.seekTo(videoId - 1, playbackPosition);
 
         } else {
+            //optional
+           playerUiController.changeSubtitleBackground();
             player.prepare(new MergingMediaSource(videoSource, subtitleSource), false, false);
         }
 

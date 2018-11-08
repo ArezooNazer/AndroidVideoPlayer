@@ -2,15 +2,14 @@ package com.example.player.ui;
 
 import android.annotation.SuppressLint;
 import android.arch.persistence.room.Room;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,6 +25,7 @@ import com.example.player.db.VideoUrl;
 import com.example.player.util.PlayerUiController;
 import com.example.player.util.SubtitleAdapter;
 import com.example.player.util.VideoPlayer;
+import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.ArrayList;
@@ -88,10 +88,10 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         subtitleList.add(new SubtitleUrl(3, "English", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
 
-//        if (urlDatabase.urlDao().getAllUrls() == null) {
+        if (urlDatabase.urlDao().getAllUrls().size() == 0) {
             urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
             urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
-//        }
+        }
     }
 
     /***********************************************************
@@ -194,10 +194,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         if (controllerId == R.id.btn_subtitle) {
-//            if (playerView.getSubtitleView().getVisibility() == View.VISIBLE)
-//                showSubtitle(false);
-//            else
-//                showSubtitle(true);
             showSubtitleDialog();
         }
 
@@ -235,10 +231,17 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    @Override
+    public void changeSubtitleBackground() {
+        CaptionStyleCompat captionStyleCompat = new CaptionStyleCompat(Color.YELLOW, Color.TRANSPARENT, Color.TRANSPARENT,
+                CaptionStyleCompat.EDGE_TYPE_DROP_SHADOW, Color.LTGRAY, null);
+        playerView.getSubtitleView().setStyle(captionStyleCompat);
+    }
+
     private void showSubtitleDialog() {
         if (player != null && playerView.getSubtitleView() != null) {
             player.pausePlayer();
-            List<SubtitleUrl> subtitleUrlList = new ArrayList<>();
+            List<SubtitleUrl> subtitleUrlList;
 
             if (singleORMultipleVideo == 1) {
                 subtitleUrlList = subtitleList;
@@ -246,7 +249,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
                 subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
             }
-
 
             //set recyclerView
             if (subtitleUrlList.size() == 0) {

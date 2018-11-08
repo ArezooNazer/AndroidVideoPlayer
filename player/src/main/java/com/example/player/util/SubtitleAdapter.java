@@ -1,6 +1,5 @@
 package com.example.player.util;
 
-import android.support.v7.app.AlertDialog;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.example.player.R;
 import com.example.player.db.SubtitleUrl;
-import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.List;
 
@@ -19,9 +17,6 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
 
     private List<SubtitleUrl> subtitleUrlList;
     private VideoPlayer player;
-    private long currentPosition;
-
-    private int videoId;
 
     public SubtitleAdapter(List<SubtitleUrl> subtitleUrlList, VideoPlayer player) {
         this.subtitleUrlList = subtitleUrlList;
