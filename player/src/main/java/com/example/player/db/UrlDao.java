@@ -14,9 +14,6 @@ public interface UrlDao {
     @Query("SELECT videoUrl FROM video")
     List<String> getAllUrls();
 
-    @Query("SELECT subtitleUrl FROM subtitle WHERE videoId LIKE :videoId")
-    List<String> getAllSubtitlesTest(int videoId);
-
     @Query("SELECT * FROM subtitle WHERE videoId LIKE :videoId")
     List<SubtitleUrl> getAllSubtitles(int videoId);
 

@@ -56,6 +56,7 @@ public class VideoPlayer {
     private MediaSource videoSource, subtitleSource;
     private DefaultTrackSelector trackSelector;
     private ConcatenatingMediaSource concatenatingMediaSource = null;
+    private List<MediaSource> mediaSourceList = new ArrayList<>();
     private int  widthOfScreen;
 
 
@@ -122,7 +123,6 @@ public class VideoPlayer {
             videoSource = buildMediaSource(videoUri, cacheDataSourceFactory);
             player.prepare(videoSource);
         } else if (videoUriList != null) {
-            List<MediaSource> mediaSourceList = new ArrayList<>();
             concatenatingMediaSource = new ConcatenatingMediaSource();
 
             for (int i = 0; i < videoUriList.size(); i++) {
@@ -172,9 +172,6 @@ public class VideoPlayer {
 
     public void releasePlayer() {
         if (player != null) {
-//            playbackPosition = player.getCurrentPosition();
-//            currentWindow = player.getCurrentWindowIndex();
-//            playWhenReady = player.getPlayWhenReady();
             playerView.setPlayer(null);
             player.release();
             player.removeListener(componentListener);
@@ -322,7 +319,7 @@ public class VideoPlayer {
             int videoId = player.getCurrentWindowIndex()+1;
             long playbackPosition = player.getCurrentPosition();
 
-            mergedSource = new MergingMediaSource(concatenatingMediaSource.getMediaSource(videoId - 1), subtitleSource);
+            mergedSource = new MergingMediaSource(mediaSourceList.get(videoId - 1), subtitleSource);
             concatenatingMediaSource.removeMediaSource(videoId - 1);
             concatenatingMediaSource.addMediaSource(videoId - 1, mergedSource);
 

@@ -40,6 +40,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private ProgressBar progressBar;
     private AlertDialog alertDialog;
     public static UrlDatabase urlDatabase;
+    private int singleORMultipleVideo; // 1: if single , 2: if multiple
 
 
     /***********************************************************
@@ -47,10 +48,9 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
      ***********************************************************/
 
     private String videoUri = "http://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny_metadata.m3u8";
-    private List<SubtitleUrl> subtitleList;
+    private List<SubtitleUrl> subtitleList = new ArrayList<>();
 
     private void setVideoSubtitleList() {
-        subtitleList = new ArrayList<>();
         subtitleList.add(new SubtitleUrl(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
         subtitleList.add(new SubtitleUrl(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new SubtitleUrl(1, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
@@ -61,7 +61,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
      list of sample videos and multiple subtitles ( saved in db)
      ***********************************************************/
 
-    private List<VideoUrl> videoUriList;
+    private List<VideoUrl> videoUriList = new ArrayList<>();
 
     private void initializeDb() {
         urlDatabase = Room.databaseBuilder(getApplicationContext(), UrlDatabase.class, "URL_DB")
@@ -74,21 +74,24 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void makeListOfUri() {
-        videoUriList = new ArrayList<>();
-        subtitleList = new ArrayList<>();
 
         videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
         videoUriList.add(new VideoUrl("http://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny_metadata.m3u8"));
         videoUriList.add(new VideoUrl("http://www.storiesinflight.com/js_videosub/jellies.mp4"));
 
+        subtitleList.add(new SubtitleUrl(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
+
         subtitleList.add(new SubtitleUrl(2, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
-        subtitleList.add(new SubtitleUrl(2, "English", "https://bitdash-a.akamaihd.net/content/sintel/hls/subtitles_en.vtt"));
+        subtitleList.add(new SubtitleUrl(2, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new SubtitleUrl(2, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
+
 
         subtitleList.add(new SubtitleUrl(3, "English", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
 
-        urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
-        urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
+//        if (urlDatabase.urlDao().getAllUrls() == null) {
+            urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
+            urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
+//        }
     }
 
     /***********************************************************
@@ -111,14 +114,16 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         lock = findViewById(R.id.btn_lock);
         unLock = findViewById(R.id.btn_unLock);
 
-
-        //if you have 1 video and a list of subtitles
-        setVideoSubtitleList();
-        player = new VideoPlayer(playerView, getApplicationContext(), videoUri, this);
-
-        //if you hav list of videos and their subtitles
-        //initializeDb();
-        //player = new VideoPlayer(playerView, getApplicationContext(), urlDatabase.urlDao().getAllUrls(), this);
+        singleORMultipleVideo = 2;
+        if (singleORMultipleVideo == 1) {
+            //if you have 1 video and a list of subtitles
+            setVideoSubtitleList();
+            player = new VideoPlayer(playerView, getApplicationContext(), videoUri, this);
+        } else {
+            //if you hav list of videos and their subtitles
+            initializeDb();
+            player = new VideoPlayer(playerView, getApplicationContext(), urlDatabase.urlDao().getAllUrls(), this);
+        }
 
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
@@ -126,7 +131,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         //start video from selected time
         player.seekToSelectedPosition(0, 0, 0);
-
 
         mute.setOnClickListener(this);
         unMute.setOnClickListener(this);
@@ -233,20 +237,22 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     private void showSubtitleDialog() {
         if (player != null && playerView.getSubtitleView() != null) {
-
             player.pausePlayer();
+            List<SubtitleUrl> subtitleUrlList = new ArrayList<>();
 
-            //get current playback info
-                /* when we have list of videos
+            if (singleORMultipleVideo == 1) {
+                subtitleUrlList = subtitleList;
+            } else {
                 int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
-                List<SubtitleUrl> subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
-                */
-            List<SubtitleUrl> subtitleUrlList = subtitleList;
+                subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
+            }
+
 
             //set recyclerView
-            if (subtitleUrlList.size() == 0)
+            if (subtitleUrlList.size() == 0) {
+                player.resumePlayer();
                 Toast.makeText(this, "برای این ویدیو زیرنویسی وجود ندارد", Toast.LENGTH_SHORT).show();
-            else {
+            } else {
 
                 //init subtitle dialog
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
