@@ -9,6 +9,9 @@ customized playerView            |  quality options
   <li>
    Support different stream type including HLS, DASH, SmoothStreaming
   </li>
+ <li>
+   The ability to play single video or a list of videos
+  </li>
   <li>
    cache video 
   </li>
@@ -16,13 +19,13 @@ customized playerView            |  quality options
   support different video qualities
   </li>
  <li>
-   different subtitles
+   Switch between different subtitles
   </li>
   <li>
    lock exoplayer screen
   </li>
   <li>
-   forward and backward by double tap
+   forward and backward by double tap on screen
   </li>
   <li>
    mute mode
@@ -55,19 +58,25 @@ You can use PlayerActivity.java class and extend the features you want but if yo
     PlayerView playerView;
     
     //you can customize exoplayer ui and adding your desire ImageButtons by overriding exo_playback_control_view
-    ImageButton mute, unMute, repeatOff, repeatOne, repeatAll, subtitle, setting, lock, unLock;
+    ImageButton mute, unMute, subtitle, setting, lock, unLock;
 ```
     
 ## 3. Initialize player
  Initialize your player as follow :
  
  ```java
-        player = new VideoPlayer(playerView, getApplicationContext(), videoUri);
+        if (singleORMultipleVideo == 1) {
+            //if you have single video and a list of subtitles
+            setVideoSubtitleList();
+            player = new VideoPlayer(playerView, getApplicationContext(), videoUri, this);
+        } else {
+            //if you have a list of videos and their subtitles
+            initializeDb();
+            player = new VideoPlayer(playerView, getApplicationContext(), urlDatabase.urlDao().getAllUrls(), this);
+        }
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
-        player.setProgressbar(progressBar);
         player.seekToOnDoubleTap();
-        player.initializePlayer();
 
         //optional setting : start video from selected time
         player.seekToSelectedPosition(0, 0, 10);  
