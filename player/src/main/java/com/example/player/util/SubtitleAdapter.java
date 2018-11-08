@@ -15,28 +15,17 @@ import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.List;
 
-public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.SubtitleViewHolder>{
+public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.SubtitleViewHolder> {
 
     private List<SubtitleUrl> subtitleUrlList;
     private VideoPlayer player;
-    private PlayerView playerView;
-    private AlertDialog alertDialog;
     private long currentPosition;
 
     private int videoId;
 
-    public SubtitleAdapter(List<SubtitleUrl> subtitleUrlList,
-                           VideoPlayer player,
-                           PlayerView playerView,
-                           AlertDialog alertDialog,
-                           int videoId,
-                           long currentPosition) {
+    public SubtitleAdapter(List<SubtitleUrl> subtitleUrlList, VideoPlayer player) {
         this.subtitleUrlList = subtitleUrlList;
         this.player = player;
-        this.playerView = playerView;
-        this.alertDialog = alertDialog;
-        this.videoId = videoId;
-        this.currentPosition = currentPosition;
     }
 
     @NonNull
@@ -56,7 +45,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
         return subtitleUrlList.size();
     }
 
-    public class SubtitleViewHolder extends RecyclerView.ViewHolder{
+    public class SubtitleViewHolder extends RecyclerView.ViewHolder {
         TextView subtitleName;
 
         public SubtitleViewHolder(@NonNull View itemView) {
@@ -64,13 +53,11 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
             this.subtitleName = itemView.findViewById(R.id.subtitle_text_view);
         }
 
-        public void onBind(SubtitleUrl subtitleUrl){
+        public void onBind(SubtitleUrl subtitleUrl) {
             subtitleName.setText(subtitleUrl.getTitle());
             Log.d("title", "subtitleUrl.getTitle() >> " + subtitleUrl.getTitle());
             itemView.setOnClickListener(view -> {
-                player.setSelectedSubtitle(subtitleUrl.getSubtitleUrl(), videoId, currentPosition);
-                playerView.getSubtitleView().setVisibility(View.VISIBLE);
-                alertDialog.dismiss();
+                player.setSelectedSubtitle(subtitleUrl.getSubtitleUrl());
             });
         }
     }

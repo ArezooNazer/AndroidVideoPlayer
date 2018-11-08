@@ -53,32 +53,27 @@ public class VideoPlayer {
 
     private PlayerView playerView;
     private SimpleExoPlayer player;
-    private MediaSource mediaSource, subtitleSource;
+    private MediaSource videoSource, subtitleSource;
     private DefaultTrackSelector trackSelector;
     private ConcatenatingMediaSource concatenatingMediaSource = null;
+    private int  widthOfScreen;
 
-    private boolean playWhenReady;
-    private int currentWindow, widthOfScreen;
-    private long playbackPosition;
 
     private Uri videoUri, subtitleUri;
     private List<Uri> videoUriList;
     private String videoUrl;
     private ComponentListener componentListener;
 
-    public VideoPlayer(PlayerView playerView, Context context, String videoPath) {
+    public VideoPlayer(PlayerView playerView, Context context, String videoPath, PlayerUiController mView) {
         this.playerView = playerView;
         this.context = context;
         this.videoUri = Uri.parse(videoPath);
         this.videoUrl = videoPath;
+        this.playerUiController = mView;
 
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
         if (componentListener == null)
             componentListener = new ComponentListener();
-
-        playWhenReady = false;
-        currentWindow = 0;
-        playbackPosition = 0;
 
         initializePlayer();
 
@@ -98,10 +93,6 @@ public class VideoPlayer {
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
         if (componentListener == null)
             componentListener = new ComponentListener();
-
-        playWhenReady = false;
-        currentWindow = 0;
-        playbackPosition = 0;
 
         initializePlayer();
 
@@ -128,8 +119,8 @@ public class VideoPlayer {
         player.addListener(componentListener);
 
         if (videoUri != null) {
-            mediaSource = buildMediaSource(videoUri, cacheDataSourceFactory);
-            player.prepare(mediaSource);
+            videoSource = buildMediaSource(videoUri, cacheDataSourceFactory);
+            player.prepare(videoSource);
         } else if (videoUriList != null) {
             List<MediaSource> mediaSourceList = new ArrayList<>();
             concatenatingMediaSource = new ConcatenatingMediaSource();
@@ -181,9 +172,9 @@ public class VideoPlayer {
 
     public void releasePlayer() {
         if (player != null) {
-            playbackPosition = player.getCurrentPosition();
-            currentWindow = player.getCurrentWindowIndex();
-            playWhenReady = player.getPlayWhenReady();
+//            playbackPosition = player.getCurrentPosition();
+//            currentWindow = player.getCurrentWindowIndex();
+//            playWhenReady = player.getPlayWhenReady();
             playerView.setPlayer(null);
             player.release();
             player.removeListener(componentListener);
@@ -308,42 +299,42 @@ public class VideoPlayer {
     /***********************************************************
      manually select subtitle
      ***********************************************************/
-    public void setSelectedSubtitle(String subtitle, int videoId, long currentPosition) {
+    public void setSelectedSubtitle(String subtitle) {
         MergingMediaSource mergedSource;
-        if (subtitle != null) {
-            this.subtitleUri = Uri.parse(subtitle);
-            Log.d(TAG, "subtitleUri.toString() " + subtitleUri.toString() +
-                    "subtitle >> " + subtitle);
-            Format subtitleFormat = Format.createTextSampleFormat(
-                    null, // An identifier for the track. May be null.
-                    MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
-                    Format.NO_VALUE, // Selection flags for the track.
-                    null); // The subtitle language. May be null.
+        this.subtitleUri = Uri.parse(subtitle);
+        Log.d(TAG, "subtitleUri.toString() " + subtitleUri.toString() +
+                "subtitle >> " + subtitle);
 
-            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
-                    Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
+        Format subtitleFormat = Format.createTextSampleFormat(
+                null, // An identifier for the track. May be null.
+                MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
+                Format.NO_VALUE, // Selection flags for the track.
+                null); // The subtitle language. May be null.
 
-            subtitleSource = new SingleSampleMediaSource
-                    .Factory(dataSourceFactory)
-                    .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
+        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
+                Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
 
-            if (concatenatingMediaSource != null) {
-                mergedSource = new MergingMediaSource(concatenatingMediaSource.getMediaSource(videoId - 1), subtitleSource);
-                concatenatingMediaSource.removeMediaSource(videoId - 1);
-                concatenatingMediaSource.addMediaSource(videoId - 1, mergedSource);
+        subtitleSource = new SingleSampleMediaSource
+                .Factory(dataSourceFactory)
+                .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
 
-                player.prepare(concatenatingMediaSource, false, true);
+        if (concatenatingMediaSource != null) {
+            int videoId = player.getCurrentWindowIndex()+1;
+            long playbackPosition = player.getCurrentPosition();
 
-                player.seekTo(videoId - 1, currentPosition);
+            mergedSource = new MergingMediaSource(concatenatingMediaSource.getMediaSource(videoId - 1), subtitleSource);
+            concatenatingMediaSource.removeMediaSource(videoId - 1);
+            concatenatingMediaSource.addMediaSource(videoId - 1, mergedSource);
 
-            } else {
-                player.prepare(new MergingMediaSource(mediaSource, subtitleSource), false, false);
-            }
-            resumePlayer();
+            player.prepare(concatenatingMediaSource, false, true);
+            player.seekTo(videoId - 1, playbackPosition);
 
         } else {
-            Toast.makeText(context, "there is no subtitle", Toast.LENGTH_SHORT).show();
+            player.prepare(new MergingMediaSource(videoSource, subtitleSource), false, false);
         }
+
+        playerUiController.showSubtitle(true);
+        resumePlayer();
     }
 
     /***********************************************************
