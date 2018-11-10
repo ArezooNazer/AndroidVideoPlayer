@@ -52,7 +52,6 @@ public class MyTrackSelectionView extends LinearLayout {
     private static final String TAG = "MyTrackSelectionView";
 
     private final int selectableItemBackgroundResourceId;
-    private static int previousSelectedItem = -1;
     private final LayoutInflater inflater;
     private final CheckedTextView disableView;
     private final CheckedTextView defaultView;
@@ -312,16 +311,15 @@ public class MyTrackSelectionView extends LinearLayout {
         int groupIndex = tag.first;
         int trackIndex = tag.second;
 
-        if (previousSelectedItem == -1) {
+        if (override == null) {
             override = new SelectionOverride(groupIndex, trackIndex);
-            previousSelectedItem = trackIndex;
+
         }
         else {
             int[] overrideTracks = override.tracks;
-            int[] tracks = getTracksRemoving(overrideTracks, previousSelectedItem);
+            int[] tracks = getTracksRemoving(overrideTracks, override.tracks[0]);
             override = new SelectionOverride(groupIndex, tracks);
             override = new SelectionOverride(groupIndex, trackIndex);
-            previousSelectedItem = trackIndex;
         }
     }
 
