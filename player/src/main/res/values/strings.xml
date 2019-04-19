@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">Player</string>
-    <string name="audio">audio</string>
-    <string name="video">video</string>
-    <string name="text">text</string>
-    <string name="selectQuality">select quality</string>
-</resources>
