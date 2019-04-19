@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.user.exoplayer.R;
-import com.example.user.exoplayer.player.db.Subtitle;
+import com.example.user.exoplayer.player.data.database.Subtitle;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
             subtitleName.setText(subtitleUrl.getTitle());
             Log.d("title", "subtitleUrl.getTitle() >> " + subtitleUrl.getTitle());
             itemView.setOnClickListener(view -> {
-                player.setSelectedSubtitle(subtitleUrl.getSubtitleUrl());
+                player.setSelectedSubtitle(subtitleUrl);
             });
         }
     }

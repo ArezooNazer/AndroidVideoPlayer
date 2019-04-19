@@ -2,14 +2,13 @@ package com.example.user.exoplayer;
 
 import android.arch.persistence.room.Room;
 import android.content.Intent;
-import android.media.MediaRecorder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.user.exoplayer.player.data.VideoSource;
-import com.example.user.exoplayer.player.db.Subtitle;
-import com.example.user.exoplayer.player.db.UrlDatabase;
-import com.example.user.exoplayer.player.db.VideoUrl;
+import com.example.user.exoplayer.player.data.database.Subtitle;
+import com.example.user.exoplayer.player.data.database.UrlDatabase;
+import com.example.user.exoplayer.player.data.database.VideoUrl;
 import com.example.user.exoplayer.player.ui.PlayerActivity;
 import com.google.android.exoplayer2.C;
 
@@ -20,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static UrlDatabase urlDatabase;
     private List<Subtitle> subtitleList = new ArrayList<>();
+    private static int REQUEST_CODE= 1000;
 
     /***********************************************************
      list of sample videos and multiple subtitles ( saved in db)
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     public void goToPlayerActivity(VideoSource videoSource) {
         Intent intent = new Intent(getApplicationContext(), PlayerActivity.class);
         intent.putExtra("videoSource", videoSource);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
 

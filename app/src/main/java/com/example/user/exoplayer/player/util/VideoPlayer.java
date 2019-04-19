@@ -3,7 +3,6 @@ package com.example.user.exoplayer.player.util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -15,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 
 import com.example.user.exoplayer.player.data.VideoSource;
-import com.example.user.exoplayer.player.db.Subtitle;
+import com.example.user.exoplayer.player.data.database.Subtitle;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -41,7 +40,6 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -101,7 +99,7 @@ public class VideoPlayer {
         player.setPlayWhenReady(true);
         player.addListener(componentListener);
 
-        mediaSource = buildMediaSource(videoSource.getVideo().get(0), cacheDataSourceFactory);
+        mediaSource = buildMediaSource(videoSource.getVideos().get(0), cacheDataSourceFactory);
         player.prepare(mediaSource);
 
     }

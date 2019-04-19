@@ -1,4 +1,4 @@
-package com.example.user.exoplayer.player.db;
+package com.example.user.exoplayer.player.data.database;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;

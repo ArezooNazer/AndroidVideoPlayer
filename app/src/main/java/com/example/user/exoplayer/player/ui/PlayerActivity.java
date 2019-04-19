@@ -3,10 +3,8 @@ package com.example.user.exoplayer.player.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -21,15 +19,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.user.exoplayer.R;
 import com.example.user.exoplayer.player.data.VideoSource;
-import com.example.user.exoplayer.player.db.Subtitle;
+import com.example.user.exoplayer.player.data.database.Subtitle;
 import com.example.user.exoplayer.player.util.PlayerUiController;
 import com.example.user.exoplayer.player.util.SubtitleAdapter;
 import com.example.user.exoplayer.player.util.VideoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.example.user.exoplayer.R;
 
 import java.util.List;
 
@@ -128,7 +126,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     private void initSource() {
 
-        if (videoSource.getVideo() == null) {
+        if (videoSource.getVideos() == null) {
             Toast.makeText(this, "can not play video", Toast.LENGTH_SHORT).show();
             return;
         }
