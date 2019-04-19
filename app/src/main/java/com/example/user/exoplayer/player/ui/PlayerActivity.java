@@ -3,8 +3,10 @@ package com.example.user.exoplayer.player.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +33,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerUiController {
 
     private static final String TAG = "PlayerActivity";
@@ -41,6 +44,9 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private AlertDialog alertDialog;
     private VideoSource videoSource;
     private AudioManager mAudioManager;
+    private TextView title, cancel, noSub;
+    private Typeface typeface;
+    private boolean disableBackpress = false;
 
     /***********************************************************
      Handle audio on different events
@@ -92,6 +98,9 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     private void getDataFromIntent() {
         videoSource = getIntent().getParcelableExtra("videoSource");
+//        for (int i = 0; i < videoSource.getVideos().size(); i++) {
+//            Log.d(TAG, "getDataFromIntent: " + videoSource.getVideos().get(i).getUrl());
+//        }
     }
 
     private void setupLayout() {
@@ -185,34 +194,48 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
+    public void onBackPressed() {
+        if (disableBackpress)
+            return;
+
+        super.onBackPressed();
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         hideSystemUi();
-
     }
-
 
     @Override
     public void onClick(View view) {
-
         int controllerId = view.getId();
-        Log.d("id", "onClick() called with: view = [" + view + "]" + controllerId);
 
-        if (controllerId == R.id.btn_mute) {
-            player.setMute(true);
+        switch (controllerId) {
+            case R.id.btn_mute:
+                player.setMute(true);
+                break;
+            case R.id.btn_unMute:
+                player.setMute(false);
+                break;
+            case R.id.btn_settings:
+                player.setSelectedQuality(this);
+                break;
+            case R.id.btn_subtitle:
+                prepareSubtitles();
+                break;
+            case R.id.btn_lock:
+                updateLockMode(true);
+                break;
+            case R.id.btn_unLock:
+                updateLockMode(false);
+            case R.id.exo_rew:
+                player.seekToSelectedPosition(0, true);
+                break;
+            default:
+                break;
         }
 
-        if (controllerId == R.id.btn_unMute) {
-            player.setMute(false);
-        }
-
-        if (controllerId == R.id.btn_settings) {
-            player.setSelectedQuality(this, "select quality");
-        }
-
-        if (controllerId == R.id.btn_subtitle) {
-            showSubtitleDialog();
-        }
 
         if (controllerId == R.id.btn_lock) {
             updateLockMode(true);
@@ -239,13 +262,17 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void showSubtitle(boolean show) {
-        if (player != null && playerView.getSubtitleView() != null) {
-            if (show) {
-                alertDialog.dismiss();
-                playerView.getSubtitleView().setVisibility(View.VISIBLE);
-            } else
-                playerView.getSubtitleView().setVisibility(View.GONE);
+
+        if (player == null || playerView.getSubtitleView() == null)
+            return;
+
+        if (!show) {
+            playerView.getSubtitleView().setVisibility(View.GONE);
+            return;
         }
+
+        alertDialog.dismiss();
+        playerView.getSubtitleView().setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -255,61 +282,67 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         playerView.getSubtitleView().setStyle(captionStyleCompat);
     }
 
-    private void showSubtitleDialog() {
-        if (player != null && playerView.getSubtitleView() != null) {
-            player.pausePlayer();
-            List<Subtitle> subtitleUrlList = new ArrayList<>();
+    private void prepareSubtitles() {
+        if (player == null || playerView.getSubtitleView() == null)
+            return;
 
-            //todo : subtitle list
-            int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
-//            subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
-
-            //set recyclerView
-            if (subtitleUrlList.size() == 0) {
-                player.resumePlayer();
-                Toast.makeText(this, "برای این ویدیو زیرنویسی وجود ندارد", Toast.LENGTH_SHORT).show();
-            } else {
-
-                //init subtitle dialog
-                final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
-
-                LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
-                View view = inflater.inflate(R.layout.subtitle_selection_dialog, null);
-                builder.setView(view);
-
-                alertDialog = builder.create();
-
-                // set the height and width of dialog
-                WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-                layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
-                layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
-                layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-                layoutParams.gravity = Gravity.CENTER;
-
-                alertDialog.getWindow().setAttributes(layoutParams);
-
-                RecyclerView recyclerView = view.findViewById(R.id.subtitle_recycler_view);
-                recyclerView.setAdapter(new SubtitleAdapter(subtitleUrlList, player));
-
-                TextView noSubtitle = view.findViewById(R.id.no_subtitle_text_view);
-                noSubtitle.setOnClickListener(view1 -> {
-                    if (playerView.getSubtitleView().getVisibility() == View.VISIBLE)
-                        showSubtitle(false);
-                    alertDialog.dismiss();
-                    player.resumePlayer();
-                });
-
-                Button cancelDialog = view.findViewById(R.id.cancel_dialog_btn);
-                cancelDialog.setOnClickListener(view1 -> {
-                    alertDialog.dismiss();
-                    player.resumePlayer();
-                });
-
-                // to prevent dialog box from getting dismissed on outside touch
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.show();
-            }
+        if (player.getCurrentVideo().getSubtitleList() == null ||
+                player.getCurrentVideo().getSubtitleList().size() == 0) {
+            Toast.makeText(this, "زیرنویس موجود نیست.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        player.pausePlayer();
+        showSubtitleDialog();
+
+    }
+
+    private void showSubtitleDialog() {
+        //init subtitle dialog
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
+
+
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        View view = inflater.inflate(R.layout.subtitle_selection_dialog, null);
+
+        title = view.findViewById(R.id.subtitle_dialog_header);
+        cancel = view.findViewById(R.id.cancel_dialog_btn);
+        noSub = view.findViewById(R.id.no_subtitle_text_view);
+
+        builder.setView(view);
+        alertDialog = builder.create();
+
+
+        // set the height and width of dialog
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(alertDialog.getWindow().getAttributes());
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.gravity = Gravity.CENTER;
+
+        alertDialog.getWindow().setAttributes(layoutParams);
+
+        RecyclerView recyclerView = view.findViewById(R.id.subtitle_recycler_view);
+        recyclerView.setAdapter(new SubtitleAdapter(player.getCurrentVideo().getSubtitleList(), player));
+
+        TextView noSubtitle = view.findViewById(R.id.no_subtitle_text_view);
+        noSubtitle.setOnClickListener(view1 -> {
+            if (playerView.getSubtitleView().getVisibility() == View.VISIBLE)
+                showSubtitle(false);
+            alertDialog.dismiss();
+            player.resumePlayer();
+        });
+
+        Button cancelDialog = view.findViewById(R.id.cancel_dialog_btn);
+        cancelDialog.setOnClickListener(view1 -> {
+            alertDialog.dismiss();
+            player.resumePlayer();
+        });
+
+        // to prevent dialog box from getting dismissed on outside touch
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
     }
 
     public void setMuteMode(boolean mute) {
@@ -325,17 +358,22 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void updateLockMode(boolean isLock) {
-        if (player != null && playerView != null) {
-            player.lockScreen(isLock);
-            if (isLock) {
-                playerView.hideController();
-                unLock.setVisibility(View.VISIBLE);
+        if (player == null || playerView == null)
+            return;
 
-            } else {
-                playerView.showController();
-                unLock.setVisibility(View.GONE);
-            }
+        player.lockScreen(isLock);
+
+        if (isLock) {
+            disableBackpress = true;
+            playerView.hideController();
+            unLock.setVisibility(View.VISIBLE);
+            return;
         }
+
+        disableBackpress = false;
+        playerView.showController();
+        unLock.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -345,5 +383,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         else
             progressBar.setVisibility(View.GONE);
     }
+
 
 }

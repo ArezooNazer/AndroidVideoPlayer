@@ -71,7 +71,6 @@ public class MyTrackSelectionView extends LinearLayout {
 
     public static Pair<AlertDialog, MyTrackSelectionView> getDialog(
             Activity activity,
-            CharSequence title,
             DefaultTrackSelector trackSelector,
             int rendererIndex) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -88,7 +87,6 @@ public class MyTrackSelectionView extends LinearLayout {
 
         AlertDialog dialog =
                 builder
-                        .setTitle(title)
                         .setView(dialogView)
                         .setPositiveButton(android.R.string.ok, okClickListener)
                         .setNegativeButton(android.R.string.cancel, null)

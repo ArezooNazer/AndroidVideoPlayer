@@ -153,6 +153,10 @@ public class VideoPlayer {
         return player;
     }
 
+    public VideoSource.SingleVideo getCurrentVideo() {
+        return videoSource.getVideos().get(player.getCurrentWindowIndex());
+    }
+
     /************************************************************
      mute, unMute
      ***********************************************************/
@@ -170,7 +174,7 @@ public class VideoPlayer {
     /***********************************************************
      manually select stream quality
      ***********************************************************/
-    public void setSelectedQuality(Activity activity, CharSequence dialogTitle) {
+    public void setSelectedQuality(Activity activity) {
 
         MappingTrackSelector.MappedTrackInfo mappedTrackInfo;
 
@@ -189,7 +193,7 @@ public class VideoPlayer {
 
 
                 Pair<AlertDialog, MyTrackSelectionView> dialogPair =
-                        MyTrackSelectionView.getDialog(activity, dialogTitle, trackSelector, rendererIndex);
+                        MyTrackSelectionView.getDialog(activity, trackSelector, rendererIndex);
                 dialogPair.second.setShowDisableOption(false);
                 dialogPair.second.setAllowAdaptiveSelections(allowAdaptiveSelections);
                 dialogPair.second.animate();
@@ -207,6 +211,14 @@ public class VideoPlayer {
     public void seekToSelectedPosition(int hour, int minute, int second) {
         long playbackPosition = (hour * 3600 + minute * 60 + second) * 1000;
         player.seekTo(playbackPosition);
+    }
+
+    public void seekToSelectedPosition(long millisecond, boolean rewind) {
+        if(rewind){
+            player.seekTo(player.getCurrentPosition() - 15000);
+            return;
+        }
+        player.seekTo(millisecond * 1000);
     }
 
     public void seekToOnDoubleTap() {
