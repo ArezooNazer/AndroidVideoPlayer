@@ -1,0 +1,11 @@
+package com.example.user.exoplayer.player.db
+
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+
+@Entity(tableName = "video")
+class VideoUrl(var videoUrl: String?) {
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+}

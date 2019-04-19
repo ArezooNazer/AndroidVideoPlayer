@@ -1,9 +1,12 @@
 package com.example.user.exoplayer.player.ui;
 
 import android.annotation.SuppressLint;
-import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -17,79 +20,63 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.user.exoplayer.player.db.SubtitleUrl;
-import com.example.user.exoplayer.player.db.UrlDatabase;
-import com.example.user.exoplayer.player.db.VideoUrl;
+
+import com.example.user.exoplayer.player.data.VideoSource;
+import com.example.user.exoplayer.player.db.Subtitle;
 import com.example.user.exoplayer.player.util.PlayerUiController;
 import com.example.user.exoplayer.player.util.SubtitleAdapter;
 import com.example.user.exoplayer.player.util.VideoPlayer;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.example.user.exoplayer.R;
-import java.util.ArrayList;
+
 import java.util.List;
+
+import static com.example.user.exoplayer.MainActivity.urlDatabase;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerUiController {
 
     private static final String TAG = "PlayerActivity";
     private PlayerView playerView;
     private VideoPlayer player;
-    private ImageButton mute, unMute, subtitle, setting, lock, unLock;
+    private ImageButton mute, unMute, subtitle, setting, lock, unLock, nextBtn;
     private ProgressBar progressBar;
     private AlertDialog alertDialog;
-    public static UrlDatabase urlDatabase;
-    private int singleORMultipleVideo; // 1: if single , 2: if multiple
-
-
-    /***********************************************************
-     A sample video and multiple subtitles
-     ***********************************************************/
-
-    private String videoUri = "http://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny_metadata.m3u8";
-    private List<SubtitleUrl> subtitleList = new ArrayList<>();
-
-    private void setVideoSubtitleList() {
-        subtitleList.add(new SubtitleUrl(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
-        subtitleList.add(new SubtitleUrl(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
-        subtitleList.add(new SubtitleUrl(1, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
-
-    }
+    private VideoSource videoSource;
+    private AudioManager mAudioManager;
 
     /***********************************************************
-     list of sample videos and multiple subtitles ( saved in db)
+     Handle audio on different events
      ***********************************************************/
-
-    private List<VideoUrl> videoUriList = new ArrayList<>();
-
-    private void initializeDb() {
-        urlDatabase = Room.databaseBuilder(getApplicationContext(), UrlDatabase.class, "URL_DB")
-                .fallbackToDestructiveMigration()
-                .allowMainThreadQueries()
-                .build();
-
-       makeListOfUri();
-    }
-
-    private void makeListOfUri() {
-
-        videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
-        videoUriList.add(new VideoUrl("http://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny_metadata.m3u8"));
-        videoUriList.add(new VideoUrl("http://www.storiesinflight.com/js_videosub/jellies.mp4"));
-
-        subtitleList.add(new SubtitleUrl(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
-
-        subtitleList.add(new SubtitleUrl(2, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
-        subtitleList.add(new SubtitleUrl(2, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
-        subtitleList.add(new SubtitleUrl(2, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
-
-
-        subtitleList.add(new SubtitleUrl(3, "English", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
-
-        if (urlDatabase.urlDao().getAllUrls().size() == 0) {
-            urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
-            urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
-        }
-    }
+    private final AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+                    switch (focusChange) {
+                        case AudioManager.AUDIOFOCUS_GAIN:
+                            if (player != null)
+                                //  player.getPlayer().setPlayWhenReady(true);
+                                break;
+                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                            // Audio focus was lost, but it's possible to duck (i.e.: play quietly)
+                            if (player != null)
+                                player.getPlayer().setPlayWhenReady(false);
+                            break;
+                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                            // Lost audio focus, but will gain it back (shortly), so note whether
+                            // playback should resume
+                            if (player != null)
+                                player.getPlayer().setPlayWhenReady(false);
+                            break;
+                        case AudioManager.AUDIOFOCUS_LOSS:
+                            // Lost audio focus, probably "permanently"
+                            if (player != null)
+                                player.getPlayer().setPlayWhenReady(false);
+                            break;
+                    }
+                }
+            };
 
 
     /***********************************************************
@@ -102,22 +89,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_player);
         getSupportActionBar().hide();
 
+        getDataFromIntent();
         setupLayout();
+        initSource();
+    }
 
-
-        singleORMultipleVideo = 2;
-        if (singleORMultipleVideo == 1) {
-            //if you have 1 video and a list of subtitles
-            setVideoSubtitleList();
-            player = new VideoPlayer(playerView, getApplicationContext(), videoUri, this);
-        } else {
-            //if you hav list of videos and their subtitles
-            initializeDb();
-            player = new VideoPlayer(playerView, getApplicationContext(), urlDatabase.urlDao().getAllUrls(), this);
-        }
-
-
-
+    private void getDataFromIntent() {
+        videoSource = getIntent().getParcelableExtra("videoSource");
     }
 
     private void setupLayout() {
@@ -131,6 +109,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         setting = findViewById(R.id.btn_settings);
         lock = findViewById(R.id.btn_lock);
         unLock = findViewById(R.id.btn_unLock);
+        nextBtn = findViewById(R.id.exo_next);
 
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
@@ -145,6 +124,45 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         setting.setOnClickListener(this);
         lock.setOnClickListener(this);
         unLock.setOnClickListener(this);
+    }
+
+    private void initSource() {
+
+        if (videoSource.getVideo() == null) {
+            Toast.makeText(this, "can not play video", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        player = new VideoPlayer(playerView, getApplicationContext(), videoSource, this);
+        this.mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        player.getPlayer().addListener(new Player.EventListener() {
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                switch (playbackState) {
+                    case Player.STATE_ENDED:
+                        nextBtn.performClick();
+                        break;
+                    case Player.STATE_READY:
+                        Log.d(TAG, "onPlayerStateChanged: STATE_READY");
+                        mAudioManager.requestAudioFocus(
+                                mOnAudioFocusChangeListener,
+                                AudioManager.STREAM_MUSIC,
+                                AudioManager.AUDIOFOCUS_GAIN);
+                        break;
+                }
+            }
+
+        });
+
+//        if (player.getCurrentVideo().getSubtitles() == null ||
+//                player.getCurrentVideo().getSubtitles().size() == 0)
+//
+//            subtitle.setImageResource(R.drawable.exo_no_subtitle_btn);
+
+        //optional setting
+        playerView.getSubtitleView().setVisibility(View.GONE);
+        player.seekToOnDoubleTap();
+
     }
 
     @Override
@@ -247,14 +265,10 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private void showSubtitleDialog() {
         if (player != null && playerView.getSubtitleView() != null) {
             player.pausePlayer();
-            List<SubtitleUrl> subtitleUrlList;
+            List<Subtitle> subtitleUrlList;
 
-            if (singleORMultipleVideo == 1) {
-                subtitleUrlList = subtitleList;
-            } else {
-                int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
-                subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
-            }
+            int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
+            subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
 
             //set recyclerView
             if (subtitleUrlList.size() == 0) {
@@ -303,7 +317,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
     }
-
 
     public void setMuteMode(boolean mute) {
         if (player != null && playerView != null) {

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
@@ -12,7 +13,11 @@ import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+
+import com.example.user.exoplayer.player.data.VideoSource;
+import com.example.user.exoplayer.player.db.Subtitle;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
@@ -50,44 +55,29 @@ public class VideoPlayer {
 
     private PlayerView playerView;
     private SimpleExoPlayer player;
-    private MediaSource videoSource, subtitleSource;
+    private MediaSource mediaSource;
     private DefaultTrackSelector trackSelector;
     private ConcatenatingMediaSource concatenatingMediaSource = null;
     private List<MediaSource> mediaSourceList = new ArrayList<>();
-    private int  widthOfScreen;
-
-
-    private Uri videoUri, subtitleUri;
-    private List<Uri> videoUriList;
-    private String videoUrl;
+    private int widthOfScreen;
     private ComponentListener componentListener;
+    private CacheDataSourceFactory cacheDataSourceFactory;
+    private VideoSource videoSource;
+    private boolean isLock = false;
 
-    public VideoPlayer(PlayerView playerView, Context context, String videoPath, PlayerUiController mView) {
+    public VideoPlayer(PlayerView playerView,
+                       Context context,
+                       VideoSource videoSource,
+                       PlayerUiController mView) {
+
         this.playerView = playerView;
         this.context = context;
-        this.videoUri = Uri.parse(videoPath);
-        this.videoUrl = videoPath;
         this.playerUiController = mView;
-
-        this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
-        if (componentListener == null)
-            componentListener = new ComponentListener();
-
-        initializePlayer();
-
-    }
-
-    public VideoPlayer(PlayerView playerView, Context context, List<String> videoPathList, PlayerUiController mView) {
-        this.playerView = playerView;
-        this.context = context;
-        this.videoUriList = new ArrayList<>();
-        this.playerUiController = mView;
-
-        for (int i = 0; i < videoPathList.size(); i++) {
-            Log.e(TAG, "VideoPlayer: " + videoPathList.get(i) + " " + videoUriList);
-            videoUriList.add(Uri.parse(videoPathList.get(i)));
-        }
-
+        this.cacheDataSourceFactory = new CacheDataSourceFactory(
+                context,
+                100 * 1024 * 1024,
+                5 * 1024 * 1024);
+        this.videoSource = videoSource;
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
         if (componentListener == null)
             componentListener = new ComponentListener();
@@ -99,16 +89,11 @@ public class VideoPlayer {
     /******************************************************************
      initialize ExoPlayer
      ******************************************************************/
-    public void initializePlayer() {
+    private void initializePlayer() {
         playerView.requestFocus();
-        CacheDataSourceFactory cacheDataSourceFactory = new CacheDataSourceFactory(
-                context,
-                100 * 1024 * 1024,
-                5 * 1024 * 1024);
 
         if (player == null)
             player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
-
 
         playerView.setPlayer(player);
         playerView.setKeepScreenOn(true);
@@ -116,45 +101,35 @@ public class VideoPlayer {
         player.setPlayWhenReady(true);
         player.addListener(componentListener);
 
-        if (videoUri != null) {
-            videoSource = buildMediaSource(videoUri, cacheDataSourceFactory);
-            player.prepare(videoSource);
-        } else if (videoUriList != null) {
-            concatenatingMediaSource = new ConcatenatingMediaSource();
+        mediaSource = buildMediaSource(videoSource.getVideo().get(0), cacheDataSourceFactory);
+        player.prepare(mediaSource);
 
-            for (int i = 0; i < videoUriList.size(); i++) {
-                mediaSourceList.add(buildMediaSource(videoUriList.get(i), cacheDataSourceFactory));
-                concatenatingMediaSource.addMediaSource(mediaSourceList.get(i));
-            }
-            player.prepare(concatenatingMediaSource);
-        }
     }
 
     /******************************************************************
      building mediaSource depend on stream type and caching
      ******************************************************************/
-    private MediaSource buildMediaSource(Uri videoUri, CacheDataSourceFactory cacheDataSourceFactory) {
-        @C.ContentType int type = Util.inferContentType(videoUri);
-
-        switch (type) {
+    private MediaSource buildMediaSource(VideoSource.SingleVideo singleVideo, CacheDataSourceFactory cacheDataSourceFactory) {
+        Uri source = Uri.parse(singleVideo.getUrl());
+        switch (singleVideo.getVideoType()) {
             case C.TYPE_SS:
                 Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_SS + "]");
-                return new SsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
+                return new SsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(source);
 
             case C.TYPE_DASH:
-                Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_DASH + "]");
-                return new DashMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
+                Log.d(TAG, "buildMediaSource() C.TYPE_DASH = [" + C.TYPE_DASH + "]");
+                return new DashMediaSource.Factory(cacheDataSourceFactory).createMediaSource(source);
 
             case C.TYPE_HLS:
-                Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_HLS + "]");
-                return new HlsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
+                Log.d(TAG, "buildMediaSource() C.TYPE_HLS = [" + C.TYPE_HLS + "]");
+                return new HlsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(source);
 
             case C.TYPE_OTHER:
-                Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_OTHER + "]");
-                return new ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(videoUri);
+                Log.d(TAG, "buildMediaSource() C.TYPE_OTHER = [" + C.TYPE_OTHER + "]");
+                return new ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(source);
 
             default: {
-                throw new IllegalStateException("Unsupported type: " + type);
+                throw new IllegalStateException("Unsupported type: " + source);
             }
         }
     }
@@ -234,29 +209,6 @@ public class VideoPlayer {
     public void seekToSelectedPosition(int hour, int minute, int second) {
         long playbackPosition = (hour * 3600 + minute * 60 + second) * 1000;
         player.seekTo(playbackPosition);
-
-//        long videoDuration = getVideoDuration();
-//        if (player != null) {
-//            if (playbackPosition <= videoDuration) {
-//                player.seekTo(playbackPosition);
-//            } else {
-//                Toast.makeText(context, "playbackPosition <= mTimeInMilliseconds", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-    }
-
-    private long getVideoDuration() {
-
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(videoUrl, new HashMap<>());
-        String mVideoDuration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-
-        Log.d(TAG, "videoDuration >>  " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        Log.d(TAG, "ARTIST >>  " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-        Log.d(TAG, "TITLE >>  " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
-        Log.d(TAG, "BITRATE >>  " + retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
-
-        return Long.parseLong(mVideoDuration);
     }
 
     public void seekToOnDoubleTap() {
@@ -293,58 +245,47 @@ public class VideoPlayer {
     /***********************************************************
      manually select subtitle
      ***********************************************************/
-    public void setSelectedSubtitle(String subtitle) {
-        MergingMediaSource mergedSource;
-        this.subtitleUri = Uri.parse(subtitle);
-        Log.d(TAG, "subtitleUri.toString() " + subtitleUri.toString() +
-                "subtitle >> " + subtitle);
+    void setSelectedSubtitle(Subtitle subtitle) {
 
-        Format subtitleFormat = Format.createTextSampleFormat(
-                null, // An identifier for the track. May be null.
-                MimeTypes.APPLICATION_SUBRIP, // The mime type. Must be set correctly.
-                Format.NO_VALUE, // Selection flags for the track.
-                null); // The subtitle language. May be null.
+        if (TextUtils.isEmpty(subtitle.getTitle()))
+            Log.d(TAG, "setSelectedSubtitle: subtitle title is empty");
+
+
+        Format subtitleFormat;
+        subtitleFormat = Format.createTextSampleFormat(
+                null,
+                MimeTypes.APPLICATION_SUBRIP,
+                Format.NO_VALUE,
+                null);
+
 
         DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
 
-        subtitleSource = new SingleSampleMediaSource
+        MediaSource subtitleSource = new SingleSampleMediaSource
                 .Factory(dataSourceFactory)
-                .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
+                .createMediaSource(Uri.parse(subtitle.getSubtitleUrl()), subtitleFormat, C.TIME_UNSET);
 
-        if (concatenatingMediaSource != null) {
-            int videoId = player.getCurrentWindowIndex()+1;
-            long playbackPosition = player.getCurrentPosition();
 
-            mergedSource = new MergingMediaSource(mediaSourceList.get(videoId - 1), subtitleSource);
-            concatenatingMediaSource.removeMediaSource(videoId - 1);
-            concatenatingMediaSource.addMediaSource(videoId - 1, mergedSource);
+        //optional
+        playerUiController.changeSubtitleBackground();
 
-            //optional
-            playerUiController.changeSubtitleBackground();
-            player.prepare(concatenatingMediaSource, false, true);
-            player.seekTo(videoId - 1, playbackPosition);
-
-        } else {
-            //optional
-           playerUiController.changeSubtitleBackground();
-            player.prepare(new MergingMediaSource(videoSource, subtitleSource), false, false);
-        }
-
+        player.prepare(new MergingMediaSource(mediaSource, subtitleSource), false, false);
         playerUiController.showSubtitle(true);
         resumePlayer();
+
+
     }
 
     /***********************************************************
      playerView listener for lock and unlock screen
      ***********************************************************/
     public void lockScreen(boolean isLock) {
-        playerView.setControllerVisibilityListener(visibility -> {
-            if (isLock)
-                playerView.hideController();
-            else
-                playerView.showController();
-        });
+        this.isLock = isLock;
+    }
+
+    public boolean isLock() {
+        return isLock;
     }
 
     /***********************************************************
@@ -355,11 +296,24 @@ public class VideoPlayer {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-            if (playbackState == Player.STATE_BUFFERING) {
-                playerUiController.showProgressBar(true);
-            } else {
-                playerUiController.showProgressBar(false);
+            switch (playbackState) {
+                case Player.STATE_BUFFERING:
+                    playerUiController.showProgressBar(true);
+                    break;
+                case Player.STATE_READY:
+                    playerUiController.showProgressBar(false);
+                    break;
+                default:
+                    break;
             }
+
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+
+            playerUiController.showProgressBar(false);
+//            playerUiController.showRetryBtn(true);
         }
     }
 

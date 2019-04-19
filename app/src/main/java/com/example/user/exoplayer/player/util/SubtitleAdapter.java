@@ -9,16 +9,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.user.exoplayer.R;
-import com.example.user.exoplayer.player.db.SubtitleUrl;
+import com.example.user.exoplayer.player.db.Subtitle;
 
 import java.util.List;
 
 public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.SubtitleViewHolder> {
 
-    private List<SubtitleUrl> subtitleUrlList;
+    private List<Subtitle> subtitleUrlList;
     private VideoPlayer player;
 
-    public SubtitleAdapter(List<SubtitleUrl> subtitleUrlList, VideoPlayer player) {
+    public SubtitleAdapter(List<Subtitle> subtitleUrlList, VideoPlayer player) {
         this.subtitleUrlList = subtitleUrlList;
         this.player = player;
     }
@@ -48,7 +48,7 @@ public class SubtitleAdapter extends RecyclerView.Adapter<SubtitleAdapter.Subtit
             this.subtitleName = itemView.findViewById(R.id.subtitle_text_view);
         }
 
-        public void onBind(SubtitleUrl subtitleUrl) {
+        public void onBind(Subtitle subtitleUrl) {
             subtitleName.setText(subtitleUrl.getTitle());
             Log.d("title", "subtitleUrl.getTitle() >> " + subtitleUrl.getTitle());
             itemView.setOnClickListener(view -> {
