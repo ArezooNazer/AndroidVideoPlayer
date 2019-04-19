@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.user.exoplayer.player.data.VideoSource;
 import com.example.user.exoplayer.player.data.database.Subtitle;
-import com.example.user.exoplayer.player.data.database.UrlDatabase;
+import com.example.user.exoplayer.player.data.database.AppDatabase;
 import com.example.user.exoplayer.player.data.database.VideoUrl;
 import com.example.user.exoplayer.player.ui.PlayerActivity;
 import com.google.android.exoplayer2.C;
@@ -17,9 +17,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static UrlDatabase urlDatabase;
+    public AppDatabase urlDatabase;
     private List<Subtitle> subtitleList = new ArrayList<>();
-    private static int REQUEST_CODE= 1000;
+    private int REQUEST_CODE = 1000;
 
     /***********************************************************
      list of sample videos and multiple subtitles ( saved in db)
@@ -27,13 +27,10 @@ public class MainActivity extends AppCompatActivity {
 
     private List<VideoUrl> videoUriList = new ArrayList<>();
 
-    private void initializeDb(SourceListener sourceListener) {
-        urlDatabase = Room.databaseBuilder(getApplicationContext(), UrlDatabase.class, "URL_DB")
-                .fallbackToDestructiveMigration()
+    private void initializeDb() {
+        urlDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "APP_DB")
                 .allowMainThreadQueries()
                 .build();
-
-        makeListOfUri(sourceListener);
     }
 
     private void makeListOfUri(SourceListener sourceListener) {
@@ -43,19 +40,18 @@ public class MainActivity extends AppCompatActivity {
         videoUriList.add(new VideoUrl("http://www.storiesinflight.com/js_videosub/jellies.mp4"));
 
         subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
-
         subtitleList.add(new Subtitle(2, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
         subtitleList.add(new Subtitle(2, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new Subtitle(2, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
-
-
         subtitleList.add(new Subtitle(3, "English", "http://www.storiesinflight.com/js_videosub/jellies.srt"));
 
         if (urlDatabase.urlDao().getAllUrls().size() == 0) {
             urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
             urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
         }
-        sourceListener.success(makeVideoSource(videoUriList));
+
+        VideoSource videoSource = makeVideoSource(videoUriList);
+        sourceListener.success(videoSource);
     }
 
     private VideoSource makeVideoSource(List<VideoUrl> videos) {
@@ -78,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initializeDb(videoSource -> goToPlayerActivity(videoSource));
+        initializeDb();
+        makeListOfUri(this::goToPlayerActivity);
 
     }
 
@@ -87,6 +84,5 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("videoSource", videoSource);
         startActivityForResult(intent, REQUEST_CODE);
     }
-
 
 }

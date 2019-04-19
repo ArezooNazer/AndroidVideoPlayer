@@ -3,9 +3,8 @@ package com.example.user.exoplayer.player.data.database;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
-@Database(entities = {VideoUrl.class, Subtitle.class} , version = 3)
-public abstract class UrlDatabase extends RoomDatabase {
-
+@Database(entities = {VideoUrl.class, Subtitle.class} , version = 1)
+public abstract class AppDatabase extends RoomDatabase {
     public abstract UrlDao urlDao();
 
 }

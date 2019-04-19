@@ -29,10 +29,8 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.example.user.exoplayer.MainActivity.urlDatabase;
-
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerUiController {
 
     private static final String TAG = "PlayerActivity";
@@ -111,10 +109,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
-        player.seekToOnDoubleTap();
-
-        //start video from selected time
-        player.seekToSelectedPosition(0, 0, 0);
 
         mute.setOnClickListener(this);
         unMute.setOnClickListener(this);
@@ -132,6 +126,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         player = new VideoPlayer(playerView, getApplicationContext(), videoSource, this);
+        player.seekToOnDoubleTap();
         this.mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         player.getPlayer().addListener(new Player.EventListener() {
             @Override
@@ -263,10 +258,11 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private void showSubtitleDialog() {
         if (player != null && playerView.getSubtitleView() != null) {
             player.pausePlayer();
-            List<Subtitle> subtitleUrlList;
+            List<Subtitle> subtitleUrlList = new ArrayList<>();
 
+            //todo : subtitle list
             int currentVideoId = player.getPlayer().getCurrentWindowIndex() + 1;
-            subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
+//            subtitleUrlList = urlDatabase.urlDao().getAllSubtitles(currentVideoId);
 
             //set recyclerView
             if (subtitleUrlList.size() == 0) {
