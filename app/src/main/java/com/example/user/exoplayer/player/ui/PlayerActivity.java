@@ -286,8 +286,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         if (player == null || playerView.getSubtitleView() == null)
             return;
 
-        if (player.getCurrentVideo().getSubtitleList() == null ||
-                player.getCurrentVideo().getSubtitleList().size() == 0) {
+        if (player.getCurrentVideo().getSubtitles() == null ||
+                player.getCurrentVideo().getSubtitles().size() == 0) {
             Toast.makeText(this, "زیرنویس موجود نیست.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -324,7 +324,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         alertDialog.getWindow().setAttributes(layoutParams);
 
         RecyclerView recyclerView = view.findViewById(R.id.subtitle_recycler_view);
-        recyclerView.setAdapter(new SubtitleAdapter(player.getCurrentVideo().getSubtitleList(), player));
+        recyclerView.setAdapter(new SubtitleAdapter(player.getCurrentVideo().getSubtitles(), player));
 
         TextView noSubtitle = view.findViewById(R.id.no_subtitle_text_view);
         noSubtitle.setOnClickListener(view1 -> {

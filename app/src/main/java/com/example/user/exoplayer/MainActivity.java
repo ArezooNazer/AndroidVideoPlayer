@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
 
     public AppDatabase urlDatabase;
     private List<Subtitle> subtitleList = new ArrayList<>();
-    private int REQUEST_CODE = 1000;
 
     /***********************************************************
      list of sample videos and multiple subtitles ( saved in db)
@@ -35,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void makeListOfUri(SourceListener sourceListener) {
 
-        videoUriList.add(new VideoUrl("https:http://www.storiesinflight.com/js_videosub/jellies.mp4"));
+//        videoUriList.add(new VideoUrl("https:http://www.storiesinflight.com/js_videosub/jellies.mp4"));
+        videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
         videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
 
         subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             );
 
         }
-        return new VideoSource(singleVideos);
+        return new VideoSource(singleVideos, 0);
     }
 
     @Override
@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToPlayerActivity(VideoSource videoSource) {
+        int REQUEST_CODE = 1000;
         Intent intent = new Intent(getApplicationContext(), PlayerActivity.class);
         intent.putExtra("videoSource", videoSource);
         startActivityForResult(intent, REQUEST_CODE);
