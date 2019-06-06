@@ -93,7 +93,7 @@ public class VideoPlayer {
         player.setPlayWhenReady(true);
         player.addListener(componentListener);
 
-        mediaSource = buildMediaSource(videoSource.getVideos().get(0), cacheDataSourceFactory);
+        mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
         player.prepare(mediaSource);
 
     }
@@ -300,7 +300,7 @@ public class VideoPlayer {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
+            Log.d(TAG, "onPlayerStateChanged: playWhenReady: " + playWhenReady + " playbackState: " + playbackState);
             switch (playbackState) {
                 case Player.STATE_IDLE:
                     playerController.showProgressBar(false);
