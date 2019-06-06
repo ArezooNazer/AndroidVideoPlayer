@@ -336,6 +336,10 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         RecyclerView recyclerView = view.findViewById(R.id.subtitle_recycler_view);
         recyclerView.setAdapter(new SubtitleAdapter(player.getCurrentVideo().getSubtitles(), player));
 
+        for(int i = 0; i< player.getCurrentVideo().getSubtitles().size(); i++){
+            Log.d("subtitle", "showSubtitleDialog: " + player.getCurrentVideo().getSubtitles().get(i).getTitle());
+        }
+
         TextView noSubtitle = view.findViewById(R.id.no_subtitle_text_view);
         noSubtitle.setOnClickListener(view1 -> {
             if (playerView.getSubtitleView().getVisibility() == View.VISIBLE)

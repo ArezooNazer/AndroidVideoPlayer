@@ -50,7 +50,7 @@ public class VideoPlayer {
     private SimpleExoPlayer player;
     private MediaSource mediaSource;
     private DefaultTrackSelector trackSelector;
-    private int widthOfScreen;
+    private int widthOfScreen, index;
     private ComponentListener componentListener;
     private CacheDataSourceFactory cacheDataSourceFactory;
     private VideoSource videoSource;
@@ -69,6 +69,7 @@ public class VideoPlayer {
                 100 * 1024 * 1024,
                 5 * 1024 * 1024);
         this.videoSource = videoSource;
+        this.index = videoSource.getSelectedSourceIndex();
         this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
         if (componentListener == null)
             componentListener = new ComponentListener();
@@ -148,7 +149,7 @@ public class VideoPlayer {
     }
 
     public VideoSource.SingleVideo getCurrentVideo() {
-        return videoSource.getVideos().get(player.getCurrentWindowIndex());
+        return videoSource.getVideos().get(index);
     }
 
     /************************************************************

@@ -67,15 +67,12 @@ public class MyTrackSelectionView extends LinearLayout {
     private boolean isDisabled;
     private @Nullable
     SelectionOverride override;
-    private static Context context;
 
     public static Pair<AlertDialog, MyTrackSelectionView> getDialog(
             Activity activity,
             DefaultTrackSelector trackSelector,
             int rendererIndex) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        context = activity;
 
         // Inflate with the builder's context to ensure the correct style is used.
         LayoutInflater dialogInflater = LayoutInflater.from(builder.getContext());

@@ -40,8 +40,9 @@ public class MainActivity extends AppCompatActivity {
         videoUriList.add(new VideoUrl("https://5b44cf20b0388.streamlock.net:8443/vod/smil:bbb.smil/playlist.m3u8"));
 
         subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
-        subtitleList.add(new Subtitle(2, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
-        subtitleList.add(new Subtitle(2, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
+        subtitleList.add(new Subtitle(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
+
+        subtitleList.add(new Subtitle(2, "German", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new Subtitle(2, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
 
         if (urlDatabase.urlDao().getAllUrls().size() == 0) {
@@ -53,13 +54,11 @@ public class MainActivity extends AppCompatActivity {
 
     private VideoSource makeVideoSource(List<VideoUrl> videos, int index) {
         List<VideoSource.SingleVideo> singleVideos = new ArrayList<>();
-        List<Subtitle> subtitles;
         for (int i = 0; i < videos.size(); i++) {
 
-            subtitles = urlDatabase.urlDao().getAllSubtitles(i);
             singleVideos.add(i, new VideoSource.SingleVideo(
                     videos.get(i).getVideoUrl(),
-                    subtitles == null ? new ArrayList<>() : subtitles)
+                    urlDatabase.urlDao().getAllSubtitles(i + 1))
             );
 
         }
@@ -75,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
         Stetho.initializeWithDefaults(this);
         initializeDb();
         makeListOfUri();
-
-
     }
 
     private void setLayout() {
