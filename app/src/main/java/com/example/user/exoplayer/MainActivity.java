@@ -33,9 +33,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void makeListOfUri(SourceListener sourceListener) {
-
-//        videoUriList.add(new VideoUrl("https:http://www.storiesinflight.com/js_videosub/jellies.mp4"));
-        videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
+        videoUriList.add(new VideoUrl("https:http://www.storiesinflight.com/js_videosub/jellies.mp4"));
         videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
 
         subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
@@ -59,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
             subtitles = urlDatabase.urlDao().getAllSubtitles(i);
             singleVideos.add(i, new VideoSource.SingleVideo(
-                    C.TYPE_HLS,
                     videos.get(i).getVideoUrl(),
                     subtitles == null ? new ArrayList<>() : subtitles)
             );

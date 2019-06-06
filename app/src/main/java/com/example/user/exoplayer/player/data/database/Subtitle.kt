@@ -16,9 +16,9 @@ import kotlinx.android.parcel.Parcelize
                 childColumns = ["videoId"],
                 onDelete = CASCADE)])
 
-class Subtitle(val videoId: Int = 0,
-               val title: String? = null,
-               val subtitleUrl: String? = null) : Parcelable {
+class Subtitle(var videoId: Int = 0,
+               var title: String? = null,
+               var subtitleUrl: String? = null) : Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

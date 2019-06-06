@@ -48,7 +48,7 @@ public class VideoPlayer {
     private final String CLASS_NAME = VideoPlayer.class.getName();
     private static final String TAG = "VideoPlayer";
     private Context context;
-    private PlayerUiController playerUiController;
+    private PlayerController playerUiController;
 
 
     private PlayerView playerView;
@@ -66,7 +66,7 @@ public class VideoPlayer {
     public VideoPlayer(PlayerView playerView,
                        Context context,
                        VideoSource videoSource,
-                       PlayerUiController mView) {
+                       PlayerController mView) {
 
         this.playerView = playerView;
         this.context = context;
@@ -109,7 +109,8 @@ public class VideoPlayer {
      ******************************************************************/
     private MediaSource buildMediaSource(VideoSource.SingleVideo singleVideo, CacheDataSourceFactory cacheDataSourceFactory) {
         Uri source = Uri.parse(singleVideo.getUrl());
-        switch (singleVideo.getVideoType()) {
+        @C.ContentType int type = Util.inferContentType(source);
+        switch (type) {
             case C.TYPE_SS:
                 Log.d(TAG, "buildMediaSource() C.TYPE_SS = [" + C.TYPE_SS + "]");
                 return new SsMediaSource.Factory(cacheDataSourceFactory).createMediaSource(source);
@@ -214,7 +215,7 @@ public class VideoPlayer {
     }
 
     public void seekToSelectedPosition(long millisecond, boolean rewind) {
-        if(rewind){
+        if (rewind) {
             player.seekTo(player.getCurrentPosition() - 15000);
             return;
         }
@@ -307,23 +308,26 @@ public class VideoPlayer {
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
             switch (playbackState) {
+                case Player.STATE_IDLE:
+                    playerUiController.showProgressBar(false);
+                    playerUiController.showRetryBtn(true);
+                    break;
                 case Player.STATE_BUFFERING:
                     playerUiController.showProgressBar(true);
                     break;
                 case Player.STATE_READY:
                     playerUiController.showProgressBar(false);
+                    playerUiController.audioFocus();
                     break;
                 default:
                     break;
             }
-
         }
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
-
             playerUiController.showProgressBar(false);
-//            playerUiController.showRetryBtn(true);
+            playerUiController.showRetryBtn(true);
         }
     }
 

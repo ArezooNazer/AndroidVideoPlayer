@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -23,23 +22,19 @@ import android.widget.Toast;
 
 import com.example.user.exoplayer.R;
 import com.example.user.exoplayer.player.data.VideoSource;
-import com.example.user.exoplayer.player.data.database.Subtitle;
-import com.example.user.exoplayer.player.util.PlayerUiController;
+import com.example.user.exoplayer.player.util.PlayerController;
 import com.example.user.exoplayer.player.util.SubtitleAdapter;
 import com.example.user.exoplayer.player.util.VideoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerUiController {
+public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerController {
 
     private static final String TAG = "PlayerActivity";
     private PlayerView playerView;
     private VideoPlayer player;
-    private ImageButton mute, unMute, subtitle, setting, lock, unLock, nextBtn;
+    private ImageButton mute, unMute, subtitle, setting, lock, unLock, nextBtn, retry, back;
     private ProgressBar progressBar;
     private AlertDialog alertDialog;
     private VideoSource videoSource;
@@ -98,9 +93,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     private void getDataFromIntent() {
         videoSource = getIntent().getParcelableExtra("videoSource");
-//        for (int i = 0; i < videoSource.getVideos().size(); i++) {
-//            Log.d(TAG, "getDataFromIntent: " + videoSource.getVideos().get(i).getUrl());
-//        }
     }
 
     private void setupLayout() {
@@ -115,6 +107,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         lock = findViewById(R.id.btn_lock);
         unLock = findViewById(R.id.btn_unLock);
         nextBtn = findViewById(R.id.exo_next);
+        retry = findViewById(R.id.retry_btn);
+        back = findViewById(R.id.btn_back);
 
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
@@ -125,6 +119,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         setting.setOnClickListener(this);
         lock.setOnClickListener(this);
         unLock.setOnClickListener(this);
+        retry.setOnClickListener(this);
+        back.setOnClickListener(this);
     }
 
     private void initSource() {
@@ -156,41 +152,50 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         });
 
-//        if (player.getCurrentVideo().getSubtitles() == null ||
-//                player.getCurrentVideo().getSubtitles().size() == 0)
-//
-//            subtitle.setImageResource(R.drawable.exo_no_subtitle_btn);
-
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
         player.seekToOnDoubleTap();
+
+        playerView.setControllerVisibilityListener(visibility ->
+        {
+            Log.i(TAG, "onVisibilityChange: " + visibility);
+            if (player.isLock())
+                playerView.hideController();
+
+            back.setVisibility(visibility == View.VISIBLE && !player.isLock() ? View.VISIBLE : View.GONE);
+        });
 
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        hideSystemUi();
-        player.resumePlayer();
+        if (player != null)
+            player.resumePlayer();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         hideSystemUi();
-        player.resumePlayer();
+        if (player != null)
+            player.resumePlayer();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        player.pausePlayer();
+        if (player != null)
+            player.releasePlayer();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        player.releasePlayer();
+        if (mAudioManager != null)
+            mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
+        if (player != null)
+            player.releasePlayer();
     }
 
     @Override
@@ -232,6 +237,14 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.exo_rew:
                 player.seekToSelectedPosition(0, true);
                 break;
+            case R.id.btn_back:
+                onBackPressed();
+                break;
+            case R.id.retry_btn:
+                initSource();
+                showProgressBar(true);
+                showRetryBtn(false);
+                break;
             default:
                 break;
         }
@@ -252,12 +265,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
      ***********************************************************/
     @SuppressLint("InlinedApi")
     private void hideSystemUi() {
-        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
     @Override
@@ -378,10 +391,20 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void showProgressBar(boolean visible) {
-        if (visible)
-            progressBar.setVisibility(View.VISIBLE);
-        else
-            progressBar.setVisibility(View.GONE);
+        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showRetryBtn(boolean visible) {
+        retry.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void audioFocus() {
+        mAudioManager.requestAudioFocus(
+                mOnAudioFocusChangeListener,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
     }
 
 
