@@ -34,7 +34,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private static final String TAG = "PlayerActivity";
     private PlayerView playerView;
     private VideoPlayer player;
-    private ImageButton mute, unMute, subtitle, setting, lock, unLock, nextBtn, retry, back;
+    private ImageButton mute, unMute, subtitle, noSubtitle, setting, lock, unLock, nextBtn, retry, back;
     private ProgressBar progressBar;
     private AlertDialog alertDialog;
     private VideoSource videoSource;
@@ -131,6 +131,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         player = new VideoPlayer(playerView, getApplicationContext(), videoSource, this);
+
+        if (player.getCurrentVideo().getSubtitles() == null ||
+                player.getCurrentVideo().getSubtitles().size() == 0) {
+
+            subtitle.setImageResource(R.drawable.exo_no_subtitle_btn);
+        }
+
         player.seekToOnDoubleTap();
         this.mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         player.getPlayer().addListener(new Player.EventListener() {

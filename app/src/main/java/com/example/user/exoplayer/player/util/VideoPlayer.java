@@ -22,7 +22,6 @@ import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
@@ -39,24 +38,18 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class VideoPlayer {
 
     private final String CLASS_NAME = VideoPlayer.class.getName();
     private static final String TAG = "VideoPlayer";
     private Context context;
-    private PlayerController playerUiController;
-
+    private PlayerController playerController;
 
     private PlayerView playerView;
     private SimpleExoPlayer player;
     private MediaSource mediaSource;
     private DefaultTrackSelector trackSelector;
-    private ConcatenatingMediaSource concatenatingMediaSource = null;
-    private List<MediaSource> mediaSourceList = new ArrayList<>();
     private int widthOfScreen;
     private ComponentListener componentListener;
     private CacheDataSourceFactory cacheDataSourceFactory;
@@ -70,7 +63,7 @@ public class VideoPlayer {
 
         this.playerView = playerView;
         this.context = context;
-        this.playerUiController = mView;
+        this.playerController = mView;
         this.cacheDataSourceFactory = new CacheDataSourceFactory(
                 context,
                 100 * 1024 * 1024,
@@ -165,10 +158,10 @@ public class VideoPlayer {
         float currentVolume = player.getVolume();
         if (currentVolume > 0 && mute) {
             player.setVolume(0);
-            playerUiController.setMuteMode(true);
+            playerController.setMuteMode(true);
         } else if (!mute && currentVolume == 0) {
             player.setVolume(1);
-            playerUiController.setMuteMode(false);
+            playerController.setMuteMode(false);
         }
     }
 
@@ -279,10 +272,10 @@ public class VideoPlayer {
 
 
         //optional
-        playerUiController.changeSubtitleBackground();
+        playerController.changeSubtitleBackground();
 
         player.prepare(new MergingMediaSource(mediaSource, subtitleSource), false, false);
-        playerUiController.showSubtitle(true);
+        playerController.showSubtitle(true);
         resumePlayer();
 
 
@@ -309,15 +302,15 @@ public class VideoPlayer {
 
             switch (playbackState) {
                 case Player.STATE_IDLE:
-                    playerUiController.showProgressBar(false);
-                    playerUiController.showRetryBtn(true);
+                    playerController.showProgressBar(false);
+                    playerController.showRetryBtn(true);
                     break;
                 case Player.STATE_BUFFERING:
-                    playerUiController.showProgressBar(true);
+                    playerController.showProgressBar(true);
                     break;
                 case Player.STATE_READY:
-                    playerUiController.showProgressBar(false);
-                    playerUiController.audioFocus();
+                    playerController.showProgressBar(false);
+                    playerController.audioFocus();
                     break;
                 default:
                     break;
@@ -326,8 +319,8 @@ public class VideoPlayer {
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
-            playerUiController.showProgressBar(false);
-            playerUiController.showRetryBtn(true);
+            playerController.showProgressBar(false);
+            playerController.showRetryBtn(true);
         }
     }
 

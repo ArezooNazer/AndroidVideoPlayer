@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void makeListOfUri(SourceListener sourceListener) {
-        videoUriList.add(new VideoUrl("https:http://www.storiesinflight.com/js_videosub/jellies.mp4"));
-        videoUriList.add(new VideoUrl("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"));
+        videoUriList.add(new VideoUrl("https://www.radiantmediaplayer.com/media/bbb-360p.mp4"));
+        videoUriList.add(new VideoUrl("https://5b44cf20b0388.streamlock.net:8443/vod/smil:bbb.smil/playlist.m3u8"));
 
         subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new Subtitle(2, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
