@@ -41,14 +41,16 @@
             android:id="@+id/progress_bar"
             android:layout_width="60dp"
             android:layout_height="600dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"/>
 
         <ImageButton
             android:id="@+id/retry_btn"
             android:layout_width="60dp"
-            android:layout_height="600dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
             android:src="@drawable/exo_retry_btn"
+            android:background="@android:color/transparent"
             android:visibility="gone" />
 
     </com.google.android.exoplayer2.ui.PlayerView>

@@ -29,11 +29,11 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="ffffff" />
-                            <entry key="height" value="40" />
+                            <entry key="height" value="60" />
                             <entry key="outputName" value="exo_retry_btn" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="C:\Users\DaryaComputer" />
-                            <entry key="width" value="40" />
+                            <entry key="width" value="60" />
                           </map>
                         </option>
                       </PersistentState>
