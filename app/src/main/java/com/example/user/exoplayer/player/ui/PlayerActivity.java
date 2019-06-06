@@ -3,7 +3,6 @@ package com.example.user.exoplayer.player.ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -34,14 +33,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private static final String TAG = "PlayerActivity";
     private PlayerView playerView;
     private VideoPlayer player;
-    private ImageButton mute, unMute, subtitle, noSubtitle, setting, lock, unLock, nextBtn, retry, back;
+    private ImageButton mute, unMute, subtitle, setting, lock, unLock, nextBtn, retry, back;
     private ProgressBar progressBar;
     private AlertDialog alertDialog;
     private VideoSource videoSource;
     private AudioManager mAudioManager;
-    private TextView title, cancel, noSub;
-    private Typeface typeface;
-    private boolean disableBackpress = false;
+    private boolean disableBackPress = false;
 
     /***********************************************************
      Handle audio on different events
@@ -95,7 +92,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void setupLayout() {
-
         playerView = findViewById(R.id.demo_player_view);
         progressBar = findViewById(R.id.progress_bar);
 
@@ -206,7 +202,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onBackPressed() {
-        if (disableBackpress)
+        if (disableBackPress)
             return;
 
         super.onBackPressed();
@@ -307,7 +303,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         if (player.getCurrentVideo().getSubtitles() == null ||
                 player.getCurrentVideo().getSubtitles().size() == 0) {
-            Toast.makeText(this, "زیرنویس موجود نیست.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_subtitle), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -325,13 +321,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         View view = inflater.inflate(R.layout.subtitle_selection_dialog, null);
 
-        title = view.findViewById(R.id.subtitle_dialog_header);
-        cancel = view.findViewById(R.id.cancel_dialog_btn);
-        noSub = view.findViewById(R.id.no_subtitle_text_view);
-
         builder.setView(view);
         alertDialog = builder.create();
-
 
         // set the height and width of dialog
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
@@ -383,13 +374,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         player.lockScreen(isLock);
 
         if (isLock) {
-            disableBackpress = true;
+            disableBackPress = true;
             playerView.hideController();
             unLock.setVisibility(View.VISIBLE);
             return;
         }
 
-        disableBackpress = false;
+        disableBackPress = false;
         playerView.showController();
         unLock.setVisibility(View.GONE);
 
