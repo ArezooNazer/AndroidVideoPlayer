@@ -84,7 +84,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-        getSupportActionBar().hide();
 
         getDataFromIntent();
         setupLayout();

@@ -4,21 +4,24 @@ import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.user.exoplayer.player.data.VideoSource;
 import com.example.user.exoplayer.player.data.database.Subtitle;
 import com.example.user.exoplayer.player.data.database.AppDatabase;
 import com.example.user.exoplayer.player.data.database.VideoUrl;
 import com.example.user.exoplayer.player.ui.PlayerActivity;
-import com.google.android.exoplayer2.C;
+import com.facebook.stetho.Stetho;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public AppDatabase urlDatabase;
+    private AppDatabase urlDatabase;
     private List<Subtitle> subtitleList = new ArrayList<>();
+    private TextView playMp4, playM3u8;
 
     /***********************************************************
      list of sample videos and multiple subtitles ( saved in db)
@@ -32,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
     }
 
-    private void makeListOfUri(SourceListener sourceListener) {
+    private void makeListOfUri() {
         videoUriList.add(new VideoUrl("https://www.radiantmediaplayer.com/media/bbb-360p.mp4"));
         videoUriList.add(new VideoUrl("https://5b44cf20b0388.streamlock.net:8443/vod/smil:bbb.smil/playlist.m3u8"));
 
@@ -46,11 +49,9 @@ public class MainActivity extends AppCompatActivity {
             urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
         }
 
-        VideoSource videoSource = makeVideoSource(videoUriList);
-        sourceListener.success(videoSource);
     }
 
-    private VideoSource makeVideoSource(List<VideoUrl> videos) {
+    private VideoSource makeVideoSource(List<VideoUrl> videos, int index) {
         List<VideoSource.SingleVideo> singleVideos = new ArrayList<>();
         List<Subtitle> subtitles;
         for (int i = 0; i < videos.size(); i++) {
@@ -62,17 +63,30 @@ public class MainActivity extends AppCompatActivity {
             );
 
         }
-        return new VideoSource(singleVideos, 0);
+        return new VideoSource(singleVideos, index);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setLayout();
+        // initialize stetho
+        Stetho.initializeWithDefaults(this);
         initializeDb();
-        makeListOfUri(this::goToPlayerActivity);
+        makeListOfUri();
+
 
     }
+
+    private void setLayout() {
+        playMp4 = findViewById(R.id.mp4);
+        playM3u8 = findViewById(R.id.m3u8);
+
+        playMp4.setOnClickListener(view -> goToPlayerActivity(makeVideoSource(videoUriList, 0)));
+        playM3u8.setOnClickListener(view -> goToPlayerActivity(makeVideoSource(videoUriList, 1)));
+    }
+
 
     public void goToPlayerActivity(VideoSource videoSource) {
         int REQUEST_CODE = 1000;

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyVideoPlayer</string>
+    <string name="play_mp4_stream">play mp4 stream</string>
+    <string name="play_m3u8_stream">play m3u8 stream</string>
 </resources>
