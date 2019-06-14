@@ -188,7 +188,9 @@ public class VideoPlayer {
 
 
                 Pair<AlertDialog, MyTrackSelectionView> dialogPair =
-                        MyTrackSelectionView.getDialog(activity, trackSelector, rendererIndex);
+                        MyTrackSelectionView.getDialog(activity, trackSelector,
+                                rendererIndex,
+                                player.getVideoFormat().bitrate);
                 dialogPair.second.setShowDisableOption(false);
                 dialogPair.second.setAllowAdaptiveSelections(allowAdaptiveSelections);
                 dialogPair.second.animate();

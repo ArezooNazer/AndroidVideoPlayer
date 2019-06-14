@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
@@ -31,6 +32,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
+
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.RendererCapabilities;
 import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
@@ -41,6 +44,7 @@ import com.google.android.exoplayer2.ui.DefaultTrackNameProvider;
 import com.google.android.exoplayer2.ui.TrackNameProvider;
 import com.google.android.exoplayer2.util.Assertions;
 import com.user.exoplayer.R;
+
 import java.util.Arrays;
 
 /**
@@ -67,12 +71,24 @@ public class MyTrackSelectionView extends LinearLayout {
     private boolean isDisabled;
     private @Nullable
     SelectionOverride override;
+    private final String playingString = "<font color=#13aab2> &nbsp;(playing) &nbsp; </font>";
+    private static long currentBitrate;
+
+    private static final int BITRATE_1080P = 2800000;
+    private static final int BITRATE_720P = 1600000;
+    private static final int BITRATE_480P = 700000;
+    private static final int BITRATE_360P = 530000;
+    private static final int BITRATE_240P = 400000;
+    private static final int BITRATE_160P = 300000;
 
     public static Pair<AlertDialog, MyTrackSelectionView> getDialog(
             Activity activity,
             DefaultTrackSelector trackSelector,
-            int rendererIndex) {
+            int rendererIndex,
+            long currentBitrate) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        MyTrackSelectionView.currentBitrate = currentBitrate;
 
         // Inflate with the builder's context to ensure the correct style is used.
         LayoutInflater dialogInflater = LayoutInflater.from(builder.getContext());
@@ -236,7 +252,7 @@ public class MyTrackSelectionView extends LinearLayout {
                 CheckedTextView trackView =
                         (CheckedTextView) inflater.inflate(trackViewLayoutId, this, false);
                 trackView.setBackgroundResource(selectableItemBackgroundResourceId);
-                trackView.setText(trackNameProvider.getTrackName(group.getFormat(trackIndex)));
+                trackView.setText(Html.fromHtml(buildBitrateString(group.getFormat(trackIndex))));
                 if (trackInfo.getTrackSupport(rendererIndex, groupIndex, trackIndex)
                         == RendererCapabilities.FORMAT_HANDLED) {
                     trackView.setFocusable(true);
@@ -308,8 +324,7 @@ public class MyTrackSelectionView extends LinearLayout {
         if (override == null) {
             override = new SelectionOverride(groupIndex, trackIndex);
 
-        }
-        else {
+        } else {
             int[] overrideTracks = override.tracks;
             int[] tracks = getTracksRemoving(overrideTracks, override.tracks[0]);
             override = new SelectionOverride(groupIndex, tracks);
@@ -342,5 +357,43 @@ public class MyTrackSelectionView extends LinearLayout {
         public void onClick(View view) {
             MyTrackSelectionView.this.onClick(view);
         }
+    }
+
+    private String buildBitrateString(Format format) {
+        int bitrate = format.bitrate;
+        boolean isPlaying = currentBitrate == bitrate;
+
+        if (bitrate == Format.NO_VALUE) {
+            return updateText(isPlaying, trackNameProvider.getTrackName(format));
+        }
+        if (bitrate <= BITRATE_160P) {
+            return updateText(isPlaying, " 160P");
+        }
+        if (bitrate <= BITRATE_240P) {
+            return updateText(isPlaying, " 240P");
+        }
+        if (bitrate <= BITRATE_360P) {
+            return updateText(isPlaying, " 360P");
+        }
+        if (bitrate <= BITRATE_480P) {
+            return updateText(isPlaying, " 480P");
+        }
+        if (bitrate <= BITRATE_720P) {
+            return updateText(isPlaying, " 720P");
+        }
+        if (bitrate <= BITRATE_1080P) {
+            return updateText(isPlaying, " 1080P");
+        }
+        return trackNameProvider.getTrackName(format);
+    }
+
+    private String updateText(boolean isPlaying, String quality) {
+        if (isPlaying) {
+            if (!quality.contains(playingString))
+                return quality + playingString;
+            return quality;
+        }
+
+        return quality.replace(playingString, "");
     }
 }
