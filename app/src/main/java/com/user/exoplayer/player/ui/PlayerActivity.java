@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.user.exoplayer.PlayerApplication;
 import com.user.exoplayer.R;
 import com.user.exoplayer.player.data.VideoSource;
 import com.user.exoplayer.player.util.PlayerController;
@@ -194,10 +195,15 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mAudioManager != null)
+        if (mAudioManager != null) {
             mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
-        if (player != null)
+            mAudioManager = null;
+        }
+        if (player != null) {
             player.releasePlayer();
+            player = null;
+        }
+        PlayerApplication.getRefWatcher(this).watch(this);
     }
 
     @Override

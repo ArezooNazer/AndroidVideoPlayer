@@ -1,4 +1,4 @@
-package com.example.user.exoplayer;
+package com.user.exoplayer;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.user.exoplayer", appContext.getPackageName());
+        assertEquals("com.user.exoplayer", appContext.getPackageName());
     }
 }

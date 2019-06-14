@@ -4,15 +4,14 @@ import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.TextView;
 
-import com.example.user.exoplayer.player.data.VideoSource;
-import com.example.user.exoplayer.player.data.database.Subtitle;
-import com.example.user.exoplayer.player.data.database.AppDatabase;
-import com.example.user.exoplayer.player.data.database.VideoUrl;
-import com.example.user.exoplayer.player.ui.PlayerActivity;
 import com.facebook.stetho.Stetho;
+import com.user.exoplayer.player.data.VideoSource;
+import com.user.exoplayer.player.data.database.AppDatabase;
+import com.user.exoplayer.player.data.database.Subtitle;
+import com.user.exoplayer.player.data.database.VideoUrl;
+import com.user.exoplayer.player.ui.PlayerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
         Stetho.initializeWithDefaults(this);
         initializeDb();
         makeListOfUri();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        PlayerApplication.getRefWatcher(this).watch(this);
     }
 
     private void setLayout() {
