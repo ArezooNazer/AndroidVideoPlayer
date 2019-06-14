@@ -1,7 +1,7 @@
-package com.example.user.exoplayer.player.data
+package com.user.exoplayer.player.data
 
 import android.os.Parcelable
-import com.example.user.exoplayer.player.data.database.Subtitle
+import com.user.exoplayer.player.data.database.Subtitle
 
 import kotlinx.android.parcel.Parcelize
 

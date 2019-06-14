@@ -1,4 +1,4 @@
-package com.example.user.exoplayer.player.util;
+package com.user.exoplayer.player.util;
 
 public interface PlayerController {
 

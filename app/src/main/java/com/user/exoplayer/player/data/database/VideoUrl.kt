@@ -1,4 +1,4 @@
-package com.example.user.exoplayer.player.data.database
+package com.user.exoplayer.player.data.database
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey

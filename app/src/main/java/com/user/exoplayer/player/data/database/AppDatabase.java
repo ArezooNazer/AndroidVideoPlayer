@@ -1,4 +1,4 @@
-package com.example.user.exoplayer.player.data.database;
+package com.user.exoplayer.player.data.database;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;

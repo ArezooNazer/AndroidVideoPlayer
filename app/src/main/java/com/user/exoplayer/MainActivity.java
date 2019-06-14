@@ -1,4 +1,4 @@
-package com.example.user.exoplayer;
+package com.user.exoplayer;
 
 import android.arch.persistence.room.Room;
 import android.content.Intent;

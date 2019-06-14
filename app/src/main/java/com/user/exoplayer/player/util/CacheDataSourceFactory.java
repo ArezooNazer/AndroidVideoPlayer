@@ -1,9 +1,9 @@
-package com.example.user.exoplayer.player.util;
+package com.user.exoplayer.player.util;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.example.user.exoplayer.R;
+import com.user.exoplayer.R;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;

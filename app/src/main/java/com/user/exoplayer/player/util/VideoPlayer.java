@@ -1,4 +1,4 @@
-package com.example.user.exoplayer.player.util;
+package com.user.exoplayer.player.util;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,8 +13,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
-import com.example.user.exoplayer.player.data.VideoSource;
-import com.example.user.exoplayer.player.data.database.Subtitle;
+import com.user.exoplayer.player.data.VideoSource;
+import com.user.exoplayer.player.data.database.Subtitle;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;

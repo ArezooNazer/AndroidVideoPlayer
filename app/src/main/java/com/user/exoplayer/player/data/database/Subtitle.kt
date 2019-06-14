@@ -1,12 +1,10 @@
-package com.example.user.exoplayer.player.data.database
+package com.user.exoplayer.player.data.database
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
-import android.arch.persistence.room.PrimaryKey
-import android.os.Parcel
-import android.os.Parcelable
-
 import android.arch.persistence.room.ForeignKey.CASCADE
+import android.arch.persistence.room.PrimaryKey
+import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize

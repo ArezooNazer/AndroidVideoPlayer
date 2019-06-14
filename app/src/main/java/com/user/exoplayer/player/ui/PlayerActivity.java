@@ -1,4 +1,4 @@
-package com.example.user.exoplayer.player.ui;
+package com.user.exoplayer.player.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,14 +19,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.user.exoplayer.R;
-import com.example.user.exoplayer.player.data.VideoSource;
-import com.example.user.exoplayer.player.util.PlayerController;
-import com.example.user.exoplayer.player.util.SubtitleAdapter;
-import com.example.user.exoplayer.player.util.VideoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.user.exoplayer.R;
+import com.user.exoplayer.player.data.VideoSource;
+import com.user.exoplayer.player.util.PlayerController;
+import com.user.exoplayer.player.util.SubtitleAdapter;
+import com.user.exoplayer.player.util.VideoPlayer;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerController {
 
@@ -336,7 +336,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         RecyclerView recyclerView = view.findViewById(R.id.subtitle_recycler_view);
         recyclerView.setAdapter(new SubtitleAdapter(player.getCurrentVideo().getSubtitles(), player));
 
-        for(int i = 0; i< player.getCurrentVideo().getSubtitles().size(); i++){
+        for (int i = 0; i < player.getCurrentVideo().getSubtitles().size(); i++) {
             Log.d("subtitle", "showSubtitleDialog: " + player.getCurrentVideo().getSubtitles().get(i).getTitle());
         }
 

@@ -1,4 +1,4 @@
-package com.example.user.exoplayer.player.util;
+package com.user.exoplayer.player.util;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.user.exoplayer.R;
-import com.example.user.exoplayer.player.data.database.Subtitle;
+import com.user.exoplayer.R;
+import com.user.exoplayer.player.data.database.Subtitle;
 
 import java.util.List;
 
