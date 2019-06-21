@@ -20,7 +20,7 @@
             android:id="@+id/btn_unLock"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_gravity="top|right"
+            android:layout_gravity="top|left"
             android:layout_margin="20dp"
             android:layout_weight="0"
             android:background="@android:color/transparent"

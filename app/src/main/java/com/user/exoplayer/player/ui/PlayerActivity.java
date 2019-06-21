@@ -129,7 +129,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         if (player.getCurrentVideo().getSubtitles() == null ||
                 player.getCurrentVideo().getSubtitles().size() == 0) {
-
             subtitle.setImageResource(R.drawable.exo_no_subtitle_btn);
         }
 

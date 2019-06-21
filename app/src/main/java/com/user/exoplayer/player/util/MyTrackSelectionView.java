@@ -71,7 +71,7 @@ public class MyTrackSelectionView extends LinearLayout {
     private boolean isDisabled;
     private @Nullable
     SelectionOverride override;
-    private final String playingString = "<font color=#13aab2> &nbsp;(playing) &nbsp; </font>";
+    private final String playingString = "<font color=#673AB7> &nbsp;(playing) &nbsp; </font>";
     private static long currentBitrate;
 
     private static final int BITRATE_1080P = 2800000;
