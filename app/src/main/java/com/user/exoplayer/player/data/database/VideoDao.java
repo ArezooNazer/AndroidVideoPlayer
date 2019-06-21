@@ -9,7 +9,7 @@ import java.util.List;
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
-public interface UrlDao {
+public interface VideoDao {
 
     @Query("SELECT videoUrl FROM video")
     List<String> getAllUrls();
@@ -18,9 +18,10 @@ public interface UrlDao {
     List<Subtitle> getAllSubtitles(int videoId);
 
     @Insert(onConflict = REPLACE)
-    void insertAllVideoUrl(List<VideoUrl> urlList);
+    void insertAllVideoUrl(List<Video> urlList);
 
     @Insert(onConflict = REPLACE)
     void insertAllSubtitleUrl(List<Subtitle> subTitleList);
+
 
 }

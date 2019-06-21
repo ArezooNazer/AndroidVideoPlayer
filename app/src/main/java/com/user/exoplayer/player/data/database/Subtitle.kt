@@ -9,7 +9,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 @Entity(tableName = "subtitle",
-        foreignKeys = [ForeignKey(entity = VideoUrl::class,
+        foreignKeys = [ForeignKey(entity = Video::class,
                 parentColumns = ["id"],
                 childColumns = ["videoId"],
                 onDelete = CASCADE)])

@@ -1,4 +1,4 @@
-package com.user.exoplayer;
+package com.user.exoplayer.player.ui;
 
 import android.app.Application;
 import android.content.Context;

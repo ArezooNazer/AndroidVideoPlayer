@@ -1,4 +1,4 @@
-package com.user.exoplayer;
+package com.user.exoplayer.player.ui;
 
 import android.arch.persistence.room.Room;
 import android.content.Intent;
@@ -6,12 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import com.facebook.stetho.Stetho;
+import com.user.exoplayer.R;
 import com.user.exoplayer.player.data.VideoSource;
 import com.user.exoplayer.player.data.database.AppDatabase;
 import com.user.exoplayer.player.data.database.Subtitle;
-import com.user.exoplayer.player.data.database.VideoUrl;
-import com.user.exoplayer.player.ui.PlayerActivity;
+import com.user.exoplayer.player.data.database.Video;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
      list of sample videos and multiple subtitles ( saved in db)
      ***********************************************************/
 
-    private List<VideoUrl> videoUriList = new ArrayList<>();
+    private List<Video> videoUriList = new ArrayList<>();
 
     private void initializeDb() {
         urlDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "APP_DB")
@@ -35,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void makeListOfUri() {
-        videoUriList.add(new VideoUrl("https://www.radiantmediaplayer.com/media/bbb-360p.mp4"));
-        videoUriList.add(new VideoUrl("https://5b44cf20b0388.streamlock.net:8443/vod/smil:bbb.smil/playlist.m3u8"));
+        videoUriList.add(new Video("https://www.radiantmediaplayer.com/media/bbb-360p.mp4"));
+        videoUriList.add(new Video("https://5b44cf20b0388.streamlock.net:8443/vod/smil:bbb.smil/playlist.m3u8"));
 
         subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new Subtitle(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private VideoSource makeVideoSource(List<VideoUrl> videos, int index) {
+    private VideoSource makeVideoSource(List<Video> videos, int index) {
         List<VideoSource.SingleVideo> singleVideos = new ArrayList<>();
         for (int i = 0; i < videos.size(); i++) {
 

@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.user.exoplayer.PlayerApplication;
 import com.user.exoplayer.R;
 import com.user.exoplayer.player.data.VideoSource;
 import com.user.exoplayer.player.util.PlayerController;
