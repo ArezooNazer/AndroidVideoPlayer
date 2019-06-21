@@ -9,5 +9,5 @@ public interface PlayerController {
     void changeSubtitleBackground();
     void audioFocus();
     void setVideoWatchedLength();
-
+    void videoEnded();
 }

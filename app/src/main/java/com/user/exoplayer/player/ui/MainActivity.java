@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         videoUriList.add(new Video("https://www.radiantmediaplayer.com/media/bbb-360p.mp4", Long.getLong("zero", 0)));
         videoUriList.add(new Video("https://5b44cf20b0388.streamlock.net:8443/vod/smil:bbb.smil/playlist.m3u8",  Long.getLong("zero", 0)));
 
-        subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
-        subtitleList.add(new Subtitle(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
+//        subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
+//        subtitleList.add(new Subtitle(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
 
         subtitleList.add(new Subtitle(2, "German", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new Subtitle(2, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));

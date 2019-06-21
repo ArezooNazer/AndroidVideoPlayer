@@ -360,6 +360,10 @@ public class VideoPlayer {
                     playerController.showProgressBar(false);
                     playerController.audioFocus();
                     break;
+                case Player.STATE_ENDED:
+                    playerController.showProgressBar(false);
+                    playerController.videoEnded();
+                    break;
                 default:
                     break;
             }

@@ -252,6 +252,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 showProgressBar(true);
                 showRetryBtn(false);
                 break;
+            case R.id.exo_next:
+                player.seekToNext();
+                break;
+            case R.id.exo_prev:
+                player.seekToPrevious();
+                break;
             default:
                 break;
         }
@@ -417,6 +423,11 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     public void setVideoWatchedLength() {
         AppDatabase.Companion.getDatabase(getApplicationContext()).videoDao().
                 updateWatchedLength(player.getCurrentVideo().getUrl(), player.getWatchedLength());
+    }
+
+    @Override
+    public void videoEnded() {
+        findViewById(R.id.exo_next).performClick();
     }
 
 
