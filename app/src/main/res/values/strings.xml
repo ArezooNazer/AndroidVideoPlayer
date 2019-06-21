@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">ExoVideoPlayer</string>
+    <string name="app_name">PurplePlayer</string>
+    <string name="play_mp4_stream">play mp4 stream</string>
+    <string name="play_m3u8_stream">play m3u8 stream</string>
+    <string name="no_subtitle">There is no subtitle</string>
 </resources>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".player.ui.PlayerActivity">
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/demo_player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        app:controller_layout_id="@layout/exo_playback_control_view"
+        app:repeat_toggle_modes="none|one|all"
+        app:use_controller="true">
+
+        <ImageButton
+            android:id="@+id/btn_unLock"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|left"
+            android:layout_margin="20dp"
+            android:layout_weight="0"
+            android:background="@android:color/transparent"
+            android:src="@drawable/exo_lock_btn"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|left"
+            android:layout_margin="20dp"
+            android:layout_weight="0"
+            android:background="@android:color/transparent"
+            android:src="@drawable/exo_back_btn" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="60dp"
+            android:layout_height="600dp"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"/>
+
+        <ImageButton
+            android:id="@+id/retry_btn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:src="@drawable/exo_retry_btn"
+            android:background="@android:color/transparent"
+            android:visibility="gone" />
+
+    </com.google.android.exoplayer2.ui.PlayerView>
+</LinearLayout>

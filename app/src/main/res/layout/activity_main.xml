@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".demo.MainActivity">
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".player.ui.MainActivity">
 
-   <com.google.android.exoplayer2.ui.PlayerView
-       android:id="@+id/demo_player_view"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"/>
+    <TextView
+        android:id="@+id/mp4"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:text="@string/play_mp4_stream"
+        android:gravity="center"
+        android:textColor="@color/colorAccent"
+        android:background="@drawable/round_corner"
+        android:layout_margin="10dp"/>
+
+    <TextView
+        android:id="@+id/m3u8"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:text="@string/play_m3u8_stream"
+        android:gravity="center"
+        android:textColor="@color/colorAccent"
+        android:background="@drawable/round_corner"
+        android:layout_margin="10dp"/>
 
 </LinearLayout>

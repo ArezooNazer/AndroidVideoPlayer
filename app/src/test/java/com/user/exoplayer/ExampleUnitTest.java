@@ -1,4 +1,4 @@
-package com.example.user.exovideoplayer;
+package com.user.exoplayer;
 
 import org.junit.Test;
 
