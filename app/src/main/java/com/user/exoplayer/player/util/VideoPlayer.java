@@ -95,7 +95,7 @@ public class VideoPlayer {
 
         mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
         player.prepare(mediaSource);
-
+        seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
     }
 
     /******************************************************************
@@ -136,12 +136,15 @@ public class VideoPlayer {
     }
 
     public void releasePlayer() {
-        if (player != null) {
-            playerView.setPlayer(null);
-            player.release();
-            player.removeListener(componentListener);
-            player = null;
-        }
+        if (player == null)
+            return;
+
+        playerController.setVideoWatchedLength();
+        playerView.setPlayer(null);
+        player.release();
+        player.removeListener(componentListener);
+        player = null;
+
     }
 
     public SimpleExoPlayer getPlayer() {
@@ -247,6 +250,48 @@ public class VideoPlayer {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         widthOfScreen = metrics.widthPixels;
+    }
+
+    public void seekToNext() {
+
+        if (index < videoSource.getVideos().size() - 1) {
+            setCurrentVideoPosition();
+            index++;
+            mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
+            player.prepare(mediaSource, true, true);
+            if (videoSource.getVideos().get(index).getWatchedLength() != null)
+                seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
+
+        }
+
+    }
+
+    public void seekToPrevious() {
+
+        if (index > 0) {
+            setCurrentVideoPosition();
+            index--;
+            mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
+            player.prepare(mediaSource, true, true);
+            if (videoSource.getVideos().get(index).getWatchedLength() != null)
+                seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
+        }
+    }
+
+    private void setCurrentVideoPosition() {
+        if (getCurrentVideo() == null)
+            return;
+        getCurrentVideo().setWatchedLength(player.getCurrentPosition() / 1000);//second
+    }
+
+    public int getCurrentVideoIndex() {
+        return index;
+    }
+
+    public long getWatchedLength() {
+        if (getCurrentVideo() == null)
+            return 0;
+        return player.getCurrentPosition() / 1000;//second
     }
 
     /***********************************************************

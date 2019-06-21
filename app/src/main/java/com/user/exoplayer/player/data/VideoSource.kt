@@ -2,7 +2,6 @@ package com.user.exoplayer.player.data
 
 import android.os.Parcelable
 import com.user.exoplayer.player.data.database.Subtitle
-
 import kotlinx.android.parcel.Parcelize
 
 
@@ -14,7 +13,8 @@ data class VideoSource constructor(
 
     @Parcelize
     data class SingleVideo(var url: String? = null,
-                           var subtitles: List<Subtitle>? = null
+                           var subtitles: List<Subtitle>? = null,
+                           var watchedLength: Long? = null
     ) : Parcelable
 }
 

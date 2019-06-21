@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.user.exoplayer.R;
 import com.user.exoplayer.player.data.VideoSource;
+import com.user.exoplayer.player.data.database.AppDatabase;
 import com.user.exoplayer.player.util.PlayerController;
 import com.user.exoplayer.player.util.SubtitleAdapter;
 import com.user.exoplayer.player.util.VideoPlayer;
@@ -410,6 +411,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 mOnAudioFocusChangeListener,
                 AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN);
+    }
+
+    @Override
+    public void setVideoWatchedLength() {
+        AppDatabase.Companion.getDatabase(getApplicationContext()).videoDao().
+                updateWatchedLength(player.getCurrentVideo().getUrl(), player.getWatchedLength());
     }
 
 

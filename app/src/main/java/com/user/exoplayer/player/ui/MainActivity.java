@@ -1,6 +1,5 @@
 package com.user.exoplayer.player.ui;
 
-import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppDatabase urlDatabase;
+    private AppDatabase database;
     private List<Subtitle> subtitleList = new ArrayList<>();
     private TextView playMp4, playM3u8;
 
@@ -28,14 +27,12 @@ public class MainActivity extends AppCompatActivity {
     private List<Video> videoUriList = new ArrayList<>();
 
     private void initializeDb() {
-        urlDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "APP_DB")
-                .allowMainThreadQueries()
-                .build();
+        database = AppDatabase.Companion.getDatabase(getApplicationContext());
     }
 
     private void makeListOfUri() {
-        videoUriList.add(new Video("https://www.radiantmediaplayer.com/media/bbb-360p.mp4"));
-        videoUriList.add(new Video("https://5b44cf20b0388.streamlock.net:8443/vod/smil:bbb.smil/playlist.m3u8"));
+        videoUriList.add(new Video("https://www.radiantmediaplayer.com/media/bbb-360p.mp4", Long.getLong("zero", 0)));
+        videoUriList.add(new Video("https://5b44cf20b0388.streamlock.net:8443/vod/smil:bbb.smil/playlist.m3u8",  Long.getLong("zero", 0)));
 
         subtitleList.add(new Subtitle(1, "English", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new Subtitle(1, "Farsi", "https://download.blender.org/durian/subs/sintel_fa.srt"));
@@ -43,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
         subtitleList.add(new Subtitle(2, "German", "https://durian.blender.org/wp-content/content/subtitles/sintel_en.srt"));
         subtitleList.add(new Subtitle(2, "French", "https://durian.blender.org/wp-content/content/subtitles/sintel_fr.srt"));
 
-        if (urlDatabase.urlDao().getAllUrls().size() == 0) {
-            urlDatabase.urlDao().insertAllVideoUrl(videoUriList);
-            urlDatabase.urlDao().insertAllSubtitleUrl(subtitleList);
+        if (database.videoDao().getAllUrls().size() == 0) {
+            database.videoDao().insertAllVideoUrl(videoUriList);
+            database.videoDao().insertAllSubtitleUrl(subtitleList);
         }
 
     }
@@ -56,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
             singleVideos.add(i, new VideoSource.SingleVideo(
                     videos.get(i).getVideoUrl(),
-                    urlDatabase.urlDao().getAllSubtitles(i + 1))
+                    database.videoDao().getAllSubtitles(i + 1),
+                    videos.get(i).getWatchedLength())
             );
 
         }
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        PlayerApplication.getRefWatcher(this).watch(this);
+        database = null;
     }
 
     private void setLayout() {

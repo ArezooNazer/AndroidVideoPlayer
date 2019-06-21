@@ -8,5 +8,6 @@ public interface PlayerController {
     void showSubtitle(boolean show);
     void changeSubtitleBackground();
     void audioFocus();
+    void setVideoWatchedLength();
 
 }
