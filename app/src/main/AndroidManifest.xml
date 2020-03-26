@@ -25,7 +25,8 @@
 
         <activity
             android:name=".presentation.player.PlayerActivity"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="orientation"/>
     </application>
 
 </manifest>

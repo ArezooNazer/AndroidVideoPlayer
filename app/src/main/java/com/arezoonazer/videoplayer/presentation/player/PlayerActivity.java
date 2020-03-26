@@ -59,13 +59,10 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                                 player.getPlayer().setPlayWhenReady(false);
                             break;
                         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                            // Lost audio focus, but will gain it back (shortly), so note whether
-                            // playback should resume
-                            if (player != null)
-                                player.getPlayer().setPlayWhenReady(false);
-                            break;
                         case AudioManager.AUDIOFOCUS_LOSS:
                             // Lost audio focus, probably "permanently"
+                            // Lost audio focus, but will gain it back (shortly), so note whether
+                            // playback should resume
                             if (player != null)
                                 player.getPlayer().setPlayWhenReady(false);
                             break;
@@ -133,7 +130,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             subtitle.setImageResource(R.drawable.exo_no_subtitle_btn);
         }
 
-        player.seekToOnDoubleTap();
         this.mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         player.getPlayer().addListener(new Player.EventListener() {
             @Override
@@ -382,6 +378,11 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    @Override
+    public void showProgressBar(boolean visible) {
+        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     private void updateLockMode(boolean isLock) {
         if (player == null || playerView == null)
             return;
@@ -399,11 +400,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         playerView.showController();
         unLock.setVisibility(View.GONE);
 
-    }
-
-    @Override
-    public void showProgressBar(boolean visible) {
-        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override
