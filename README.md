@@ -3,7 +3,7 @@ A video player based on Exoplayer
 
 customized playerView            |  quality options
 :-------------------------:|:-------------------------:
-![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/playerModule/demoImage/ExoplayerDemo.png)  |  ![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/playerModule/demoImage/ExoQuality.png)
+![](https://github.com/ArezooNazer/AndroidVideoPlayer/demo/Screenshot_2020-03-26-19-40-37.png)  |  ![](https://github.com/ArezooNazer/AndroidVideoPlayer/demo/Screenshot_2020-03-26-16-32-28.png)
 # Features
  <ul>
   <li>
@@ -13,40 +13,50 @@ customized playerView            |  quality options
    The ability to play single video or a list of videos
   </li>
   <li>
-   cache video 
+   Cache video
   </li>
   <li>
-  support different video qualities
+  Support different video qualities
   </li>
  <li>
    Switch between different subtitles
   </li>
   <li>
-   lock exoplayer screen
+   Lock player screen
   </li>
   <li>
-   forward and backward by double tap on screen
+   Forward and backward by double tap on screen
   </li>
   <li>
-   mute mode
+   Mute mode
   </li>
   <li>
-   loop toggle mode
+   Loop toggle mode
   </li>
+   <li>
+     AndroidX, ExoPlayer version is 2.11.3
+   </li>
  </ul>
  
  # Get started
- Everything you need is in Player Module. just follow the instructions.
- 
- ## 1. Add dependency
- In this project we use Exoplayer v.2.9.0 
- 
+
+ ## 1. Dependencies
+ In this project we used Exoplayer v.2.11.3
+
 ```java
  //Exoplayer
- implementation 'com.google.android.exoplayer:exoplayer:2.9.0'
- 
- //FFmpegMediaMetadataRetriever
- implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
+ implementation 'com.google.android.exoplayer:exoplayer:2.11.3'
+
+ /** Room
+ *  to save each video subtitles & video last watched length to resume player on next play
+ */
+ implementation 'androidx.room:room-runtime:2.2.5'
+
+ //stetho Optional
+ debugImplementation 'com.facebook.stetho:stetho:1.5.1'
+
+ //leak canary Optional
+ debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
 ```
 
 ## 2. Create a VideoPlayer instance
