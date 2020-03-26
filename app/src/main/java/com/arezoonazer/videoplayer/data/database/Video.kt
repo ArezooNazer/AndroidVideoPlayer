@@ -1,8 +1,7 @@
-package com.user.exoplayer.player.data.database
+package com.arezoonazer.videoplayer.data.database
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import java.math.BigInteger
 
 @Entity(tableName = "video")
 class Video(var videoUrl: String? = null,

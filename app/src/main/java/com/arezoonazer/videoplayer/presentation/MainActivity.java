@@ -1,15 +1,16 @@
-package com.user.exoplayer.player.ui;
+package com.arezoonazer.videoplayer.presentation;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import com.user.exoplayer.R;
-import com.user.exoplayer.player.data.VideoSource;
-import com.user.exoplayer.player.data.database.AppDatabase;
-import com.user.exoplayer.player.data.database.Subtitle;
-import com.user.exoplayer.player.data.database.Video;
+import com.arezoonazer.videoplayer.R;
+import com.arezoonazer.videoplayer.data.model.VideoSource;
+import com.arezoonazer.videoplayer.data.database.AppDatabase;
+import com.arezoonazer.videoplayer.data.database.Subtitle;
+import com.arezoonazer.videoplayer.data.database.Video;
+import com.arezoonazer.videoplayer.presentation.player.PlayerActivity;
 
 import java.util.ArrayList;
 import java.util.List;

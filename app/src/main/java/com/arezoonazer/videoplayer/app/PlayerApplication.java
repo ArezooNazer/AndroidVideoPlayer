@@ -1,4 +1,4 @@
-package com.user.exoplayer.player.ui;
+package com.arezoonazer.videoplayer.app;
 
 import android.app.Application;
 import android.content.Context;

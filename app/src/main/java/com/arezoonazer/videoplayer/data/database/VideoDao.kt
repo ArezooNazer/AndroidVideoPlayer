@@ -1,4 +1,4 @@
-package com.user.exoplayer.player.data.database
+package com.arezoonazer.videoplayer.data.database
 
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".player.ui.MainActivity">
+    tools:context=".presentation.MainActivity">
 
     <TextView
         android:id="@+id/mp4"

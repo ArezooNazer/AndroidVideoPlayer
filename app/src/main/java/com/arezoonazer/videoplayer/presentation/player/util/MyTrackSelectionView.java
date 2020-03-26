@@ -1,4 +1,4 @@
-package com.user.exoplayer.player.util;
+package com.arezoonazer.videoplayer.presentation.player.util;
 
 /*
  * Copyright (C) 2018 The Android Open Source Project
@@ -43,7 +43,7 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.ui.DefaultTrackNameProvider;
 import com.google.android.exoplayer2.ui.TrackNameProvider;
 import com.google.android.exoplayer2.util.Assertions;
-import com.user.exoplayer.R;
+import com.arezoonazer.videoplayer.R;
 
 import java.util.Arrays;
 

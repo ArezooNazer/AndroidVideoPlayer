@@ -1,4 +1,4 @@
-package com.user.exoplayer.player.util;
+package com.arezoonazer.videoplayer.presentation.player.util;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,8 +13,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
-import com.user.exoplayer.player.data.VideoSource;
-import com.user.exoplayer.player.data.database.Subtitle;
+import com.arezoonazer.videoplayer.data.model.VideoSource;
+import com.arezoonazer.videoplayer.data.database.Subtitle;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -297,7 +297,7 @@ public class VideoPlayer {
     /***********************************************************
      manually select subtitle
      ***********************************************************/
-    void setSelectedSubtitle(Subtitle subtitle) {
+    public void setSelectedSubtitle(Subtitle subtitle) {
 
         if (TextUtils.isEmpty(subtitle.getTitle()))
             Log.d(TAG, "setSelectedSubtitle: subtitle title is empty");

@@ -1,9 +1,9 @@
-package com.user.exoplayer.player.util;
+package com.arezoonazer.videoplayer.presentation.player.util;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.user.exoplayer.R;
+import com.arezoonazer.videoplayer.R;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;

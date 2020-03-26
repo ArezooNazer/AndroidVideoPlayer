@@ -1,7 +1,7 @@
-package com.user.exoplayer.player.data
+package com.arezoonazer.videoplayer.data.model
 
 import android.os.Parcelable
-import com.user.exoplayer.player.data.database.Subtitle
+import com.arezoonazer.videoplayer.data.database.Subtitle
 import kotlinx.android.parcel.Parcelize
 
 
