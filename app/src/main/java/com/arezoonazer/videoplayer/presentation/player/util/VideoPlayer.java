@@ -64,16 +64,8 @@ public class VideoPlayer {
         this.playerView = playerView;
         this.context = context;
         this.playerController = mView;
-        this.cacheDataSourceFactory = new CacheDataSourceFactory(
-                context,
-                100 * 1024 * 1024,
-                5 * 1024 * 1024);
         this.videoSource = videoSource;
         this.index = videoSource.getSelectedSourceIndex();
-        this.trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory());
-        if (componentListener == null)
-            componentListener = new ComponentListener();
-
         initializePlayer();
 
     }
@@ -84,8 +76,22 @@ public class VideoPlayer {
     private void initializePlayer() {
         playerView.requestFocus();
 
-        if (player == null)
-            player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+        componentListener = new ComponentListener();
+
+        cacheDataSourceFactory = new CacheDataSourceFactory(
+                context,
+                100 * 1024 * 1024,
+                5 * 1024 * 1024);
+
+        trackSelector = new DefaultTrackSelector(context);
+
+        trackSelector.setParameters(trackSelector
+                .buildUponParameters()
+                .setMaxVideoSizeSd());
+
+        player = new SimpleExoPlayer.Builder(context)
+                .setTrackSelector(trackSelector)
+                .build();
 
         playerView.setPlayer(player);
         playerView.setKeepScreenOn(true);
