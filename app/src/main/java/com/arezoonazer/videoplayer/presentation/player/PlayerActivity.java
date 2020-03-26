@@ -1,13 +1,13 @@
-package com.user.exoplayer.player.ui;
+package com.arezoonazer.videoplayer.presentation.player;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,15 +19,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arezoonazer.videoplayer.app.PlayerApplication;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.user.exoplayer.R;
-import com.user.exoplayer.player.data.VideoSource;
-import com.user.exoplayer.player.data.database.AppDatabase;
-import com.user.exoplayer.player.util.PlayerController;
-import com.user.exoplayer.player.util.SubtitleAdapter;
-import com.user.exoplayer.player.util.VideoPlayer;
+import com.arezoonazer.videoplayer.R;
+import com.arezoonazer.videoplayer.data.model.VideoSource;
+import com.arezoonazer.videoplayer.data.database.AppDatabase;
+import com.arezoonazer.videoplayer.presentation.player.util.PlayerController;
+import com.arezoonazer.videoplayer.presentation.player.util.VideoPlayer;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerController {
 

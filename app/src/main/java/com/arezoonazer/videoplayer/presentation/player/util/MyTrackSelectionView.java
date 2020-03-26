@@ -1,4 +1,4 @@
-package com.user.exoplayer.player.util;
+package com.arezoonazer.videoplayer.presentation.player.util;
 
 /*
  * Copyright (C) 2018 The Android Open Source Project
@@ -22,8 +22,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.annotation.AttrRes;
-import android.support.annotation.Nullable;
+import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
 import android.text.Html;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -43,7 +43,7 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.ui.DefaultTrackNameProvider;
 import com.google.android.exoplayer2.ui.TrackNameProvider;
 import com.google.android.exoplayer2.util.Assertions;
-import com.user.exoplayer.R;
+import com.arezoonazer.videoplayer.R;
 
 import java.util.Arrays;
 

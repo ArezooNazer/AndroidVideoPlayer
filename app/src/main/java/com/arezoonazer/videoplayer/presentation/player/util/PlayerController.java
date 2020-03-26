@@ -1,4 +1,4 @@
-package com.user.exoplayer.player.util;
+package com.arezoonazer.videoplayer.presentation.player.util;
 
 public interface PlayerController {
 

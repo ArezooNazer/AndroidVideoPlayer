@@ -1,4 +1,4 @@
-package com.user.exoplayer;
+package com.arezoonazer.videoplayer;
 
 import org.junit.Test;
 

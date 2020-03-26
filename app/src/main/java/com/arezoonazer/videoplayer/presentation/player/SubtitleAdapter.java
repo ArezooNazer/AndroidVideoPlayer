@@ -1,15 +1,16 @@
-package com.user.exoplayer.player.util;
+package com.arezoonazer.videoplayer.presentation.player;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.user.exoplayer.R;
-import com.user.exoplayer.player.data.database.Subtitle;
+import com.arezoonazer.videoplayer.R;
+import com.arezoonazer.videoplayer.data.database.Subtitle;
+import com.arezoonazer.videoplayer.presentation.player.util.VideoPlayer;
 
 import java.util.List;
 
