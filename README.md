@@ -3,7 +3,7 @@ A video player based on Exoplayer
 
 customized playerView            |  quality options
 :-------------------------:|:-------------------------:
-![](https://github.com/ArezooNazer/AndroidVideoPlayer/demo/Screenshot_2020-03-26-19-40-37.png)  |  ![](https://github.com/ArezooNazer/AndroidVideoPlayer/demo/Screenshot_2020-03-26-16-32-28.png)
+![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/master/demo/Screenshot_2020-03-26-19-40-37.png)  |  ![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/master/demo/Screenshot_2020-03-26-16-32-28.png)
 # Features
  <ul>
   <li>
