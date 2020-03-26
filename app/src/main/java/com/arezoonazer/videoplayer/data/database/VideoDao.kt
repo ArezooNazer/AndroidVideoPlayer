@@ -9,6 +9,9 @@ import androidx.room.OnConflictStrategy.REPLACE
 @Dao
 interface VideoDao {
 
+    @get:Query("SELECT * FROM video")
+    val videos: List<Video>
+
     @get:Query("SELECT videoUrl FROM video")
     val allUrls: List<String>
 
