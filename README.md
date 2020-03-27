@@ -59,38 +59,81 @@ customized playerView            |  quality options
  debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
 ```
 
-## 2. Create a VideoPlayer instance
-You can use PlayerActivity.java class and extend the features you want but if you want to use this player in another activity, create an instance of VideoPlayer class in your activity.
+## 2. Create an instance of VideoPlayer in your activity
+
 ```java
-    VideoPlayer player;
-    
-    //as you can see in activity_player.xml you have to use PlayerView for exoplayer content to be played
-    PlayerView playerView;
-    
-    //you can customize exoplayer ui and adding your desire ImageButtons by overriding exo_playback_control_view
-    ImageButton mute, unMute, subtitle, setting, lock, unLock;
+    //videoSource is a list of SingleVideo which contains list of videos,
+    //their subtitle list & their last watched length (used to resume the video)
+    player = new VideoPlayer(playerView, getApplicationContext(), videoSource, this);
+
+    //used to pause/resume player on incoming calls
+    mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+
+    //used to hide/show player controller views
+    playerView.setControllerVisibilityListener(visibility ->
+      {
+         if (player.isLock())
+             playerView.hideController();
+             back.setVisibility(visibility == View.VISIBLE && !player.isLock() ? View.VISIBLE : View.GONE);
+      });
+
+    //optional setting
+    playerView.getSubtitleView().setVisibility(View.GONE);
+    player.seekToOnDoubleTap();
 ```
     
-## 3. Initialize player
- Initialize your player as follow :
+## 3. Initialize ExoPlayer
+Initialize your ExoPlayer in VideoPlayer as follow :
  
  ```java
-        if (singleORMultipleVideo == 1) {
-            //if you have single video and a list of subtitles
-            setVideoSubtitleList();
-            player = new VideoPlayer(playerView, getApplicationContext(), videoUri, this);
-        } else {
-            //if you have a list of videos and their subtitles
-            initializeDb();
-            player = new VideoPlayer(playerView, getApplicationContext(), urlDatabase.urlDao().getAllUrls(), this);
-        }
-        //optional setting
-        playerView.getSubtitleView().setVisibility(View.GONE);
-        player.seekToOnDoubleTap();
+        cacheDataSourceFactory = new CacheDataSourceFactory(
+          context,
+          100 * 1024 * 1024,
+          5 * 1024 * 1024);
 
-        //optional setting : start video from selected time
-        player.seekToSelectedPosition(0, 0, 10);  
+        trackSelector = new DefaultTrackSelector(context);
+        trackSelector.setParameters(trackSelector
+                        .buildUponParameters()
+                        .setMaxVideoSizeSd());
+
+        exoPlayer = new SimpleExoPlayer.Builder(context)
+                        .setTrackSelector(trackSelector)
+                        .build();
+
+        playerView.setPlayer(exoPlayer);
+        playerView.setKeepScreenOn(true);
+        exoPlayer.setPlayWhenReady(true);
+        exoPlayer.addListener(componentListener);
+        //build mediaSource depend on video type (Regular, HLS, DASH, etc)
+        mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
+        exoPlayer.prepare(mediaSource);
+        //resume video
+        seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
 ```
 ## 4. Add listener
-Add listener implementations for ImageButtons in your activity.
+Add listener implementations for player control buttons in your activity.
 
+## Version notes
+
+#### V.1.1.0 (27.3.2020)
+ <ul>
+   <li>
+      Migrate to Androidx
+   </li>
+   <li>
+      Exoplayer v.2.11.3
+   </li>
+   <li>
+      Resume player using watched length bug fixed
+   </li>
+   <li>
+      Unlock player bug fixed
+   </li>
+ </ul>
+
+#### V.1.0.0
+ <ul>
+   <li>
+      Exoplayer v.2.9.2
+   </li>
+ </ul>
