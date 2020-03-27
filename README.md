@@ -110,6 +110,27 @@ Initialize your ExoPlayer in VideoPlayer as follow :
 ## 4. Add listener
 Add listener implementations for player control buttons in your activity.
 
+## 5. Subtitle
+As mentioned in [ExoPlayer Doc](https://exoplayer.dev/media-sources.html):
+Given a video file and a separate subtitle file, MergingMediaSource can be used to merge them into a single source for playback.
+
+```java
+  Format subtitleFormat = Format.createTextSampleFormat(
+                id, // can be null
+                MimeTypes.APPLICATION_SUBRIP,
+                Format.NO_VALUE,
+                null);
+
+  MediaSource subtitleSource = new SingleSampleMediaSource
+                                .Factory(cacheDataSourceFactory)
+                                .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
+
+  exoPlayer.prepare(new MergingMediaSource(mediaSource, subtitleSource),
+   false, // Reset position
+   false //Reset state
+  );
+```
+
 ## Version notes
 
 #### V.1.1.0 (27.3.2020)
