@@ -31,8 +31,6 @@ import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 
@@ -82,10 +80,8 @@ public class VideoPlayer {
                 5 * 1024 * 1024);
 
         trackSelector = new DefaultTrackSelector(context);
-
-        trackSelector.setParameters(trackSelector
-                .buildUponParameters()
-                .setMaxVideoSizeSd());
+//        trackSelector.setParameters(trackSelector
+//                .buildUponParameters());
 
         exoPlayer = new SimpleExoPlayer.Builder(context)
                 .setTrackSelector(trackSelector)
@@ -305,19 +301,17 @@ public class VideoPlayer {
             Log.d(TAG, "setSelectedSubtitle: subtitle title is empty");
 
 
-        Format subtitleFormat;
-        subtitleFormat = Format.createTextSampleFormat(
+        Format subtitleFormat = Format.createTextSampleFormat(
                 null,
                 MimeTypes.APPLICATION_SUBRIP,
                 Format.NO_VALUE,
                 null);
 
-
-        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, CLASS_NAME), new DefaultBandwidthMeter());
+//        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
+//                Util.getUserAgent(context,CLASS_NAME ));
 
         MediaSource subtitleSource = new SingleSampleMediaSource
-                .Factory(dataSourceFactory)
+                .Factory(cacheDataSourceFactory)
                 .createMediaSource(Uri.parse(subtitle.getSubtitleUrl()), subtitleFormat, C.TIME_UNSET);
 
 

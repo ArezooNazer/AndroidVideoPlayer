@@ -47,71 +47,89 @@ customized playerView            |  quality options
  //Exoplayer
  implementation 'com.google.android.exoplayer:exoplayer:2.11.3'
 
- /** Room
- *  to save each video subtitles & video last watched length to resume player on next play
- */
+ // Room
+ // To save each video subtitles & video last watched length to resume player on next play
  implementation 'androidx.room:room-runtime:2.2.5'
 
- //stetho Optional
+ // Stetho Optional
  debugImplementation 'com.facebook.stetho:stetho:1.5.1'
 
- //leak canary Optional
+ // Leak canary Optional
  debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
 ```
 
 ## 2. Create an instance of VideoPlayer in your activity
 
 ```java
-    //videoSource is a list of SingleVideo which contains list of videos,
-    //their subtitle list & their last watched length (used to resume the video)
-    player = new VideoPlayer(playerView, getApplicationContext(), videoSource, this);
+ // VideoSource is a list of SingleVideo which contains list of videos, their subtitles &
+ // their last watched length (used to resume the video)
+ player = new VideoPlayer(playerView, getApplicationContext(), videoSource, this);
 
-    //used to pause/resume player on incoming calls
-    mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+ // Used to pause/resume player on incoming calls
+ mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
-    //used to hide/show player controller views
-    playerView.setControllerVisibilityListener(visibility ->
-      {
-         if (player.isLock())
-             playerView.hideController();
-             back.setVisibility(visibility == View.VISIBLE && !player.isLock() ? View.VISIBLE : View.GONE);
-      });
+ // Used to hide/show player controller views
+ playerView.setControllerVisibilityListener(visibility -> {
+    if (player.isLock())
+        playerView.hideController();
+        back.setVisibility(visibility == View.VISIBLE && !player.isLock() ? View.VISIBLE : View.GONE);
+ });
 
-    //optional setting
-    playerView.getSubtitleView().setVisibility(View.GONE);
-    player.seekToOnDoubleTap();
+ // Optional setting
+ playerView.getSubtitleView().setVisibility(View.GONE);
+ player.seekToOnDoubleTap();
 ```
     
 ## 3. Initialize ExoPlayer
 Initialize your ExoPlayer in VideoPlayer as follow :
  
  ```java
-        cacheDataSourceFactory = new CacheDataSourceFactory(
-          context,
-          100 * 1024 * 1024,
-          5 * 1024 * 1024);
+  cacheDataSourceFactory = new CacheDataSourceFactory(
+     context, 100 * 1024 * 1024, 5 * 1024 * 1024);
 
-        trackSelector = new DefaultTrackSelector(context);
-        trackSelector.setParameters(trackSelector
-                        .buildUponParameters()
-                        .setMaxVideoSizeSd());
+  trackSelector = new DefaultTrackSelector(context);
+  trackSelector.setParameters(trackSelector
+               .buildUponParameters()
+               .setMaxVideoSizeSd());
 
-        exoPlayer = new SimpleExoPlayer.Builder(context)
-                        .setTrackSelector(trackSelector)
-                        .build();
+  exoPlayer = new SimpleExoPlayer.Builder(context)
+                  .setTrackSelector(trackSelector)
+                  .build();
 
-        playerView.setPlayer(exoPlayer);
-        playerView.setKeepScreenOn(true);
-        exoPlayer.setPlayWhenReady(true);
-        exoPlayer.addListener(componentListener);
-        //build mediaSource depend on video type (Regular, HLS, DASH, etc)
-        mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
-        exoPlayer.prepare(mediaSource);
-        //resume video
-        seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
+  playerView.setPlayer(exoPlayer);
+  playerView.setKeepScreenOn(true);
+  exoPlayer.setPlayWhenReady(true);
+  // Add a listener to receive events from the player.
+  exoPlayer.addListener(componentListener);
+  // Build mediaSource depend on video type (Regular, HLS, DASH, etc)
+  mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
+  exoPlayer.prepare(mediaSource);
+  // Resume video
+  seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
 ```
 ## 4. Add listener
 Add listener implementations for player control buttons in your activity.
+
+## 5. Subtitle
+As mentioned in [ExoPlayer Doc](https://exoplayer.dev/media-sources.html):
+Given a video file and a separate subtitle file, MergingMediaSource can be used to merge them into a single source for playback.
+
+```java
+  Format subtitleFormat = Format.createTextSampleFormat(
+                id, // can be null
+                MimeTypes.APPLICATION_SUBRIP,
+                Format.NO_VALUE,
+                null);
+
+  MediaSource subtitleSource = new SingleSampleMediaSource
+                                .Factory(cacheDataSourceFactory)
+                                .createMediaSource(subtitleUri, subtitleFormat, C.TIME_UNSET);
+
+  exoPlayer.prepare(new MergingMediaSource(mediaSource, subtitleSource),
+   false, // Reset position
+   false //Reset state
+  );
+```
 
 ## Version notes
 
@@ -125,9 +143,9 @@ Add listener implementations for player control buttons in your activity.
    </li>
    <li>
       Resume player using watched length bug fixed
-   </li>
    <li>
       Unlock player bug fixed
+   </li>
    </li>
  </ul>
 
