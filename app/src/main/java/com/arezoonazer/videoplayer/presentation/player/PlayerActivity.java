@@ -5,9 +5,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,15 +16,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arezoonazer.videoplayer.app.PlayerApplication;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.text.CaptionStyleCompat;
-import com.google.android.exoplayer2.ui.PlayerView;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.arezoonazer.videoplayer.R;
-import com.arezoonazer.videoplayer.data.model.VideoSource;
+import com.arezoonazer.videoplayer.app.PlayerApplication;
 import com.arezoonazer.videoplayer.data.database.AppDatabase;
+import com.arezoonazer.videoplayer.data.model.VideoSource;
 import com.arezoonazer.videoplayer.presentation.player.util.PlayerController;
 import com.arezoonazer.videoplayer.presentation.player.util.VideoPlayer;
+import com.google.android.exoplayer2.text.CaptionStyleCompat;
+import com.google.android.exoplayer2.ui.PlayerView;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, PlayerController {
 
@@ -79,7 +79,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-
         getDataFromIntent();
         setupLayout();
         initSource();
@@ -130,25 +129,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             subtitle.setImageResource(R.drawable.exo_no_subtitle_btn);
         }
 
-        this.mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-        player.getPlayer().addListener(new Player.EventListener() {
-            @Override
-            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                switch (playbackState) {
-                    case Player.STATE_ENDED:
-                        nextBtn.performClick();
-                        break;
-                    case Player.STATE_READY:
-                        Log.d(TAG, "onPlayerStateChanged: STATE_READY");
-                        mAudioManager.requestAudioFocus(
-                                mOnAudioFocusChangeListener,
-                                AudioManager.STREAM_MUSIC,
-                                AudioManager.AUDIOFOCUS_GAIN);
-                        break;
-                }
-            }
-
-        });
+        mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         //optional setting
         playerView.getSubtitleView().setVisibility(View.GONE);
@@ -237,6 +218,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.btn_unLock:
                 updateLockMode(false);
+                break;
             case R.id.exo_rew:
                 player.seekToSelectedPosition(0, true);
                 break;
@@ -257,16 +239,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             default:
                 break;
         }
-
-
-        if (controllerId == R.id.btn_lock) {
-            updateLockMode(true);
-        }
-
-        if (controllerId == R.id.btn_unLock) {
-            updateLockMode(false);
-        }
-
     }
 
     /***********************************************************
@@ -423,7 +395,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void videoEnded() {
-        findViewById(R.id.exo_next).performClick();
+        player.seekToNext();
     }
 
 

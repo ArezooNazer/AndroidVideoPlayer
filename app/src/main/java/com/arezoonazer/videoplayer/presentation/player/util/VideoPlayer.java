@@ -13,23 +13,21 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
-import com.arezoonazer.videoplayer.data.model.VideoSource;
 import com.arezoonazer.videoplayer.data.database.Subtitle;
+import com.arezoonazer.videoplayer.data.model.VideoSource;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.EventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -47,7 +45,7 @@ public class VideoPlayer {
     private PlayerController playerController;
 
     private PlayerView playerView;
-    private SimpleExoPlayer player;
+    private SimpleExoPlayer exoPlayer;
     private MediaSource mediaSource;
     private DefaultTrackSelector trackSelector;
     private int widthOfScreen, index;
@@ -89,18 +87,18 @@ public class VideoPlayer {
                 .buildUponParameters()
                 .setMaxVideoSizeSd());
 
-        player = new SimpleExoPlayer.Builder(context)
+        exoPlayer = new SimpleExoPlayer.Builder(context)
                 .setTrackSelector(trackSelector)
                 .build();
 
-        playerView.setPlayer(player);
+        playerView.setPlayer(exoPlayer);
         playerView.setKeepScreenOn(true);
-
-        player.setPlayWhenReady(true);
-        player.addListener(componentListener);
-
+        exoPlayer.setPlayWhenReady(true);
+        exoPlayer.addListener(componentListener);
+        //build mediaSource depend on video type (Regular, HLS, DASH, etc)
         mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
-        player.prepare(mediaSource);
+        exoPlayer.prepare(mediaSource);
+        //resume video
         seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
     }
 
@@ -125,7 +123,7 @@ public class VideoPlayer {
 
             case C.TYPE_OTHER:
                 Log.d(TAG, "buildMediaSource() C.TYPE_OTHER = [" + C.TYPE_OTHER + "]");
-                return new ExtractorMediaSource.Factory(cacheDataSourceFactory).createMediaSource(source);
+                return new ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(source);
 
             default: {
                 throw new IllegalStateException("Unsupported type: " + source);
@@ -134,27 +132,27 @@ public class VideoPlayer {
     }
 
     public void pausePlayer() {
-        player.setPlayWhenReady(false);
+        exoPlayer.setPlayWhenReady(false);
     }
 
     public void resumePlayer() {
-        player.setPlayWhenReady(true);
+        exoPlayer.setPlayWhenReady(true);
     }
 
     public void releasePlayer() {
-        if (player == null)
+        if (exoPlayer == null)
             return;
 
         playerController.setVideoWatchedLength();
         playerView.setPlayer(null);
-        player.release();
-        player.removeListener(componentListener);
-        player = null;
+        exoPlayer.release();
+        exoPlayer.removeListener(componentListener);
+        exoPlayer = null;
 
     }
 
     public SimpleExoPlayer getPlayer() {
-        return player;
+        return exoPlayer;
     }
 
     public VideoSource.SingleVideo getCurrentVideo() {
@@ -165,12 +163,12 @@ public class VideoPlayer {
      mute, unMute
      ***********************************************************/
     public void setMute(boolean mute) {
-        float currentVolume = player.getVolume();
+        float currentVolume = exoPlayer.getVolume();
         if (currentVolume > 0 && mute) {
-            player.setVolume(0);
+            exoPlayer.setVolume(0);
             playerController.setMuteMode(true);
         } else if (!mute && currentVolume == 0) {
-            player.setVolume(1);
+            exoPlayer.setVolume(1);
             playerController.setMuteMode(false);
         }
     }
@@ -199,7 +197,7 @@ public class VideoPlayer {
                 Pair<AlertDialog, MyTrackSelectionView> dialogPair =
                         MyTrackSelectionView.getDialog(activity, trackSelector,
                                 rendererIndex,
-                                player.getVideoFormat().bitrate);
+                                exoPlayer.getVideoFormat().bitrate);
                 dialogPair.second.setShowDisableOption(false);
                 dialogPair.second.setAllowAdaptiveSelections(allowAdaptiveSelections);
                 dialogPair.second.animate();
@@ -216,15 +214,15 @@ public class VideoPlayer {
      ***********************************************************/
     public void seekToSelectedPosition(int hour, int minute, int second) {
         long playbackPosition = (hour * 3600 + minute * 60 + second) * 1000;
-        player.seekTo(playbackPosition);
+        exoPlayer.seekTo(playbackPosition);
     }
 
     public void seekToSelectedPosition(long millisecond, boolean rewind) {
         if (rewind) {
-            player.seekTo(player.getCurrentPosition() - 15000);
+            exoPlayer.seekTo(exoPlayer.getCurrentPosition() - 15000);
             return;
         }
-        player.seekTo(millisecond * 1000);
+        exoPlayer.seekTo(millisecond * 1000);
     }
 
     public void seekToOnDoubleTap() {
@@ -237,9 +235,9 @@ public class VideoPlayer {
                         float positionOfDoubleTapX = e.getX();
 
                         if (positionOfDoubleTapX < widthOfScreen / 2)
-                            player.seekTo(player.getCurrentPosition() - 5000);
+                            exoPlayer.seekTo(exoPlayer.getCurrentPosition() - 5000);
                         else
-                            player.seekTo(player.getCurrentPosition() + 5000);
+                            exoPlayer.seekTo(exoPlayer.getCurrentPosition() + 5000);
 
                         Log.d(TAG, "onDoubleTap(): widthOfScreen >> " + widthOfScreen +
                                 " positionOfDoubleTapX >>" + positionOfDoubleTapX);
@@ -260,16 +258,14 @@ public class VideoPlayer {
 
     public void seekToNext() {
 
-        if (index < videoSource.getVideos().size() - 1) {
+        if (videoSource.getVideos() != null && index < videoSource.getVideos().size() - 1) {
             setCurrentVideoPosition();
             index++;
             mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
-            player.prepare(mediaSource, true, true);
+            exoPlayer.prepare(mediaSource, true, true);
             if (videoSource.getVideos().get(index).getWatchedLength() != null)
                 seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
-
         }
-
     }
 
     public void seekToPrevious() {
@@ -278,7 +274,7 @@ public class VideoPlayer {
             setCurrentVideoPosition();
             index--;
             mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
-            player.prepare(mediaSource, true, true);
+            exoPlayer.prepare(mediaSource, true, true);
             if (videoSource.getVideos().get(index).getWatchedLength() != null)
                 seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
         }
@@ -287,7 +283,7 @@ public class VideoPlayer {
     private void setCurrentVideoPosition() {
         if (getCurrentVideo() == null)
             return;
-        getCurrentVideo().setWatchedLength(player.getCurrentPosition() / 1000);//second
+        getCurrentVideo().setWatchedLength(exoPlayer.getCurrentPosition() / 1000);//second
     }
 
     public int getCurrentVideoIndex() {
@@ -297,7 +293,7 @@ public class VideoPlayer {
     public long getWatchedLength() {
         if (getCurrentVideo() == null)
             return 0;
-        return player.getCurrentPosition() / 1000;//second
+        return exoPlayer.getCurrentPosition() / 1000;//second
     }
 
     /***********************************************************
@@ -328,11 +324,9 @@ public class VideoPlayer {
         //optional
         playerController.changeSubtitleBackground();
 
-        player.prepare(new MergingMediaSource(mediaSource, subtitleSource), false, false);
+        exoPlayer.prepare(new MergingMediaSource(mediaSource, subtitleSource), false, false);
         playerController.showSubtitle(true);
         resumePlayer();
-
-
     }
 
     /***********************************************************
