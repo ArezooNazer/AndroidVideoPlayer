@@ -135,7 +135,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_subtitles_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_skip_next_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -145,9 +145,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ababab" />
-                            <entry key="outputName" value="exo_no_subtitle_btn" />
-                            <entry key="overrideSize" value="true" />
+                            <entry key="color" value="ffffff" />
+                            <entry key="outputName" value="exo_disable_next_btn" />
                             <entry key="sourceFile" value="C:\Users\DaryaComputer" />
                           </map>
                         </option>

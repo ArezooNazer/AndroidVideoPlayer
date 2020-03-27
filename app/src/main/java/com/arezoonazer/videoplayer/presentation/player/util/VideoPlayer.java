@@ -96,6 +96,9 @@ public class VideoPlayer {
         exoPlayer.prepare(mediaSource);
         //resume video
         seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
+
+        if (videoSource.getVideos().size() == 1 || isLastVideo())
+            playerController.disableNextButtonOnLastVideo(true);
     }
 
     /******************************************************************
@@ -253,18 +256,30 @@ public class VideoPlayer {
     }
 
     public void seekToNext() {
-
-        if (videoSource.getVideos() != null && index < videoSource.getVideos().size() - 1) {
+        if (index < videoSource.getVideos().size() - 1) {
             setCurrentVideoPosition();
             index++;
             mediaSource = buildMediaSource(videoSource.getVideos().get(index), cacheDataSourceFactory);
             exoPlayer.prepare(mediaSource, true, true);
             if (videoSource.getVideos().get(index).getWatchedLength() != null)
                 seekToSelectedPosition(videoSource.getVideos().get(index).getWatchedLength(), false);
+
+            if (isLastVideo())
+                playerController.disableNextButtonOnLastVideo(true);
         }
     }
 
+    private boolean isLastVideo() {
+        return index == videoSource.getVideos().size() - 1;
+    }
+
     public void seekToPrevious() {
+        playerController.disableNextButtonOnLastVideo(false);
+
+        if (index == 0) {
+            seekToSelectedPosition(0, false);
+            return;
+        }
 
         if (index > 0) {
             setCurrentVideoPosition();

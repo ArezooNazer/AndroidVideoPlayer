@@ -5,38 +5,16 @@ customized playerView            |  quality options
 :-------------------------:|:-------------------------:
 ![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/master/demo/Screenshot_2020-03-26-19-40-37.png)  |  ![](https://github.com/ArezooNazer/AndroidVideoPlayer/blob/master/demo/Screenshot_2020-03-26-16-32-28.png)
 # Features
- <ul>
-  <li>
-   Support different stream type including HLS, DASH, SmoothStreaming
-  </li>
- <li>
-   The ability to play single video or a list of videos
-  </li>
-  <li>
-   Cache video
-  </li>
-  <li>
-  Support different video qualities
-  </li>
- <li>
-   Switch between different subtitles
-  </li>
-  <li>
-   Lock player screen
-  </li>
-  <li>
-   Forward and backward by double tap on screen
-  </li>
-  <li>
-   Mute mode
-  </li>
-  <li>
-   Loop toggle mode
-  </li>
-   <li>
-     AndroidX, ExoPlayer version is 2.11.3
-   </li>
- </ul>
+ - Support different stream type including [Progressive, HLS, DASH, SmoothStreaming](https://exoplayer.dev/media-sources.html)
+ - Play list of videos or resume video from last watched position
+ - Support different video qualities
+ - Switch between different subtitles
+ - Cache video
+ - Lock player screen
+ - Forward and backward by double tap on screen
+ - Mute mode
+ - Loop toggle mode
+ - AndroidX, ExoPlayer version is 2.11.3
  
  # Get started
 
@@ -49,7 +27,7 @@ customized playerView            |  quality options
 
  // Room
  // To save each video subtitles & video last watched length to resume player on next play
- implementation 'androidx.room:room-runtime:2.2.5'
+ implementation 'androidx.room:room-runtime:2.2.3'
 
  // Stetho Optional
  debugImplementation 'com.facebook.stetho:stetho:1.5.1'
@@ -88,9 +66,6 @@ Initialize your ExoPlayer in VideoPlayer as follow :
      context, 100 * 1024 * 1024, 5 * 1024 * 1024);
 
   trackSelector = new DefaultTrackSelector(context);
-  trackSelector.setParameters(trackSelector
-               .buildUponParameters()
-               .setMaxVideoSizeSd());
 
   exoPlayer = new SimpleExoPlayer.Builder(context)
                   .setTrackSelector(trackSelector)
@@ -134,24 +109,13 @@ Given a video file and a separate subtitle file, MergingMediaSource can be used 
 ## Version notes
 
 #### V.1.1.0 (27.3.2020)
- <ul>
-   <li>
-      Migrate to Androidx
-   </li>
-   <li>
-      Exoplayer v.2.11.3
-   </li>
-   <li>
-      Resume player using watched length bug fixed
-   <li>
-      Unlock player bug fixed
-   </li>
-   </li>
- </ul>
+- Migrate to Androidx
+- Exoplayer v.2.11.3
+- Customized next/previous buttons
+- Fix bugs:
+    - Resume video using last watched position
+    - playing list of videos
+    - Unlock player
 
 #### V.1.0.0
- <ul>
-   <li>
-      Exoplayer v.2.9.2
-   </li>
- </ul>
+- Exoplayer v.2.9.2

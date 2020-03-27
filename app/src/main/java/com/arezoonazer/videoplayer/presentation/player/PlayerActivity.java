@@ -34,7 +34,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private static final String TAG = "PlayerActivity";
     private PlayerView playerView;
     private VideoPlayer player;
-    private ImageButton mute, unMute, subtitle, setting, lock, unLock, nextBtn, retry, back;
+    private ImageButton mute, unMute, subtitle, setting, lock, unLock, nextBtn, preBtn, retry, back;
     private ProgressBar progressBar;
     private AlertDialog alertDialog;
     private VideoSource videoSource;
@@ -98,7 +98,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         setting = findViewById(R.id.btn_settings);
         lock = findViewById(R.id.btn_lock);
         unLock = findViewById(R.id.btn_unLock);
-        nextBtn = findViewById(R.id.exo_next);
+        nextBtn = findViewById(R.id.btn_next);
+        preBtn = findViewById(R.id.btn_prev);
         retry = findViewById(R.id.retry_btn);
         back = findViewById(R.id.btn_back);
 
@@ -111,6 +112,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         setting.setOnClickListener(this);
         lock.setOnClickListener(this);
         unLock.setOnClickListener(this);
+        nextBtn.setOnClickListener(this);
+        preBtn.setOnClickListener(this);
         retry.setOnClickListener(this);
         back.setOnClickListener(this);
     }
@@ -124,10 +127,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         player = new VideoPlayer(playerView, getApplicationContext(), videoSource, this);
 
-        if (player.getCurrentVideo().getSubtitles() == null ||
-                player.getCurrentVideo().getSubtitles().size() == 0) {
-            subtitle.setImageResource(R.drawable.exo_no_subtitle_btn);
-        }
+        checkIfVideoHasSubtitle();
 
         mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
@@ -230,11 +230,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                 showProgressBar(true);
                 showRetryBtn(false);
                 break;
-            case R.id.exo_next:
+            case R.id.btn_next:
                 player.seekToNext();
+                checkIfVideoHasSubtitle();
                 break;
-            case R.id.exo_prev:
+            case R.id.btn_prev:
                 player.seekToPrevious();
+                checkIfVideoHasSubtitle();
                 break;
             default:
                 break;
@@ -276,12 +278,22 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         playerView.getSubtitleView().setStyle(captionStyleCompat);
     }
 
+    private boolean checkIfVideoHasSubtitle(){
+        if (player.getCurrentVideo().getSubtitles() == null ||
+                player.getCurrentVideo().getSubtitles().size() == 0) {
+            subtitle.setImageResource(R.drawable.exo_no_subtitle_btn);
+            return true;
+        }
+
+        subtitle.setImageResource(R.drawable.exo_subtitle_btn);
+        return false;
+    }
+
     private void prepareSubtitles() {
         if (player == null || playerView.getSubtitleView() == null)
             return;
 
-        if (player.getCurrentVideo().getSubtitles() == null ||
-                player.getCurrentVideo().getSubtitles().size() == 0) {
+        if (checkIfVideoHasSubtitle()) {
             Toast.makeText(this, getString(R.string.no_subtitle), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -395,8 +407,20 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void videoEnded() {
+        AppDatabase.Companion.getDatabase(getApplicationContext()).videoDao().
+                updateWatchedLength(player.getCurrentVideo().getUrl(), 0);
         player.seekToNext();
     }
 
+    @Override
+    public void disableNextButtonOnLastVideo(boolean disable) {
+        if(disable){
+            nextBtn.setImageResource(R.drawable.exo_disable_next_btn);
+            nextBtn.setEnabled(false);
+            return;
+        }
 
+        nextBtn.setImageResource(R.drawable.exo_next_btn);
+        nextBtn.setEnabled(true);
+    }
 }

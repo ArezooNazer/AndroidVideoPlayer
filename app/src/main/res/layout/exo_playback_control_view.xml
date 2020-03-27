@@ -29,16 +29,16 @@
             android:src="@drawable/exo_unlock_btn" />
 
         <ImageButton
-            android:id="@id/exo_prev"
+            android:id="@+id/btn_prev"
             style="@style/ExoMediaButton.Previous" />
 
         <ImageButton
             android:id="@id/exo_rew"
             style="@style/ExoMediaButton.Rewind" />
 
-<!--        <ImageButton-->
-<!--            android:id="@id/exo_shuffle"-->
-<!--            style="@style/ExoMediaButton" />-->
+        <ImageButton
+            android:id="@id/exo_shuffle"
+            style="@style/ExoMediaButton" />
 
         <ImageButton
             android:id="@id/exo_repeat_toggle"
@@ -57,7 +57,7 @@
             style="@style/ExoMediaButton.FastForward" />
 
         <ImageButton
-            android:id="@id/exo_next"
+            android:id="@+id/btn_next"
             style="@style/ExoMediaButton.Next" />
 
         <ImageButton
