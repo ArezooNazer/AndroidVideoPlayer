@@ -29,4 +29,5 @@ task clean(type: Delete) {
 
 ext {
     leakcanary = "2.7"
+    room = "2.3.0"
 }
