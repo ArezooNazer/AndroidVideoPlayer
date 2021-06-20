@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.arezoonazer.videoplayer.R;
-import com.arezoonazer.videoplayer.app.PlayerApplication;
 import com.arezoonazer.videoplayer.data.database.AppDatabase;
 import com.arezoonazer.videoplayer.data.model.VideoSource;
 import com.arezoonazer.videoplayer.presentation.player.util.PlayerController;
@@ -179,7 +178,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
             player.releasePlayer();
             player = null;
         }
-        PlayerApplication.getRefWatcher(this).watch(this);
     }
 
     @Override
