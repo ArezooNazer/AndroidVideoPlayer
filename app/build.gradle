@@ -38,7 +38,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout"
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation "androidx.recyclerview:recyclerview:$recyclerview"
 
     //ExoPlayer
     implementation 'com.google.android.exoplayer:exoplayer:2.11.3'
