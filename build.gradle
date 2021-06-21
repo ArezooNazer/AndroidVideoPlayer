@@ -29,6 +29,7 @@ task clean(type: Delete) {
 
 ext {
     appcompat = "1.3.0"
+    constraintlayout = "2.0.4"
     leakcanary = "2.7"
     room = "2.3.0"
     parceler = "1.1.12"
