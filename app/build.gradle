@@ -51,8 +51,8 @@ dependencies {
     kapt "androidx.room:room-compiler:$room"
 
     //------------- parceler ------------------------
-    implementation 'org.parceler:parceler-api:1.1.12'
-    annotationProcessor 'org.parceler:parceler:1.1.12'
+    implementation "org.parceler:parceler-api:$parceler"
+    kapt "org.parceler:parceler:$parceler"
 
     //------------- Kotlin ------------------------------
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
