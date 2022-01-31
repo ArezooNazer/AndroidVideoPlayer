@@ -13,6 +13,7 @@ android {
         versionCode 110
         versionName "1.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
     buildTypes {
         release {
@@ -44,7 +45,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
     //ExoPlayer
-    implementation 'com.google.android.exoplayer:exoplayer:2.11.3'
+    implementation 'com.google.android.exoplayer:exoplayer:2.13.3'
 
     //Room
     implementation 'androidx.room:room-runtime:2.2.3'

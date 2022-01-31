@@ -138,8 +138,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         playerView.setControllerVisibilityListener(visibility ->
         {
             Log.i(TAG, "onVisibilityChange: " + visibility);
-            if (player.isLock())
-                playerView.hideController();
 
             back.setVisibility(visibility == View.VISIBLE && !player.isLock() ? View.VISIBLE : View.GONE);
         });
@@ -375,12 +373,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         if (isLock) {
             disableBackPress = true;
-            playerView.hideController();
+            playerView.setUseController(false);
             unLock.setVisibility(View.VISIBLE);
             return;
         }
 
         disableBackPress = false;
+        playerView.setUseController(true);
         playerView.showController();
         unLock.setVisibility(View.GONE);
 
