@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.38958333333333334" />
         <entry key="player/src/main/res/drawable/ic_launcher_background.xml" value="0.126" />
+        <entry key="player/src/main/res/layout/activity_player.xml" value="0.23802083333333332" />
       </map>
     </option>
   </component>

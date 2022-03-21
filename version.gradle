@@ -5,6 +5,7 @@ ext {
             kotlin             : '1.6.10',
             core               : '1.7.0',
             appcompat          : '1.4.1',
+            hilt               : '2.40',
             exoplayer          : '2.17.1',
             constraintlayout   : '2.1.1',
             lifecycle          : '2.4.1',

@@ -1,10 +1,18 @@
-apply plugin: "com.android.library"
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-kapt"
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
 
 android {
     compileSdkVersion 31
     buildFeatures.viewBinding true
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -14,5 +22,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$library.kotlin"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$library.lifecycle"
     implementation "com.google.android.exoplayer:exoplayer:$library.exoplayer"
+
+    implementation "com.google.dagger:hilt-android:$library.hilt"
+    kapt "com.google.dagger:hilt-compiler:$library.hilt"
+
     testImplementation "junit:junit:$library.junit"
 }
