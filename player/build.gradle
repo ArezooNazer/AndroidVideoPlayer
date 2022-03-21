@@ -1,0 +1,18 @@
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-kapt"
+
+android {
+    compileSdkVersion 31
+    buildFeatures.viewBinding true
+}
+
+dependencies {
+
+    implementation "androidx.core:core-ktx:$library.core"
+    implementation "androidx.appcompat:appcompat:$library.appcompat"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$library.kotlin"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$library.lifecycle"
+    implementation "com.google.android.exoplayer:exoplayer:$library.exoplayer"
+    testImplementation "junit:junit:$library.junit"
+}

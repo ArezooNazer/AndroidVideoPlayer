@@ -13,6 +13,7 @@ android {
         versionName "2.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -32,6 +33,7 @@ android {
 
 dependencies {
 
+    implementation project(":player")
     implementation "androidx.core:core-ktx:$library.core"
     implementation "androidx.appcompat:appcompat:$library.appcompat"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$library.kotlin"
