@@ -3,13 +3,12 @@ package com.arezoonazer.player.view
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.databinding.ActivityPlayerBinding
 import com.arezoonazer.player.di.AssistedFactory
 import com.arezoonazer.player.extension.hideSystemUI
+import com.arezoonazer.player.extension.resolveSystemGestureConflict
 import com.arezoonazer.player.util.CustomPlaybackState
 import com.arezoonazer.player.viewmodel.PlayerViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,16 +57,6 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun setProgressbarVisibility(playbackState: CustomPlaybackState) {
         binding.progressBar.isVisible = playbackState == CustomPlaybackState.LOADING
-    }
-
-    private fun resolveSystemGestureConflict() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { _, insets ->
-            val systemGestureInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            WindowInsetsCompat.Builder()
-                .setInsets(WindowInsetsCompat.Type.systemBars(), systemGestureInsets)
-                .setInsets(WindowInsetsCompat.Type.systemGestures(), systemGestureInsets)
-                .build()
-        }
     }
 
     companion object {

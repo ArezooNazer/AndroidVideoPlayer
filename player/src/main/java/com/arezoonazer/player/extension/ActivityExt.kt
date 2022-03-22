@@ -5,10 +5,19 @@ import android.content.Intent
 import android.os.Build
 import android.view.View
 import android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.view.PlayerActivity
+
+fun Activity.startPlayer(playerParams: PlayerParams) {
+    Intent(this, PlayerActivity::class.java).apply {
+        putExtra(PlayerActivity.PLAYER_PARAMS_EXTRA, playerParams)
+    }.also { playerIntent ->
+        startActivity(playerIntent)
+    }
+}
 
 fun Activity.hideSystemUI(rootView: View) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -18,11 +27,13 @@ fun Activity.hideSystemUI(rootView: View) {
     }
 }
 
-fun Activity.startPlayer(playerParams: PlayerParams) {
-    Intent(this, PlayerActivity::class.java).apply {
-        putExtra(PlayerActivity.PLAYER_PARAMS_EXTRA, playerParams)
-    }.also { playerIntent ->
-        startActivity(playerIntent)
+fun Activity.resolveSystemGestureConflict() {
+    ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { _, insets ->
+        val systemGestureInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        WindowInsetsCompat.Builder()
+            .setInsets(WindowInsetsCompat.Type.systemBars(), systemGestureInsets)
+            .setInsets(WindowInsetsCompat.Type.systemGestures(), systemGestureInsets)
+            .build()
     }
 }
 
