@@ -73,6 +73,7 @@ class PlayerActivity : AppCompatActivity() {
             exoBackButton.setOnClickListener { onBackPressed() }
             playPauseButton.setOnClickListener { viewModel.onPlayButtonClicked() }
             muteButton.setOnClickListener { viewModel.onMuteClicked() }
+            replayButton.setOnClickListener { viewModel.onReplayClicked() }
         }
     }
 
@@ -87,17 +88,18 @@ class PlayerActivity : AppCompatActivity() {
                 CustomPlaybackState.PLAYING,
                 CustomPlaybackState.PAUSED -> {
                     root.visible()
+                    replayButton.gone()
                 }
                 CustomPlaybackState.ERROR,
                 CustomPlaybackState.ENDED -> {
-                    root.gone()
+                    replayButton.visible()
                 }
                 else -> {
+                    replayButton.gone()
                 }
             }
         }
     }
-
 
     companion object {
         const val PLAYER_PARAMS_EXTRA = "playerParamsExtra"

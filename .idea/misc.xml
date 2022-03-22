@@ -7,6 +7,7 @@
         <entry key="player/src/main/res/drawable/exo_mute_btn.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_exo_mute.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_exo_pause.xml" value="0.1085" />
+        <entry key="player/src/main/res/drawable/ic_exo_replay.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_exo_unmute.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_launcher_background.xml" value="0.126" />
         <entry key="player/src/main/res/layout/activity_player.xml" value="0.23802083333333332" />

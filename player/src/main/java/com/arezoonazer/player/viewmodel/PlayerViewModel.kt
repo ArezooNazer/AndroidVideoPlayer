@@ -53,6 +53,18 @@ class PlayerViewModel @AssistedInject constructor(
         }
     }
 
+    fun onReplayClicked() {
+        when (playbackStateLiveData.value) {
+            CustomPlaybackState.ERROR -> {
+                playerRepository.rePrepareAndPlay()
+            }
+            CustomPlaybackState.ENDED -> {
+                playerRepository.seekToDefaultPosition()
+            }
+            else -> return
+        }
+    }
+
     fun onMuteClicked() {
         with(playerRepository) {
             toggleMuteState()
