@@ -22,6 +22,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$library.kotlin"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$library.lifecycle"
     implementation "com.google.android.exoplayer:exoplayer:$library.exoplayer"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$library.coordinatorlayout"
 
     implementation "com.google.dagger:hilt-android:$library.hilt"
     kapt "com.google.dagger:hilt-compiler:$library.hilt"
