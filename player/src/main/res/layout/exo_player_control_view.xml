@@ -44,6 +44,12 @@
         app:layout_constraintStart_toEndOf="@id/playPauseButton"
         app:layout_constraintTop_toTopOf="@id/playPauseButton" />
 
+    <com.arezoonazer.player.widget.MuteButton
+        android:id="@+id/muteButton"
+        style="@style/ExoMediaButton"
+        app:layout_constraintBottom_toTopOf="@id/exo_progress"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@id/exo_position"
         android:layout_width="wrap_content"

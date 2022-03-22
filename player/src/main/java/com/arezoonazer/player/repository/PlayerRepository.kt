@@ -80,6 +80,18 @@ class PlayerRepository @Inject constructor(
         }
     }
 
+    fun toggleMuteState() {
+        player.volume = if (isMute()) {
+            1f
+        } else {
+            0f
+        }
+    }
+
+    fun isMute(): Boolean {
+        return player.volume == 0F
+    }
+
     fun isPlayingStreamLive(): Boolean {
         return player.isCurrentMediaItemLive
     }

@@ -29,6 +29,9 @@ class PlayerViewModel @AssistedInject constructor(
     private val _playbackStateLiveData = MutableLiveData(CustomPlaybackState.LOADING)
     val playbackStateLiveData: LiveData<CustomPlaybackState> = _playbackStateLiveData
 
+    private val _isMuteLiveData = MutableLiveData<Boolean>(false)
+    val isMuteLiveData: LiveData<Boolean> = _isMuteLiveData
+
     private var playerEventListener: Player.Listener? = getPlayerEventLister()
 
     override fun onCleared() {
@@ -47,6 +50,13 @@ class PlayerViewModel @AssistedInject constructor(
     fun onPlayButtonClicked() {
         if (playbackStateLiveData.value != CustomPlaybackState.ERROR) {
             playerRepository.togglePlayingState()
+        }
+    }
+
+    fun onMuteClicked() {
+        with(playerRepository) {
+            toggleMuteState()
+            _isMuteLiveData.value = isMute()
         }
     }
 

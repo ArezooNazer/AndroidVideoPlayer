@@ -55,6 +55,11 @@ class PlayerActivity : AppCompatActivity() {
                 setProgressbarVisibility(playbackState)
                 setVideoControllerVisibility(playbackState)
             }
+
+            isMuteLiveData.observe(
+                this@PlayerActivity,
+                exoBinding.exoControllerPlaceholder.muteButton::setMuteState
+            )
         }
     }
 
@@ -67,6 +72,7 @@ class PlayerActivity : AppCompatActivity() {
         with(exoBinding.exoControllerPlaceholder) {
             exoBackButton.setOnClickListener { onBackPressed() }
             playPauseButton.setOnClickListener { viewModel.onPlayButtonClicked() }
+            muteButton.setOnClickListener { viewModel.onMuteClicked() }
         }
     }
 
