@@ -15,14 +15,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@id/exo_rew"
+        style="@style/ExoMediaButton.Rewind"
+        app:layout_constraintBottom_toBottomOf="@id/buttonPlayPause"
+        app:layout_constraintEnd_toStartOf="@id/buttonPlayPause"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/buttonPlayPause" />
+
     <com.arezoonazer.player.widget.PlayPauseControlButton
         android:id="@+id/buttonPlayPause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/exo_ffwd"
+        app:layout_constraintStart_toEndOf="@id/exo_rew"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@id/exo_ffwd"
+        style="@style/ExoMediaButton.FastForward"
+        app:layout_constraintBottom_toBottomOf="@id/buttonPlayPause"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonPlayPause"
+        app:layout_constraintTop_toTopOf="@id/buttonPlayPause" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
