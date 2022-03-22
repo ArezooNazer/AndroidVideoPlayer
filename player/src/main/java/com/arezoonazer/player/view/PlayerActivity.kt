@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.databinding.ActivityPlayerBinding
+import com.arezoonazer.player.databinding.ExoPlayerViewBinding
 import com.arezoonazer.player.di.AssistedFactory
 import com.arezoonazer.player.extension.hideSystemUI
 import com.arezoonazer.player.extension.resolveSystemGestureConflict
@@ -19,6 +20,10 @@ class PlayerActivity : AppCompatActivity() {
 
     private val binding: ActivityPlayerBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityPlayerBinding.inflate(layoutInflater)
+    }
+
+    private val exoBinding: ExoPlayerViewBinding by lazy(LazyThreadSafetyMode.NONE) {
+        ExoPlayerViewBinding.bind(binding.root)
     }
 
     private val playerParams: PlayerParams by lazy(LazyThreadSafetyMode.NONE) {
@@ -35,8 +40,9 @@ class PlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        resolveSystemGestureConflict()
         viewModel.onActivityCreate(this)
+        resolveSystemGestureConflict()
+        initClickListeners()
 
         with(viewModel) {
             playerLiveData.observe(this@PlayerActivity) { exoPlayer ->
@@ -53,6 +59,12 @@ class PlayerActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         hideSystemUI(binding.root)
+    }
+
+    private fun initClickListeners() {
+        with(exoBinding) {
+            exoControllerPlaceholder.exoBackButton.setOnClickListener { onBackPressed() }
+        }
     }
 
     private fun setProgressbarVisibility(playbackState: CustomPlaybackState) {
