@@ -20,6 +20,7 @@ dependencies {
     implementation "androidx.core:core-ktx:$library.core"
     implementation "androidx.appcompat:appcompat:$library.appcompat"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$library.kotlin"
+    implementation "androidx.activity:activity-ktx:$library.activity"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$library.lifecycle"
     implementation "com.google.android.exoplayer:exoplayer:$library.exoplayer"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$library.coordinatorlayout"
