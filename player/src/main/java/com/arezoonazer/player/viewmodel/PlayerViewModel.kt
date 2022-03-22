@@ -44,6 +44,12 @@ class PlayerViewModel @AssistedInject constructor(
         }
     }
 
+    fun onPlayButtonClicked() {
+        if (playbackStateLiveData.value != CustomPlaybackState.ERROR) {
+            playerRepository.togglePlayingState()
+        }
+    }
+
     private suspend fun setupPlayer(context: Context) {
         with(playerRepository) {
             _playerLiveData.value = createPlayer(context)

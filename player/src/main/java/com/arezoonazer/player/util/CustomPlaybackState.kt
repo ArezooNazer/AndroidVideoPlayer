@@ -6,6 +6,5 @@ enum class CustomPlaybackState {
     PLAYING,
     PAUSED,
     ERROR,
-    ENDED,
-    NOT_LOADED;
+    ENDED;
 }

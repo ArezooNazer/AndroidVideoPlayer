@@ -8,8 +8,10 @@ import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.databinding.ActivityPlayerBinding
 import com.arezoonazer.player.databinding.ExoPlayerViewBinding
 import com.arezoonazer.player.di.AssistedFactory
+import com.arezoonazer.player.extension.gone
 import com.arezoonazer.player.extension.hideSystemUI
 import com.arezoonazer.player.extension.resolveSystemGestureConflict
+import com.arezoonazer.player.extension.visible
 import com.arezoonazer.player.util.CustomPlaybackState
 import com.arezoonazer.player.viewmodel.PlayerViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,7 +53,7 @@ class PlayerActivity : AppCompatActivity() {
 
             playbackStateLiveData.observe(this@PlayerActivity) { playbackState ->
                 setProgressbarVisibility(playbackState)
-                // any UI update can be done here
+                setVideoControllerVisibility(playbackState)
             }
         }
     }
@@ -62,14 +64,34 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initClickListeners() {
-        with(exoBinding) {
-            exoControllerPlaceholder.exoBackButton.setOnClickListener { onBackPressed() }
+        with(exoBinding.exoControllerPlaceholder) {
+            exoBackButton.setOnClickListener { onBackPressed() }
+            buttonPlayPause.setOnClickListener { viewModel.onPlayButtonClicked() }
         }
     }
 
     private fun setProgressbarVisibility(playbackState: CustomPlaybackState) {
         binding.progressBar.isVisible = playbackState == CustomPlaybackState.LOADING
     }
+
+    private fun setVideoControllerVisibility(playbackState: CustomPlaybackState) {
+        exoBinding.exoControllerPlaceholder.run {
+            buttonPlayPause.setState(playbackState)
+            when (playbackState) {
+                CustomPlaybackState.PLAYING,
+                CustomPlaybackState.PAUSED -> {
+                    root.visible()
+                }
+                CustomPlaybackState.ERROR,
+                CustomPlaybackState.ENDED -> {
+                    root.gone()
+                }
+                else -> {
+                }
+            }
+        }
+    }
+
 
     companion object {
         const val PLAYER_PARAMS_EXTRA = "playerParamsExtra"
