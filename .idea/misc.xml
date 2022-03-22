@@ -4,6 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.38958333333333334" />
+        <entry key="player/src/main/res/drawable/exo_mute_btn.xml" value="0.1085" />
+        <entry key="player/src/main/res/drawable/ic_exo_mute.xml" value="0.1085" />
+        <entry key="player/src/main/res/drawable/ic_exo_pause.xml" value="0.1085" />
+        <entry key="player/src/main/res/drawable/ic_exo_unmute.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_launcher_background.xml" value="0.126" />
         <entry key="player/src/main/res/layout/activity_player.xml" value="0.23802083333333332" />
         <entry key="player/src/main/res/layout/exo_player_control_view.xml" value="0.16018518518518518" />

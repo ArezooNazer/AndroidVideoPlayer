@@ -66,7 +66,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun initClickListeners() {
         with(exoBinding.exoControllerPlaceholder) {
             exoBackButton.setOnClickListener { onBackPressed() }
-            buttonPlayPause.setOnClickListener { viewModel.onPlayButtonClicked() }
+            playPauseButton.setOnClickListener { viewModel.onPlayButtonClicked() }
         }
     }
 
@@ -76,7 +76,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun setVideoControllerVisibility(playbackState: CustomPlaybackState) {
         exoBinding.exoControllerPlaceholder.run {
-            buttonPlayPause.setState(playbackState)
+            playPauseButton.setState(playbackState)
             when (playbackState) {
                 CustomPlaybackState.PLAYING,
                 CustomPlaybackState.PAUSED -> {
