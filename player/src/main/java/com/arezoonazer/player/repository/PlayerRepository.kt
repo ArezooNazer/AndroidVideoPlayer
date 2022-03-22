@@ -21,9 +21,10 @@ class PlayerRepository @Inject constructor(
         get() = requireNotNull(_player)
 
     fun createPlayer(context: Context): ExoPlayer {
-        _player = ExoPlayer
-            .Builder(context)
+        _player = ExoPlayer.Builder(context)
             .setTrackSelector(trackSelectorDataSource.trackSelector)
+            .setSeekForwardIncrementMs(SEEK_INTERVAL)
+            .setSeekBackIncrementMs(SEEK_INTERVAL)
             .build()
         return player
     }
@@ -124,5 +125,9 @@ class PlayerRepository @Inject constructor(
         trackSelectorDataSource.nullifyTrackSelector()
         player.clearMediaItems()
         player.release()
+    }
+
+    companion object{
+        private const val SEEK_INTERVAL = 10000L
     }
 }

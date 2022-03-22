@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--  player  -->
-    <dimen name="player_rewind_icon_size">40dp</dimen>
     <dimen name="player_play_icon_size">25dp</dimen>
 
 </resources>

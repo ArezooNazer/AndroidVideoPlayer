@@ -17,8 +17,9 @@
 
     <ImageButton
         android:id="@id/exo_rew"
-        style="@style/ExoMediaButton.Rewind"
+        style="@style/ExoMediaButton"
         android:layout_marginHorizontal="16dp"
+        android:src="@drawable/ic_exo_rewind"
         app:layout_constraintBottom_toBottomOf="@id/playPauseButton"
         app:layout_constraintEnd_toStartOf="@id/playPauseButton"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -29,7 +30,6 @@
         android:id="@+id/playPauseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/exo_ffwd"
         app:layout_constraintStart_toEndOf="@id/exo_rew"
@@ -47,8 +47,9 @@
 
     <ImageButton
         android:id="@id/exo_ffwd"
-        style="@style/ExoMediaButton.FastForward"
+        style="@style/ExoMediaButton"
         android:layout_marginHorizontal="16dp"
+        android:src="@drawable/ic_exo_forward"
         app:layout_constraintBottom_toBottomOf="@id/playPauseButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/playPauseButton"
