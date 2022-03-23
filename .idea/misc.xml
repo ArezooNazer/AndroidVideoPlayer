@@ -9,12 +9,18 @@
         <entry key="player/src/main/res/drawable/ic_exo_mute.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_exo_pause.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_exo_play.xml" value="0.1085" />
+        <entry key="player/src/main/res/drawable/ic_exo_quality.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_exo_replay.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_exo_rewind.xml" value="0.1085" />
+        <entry key="player/src/main/res/drawable/ic_exo_selected.xml" value="0.187" />
+        <entry key="player/src/main/res/drawable/ic_exo_subtitle.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_exo_unmute.xml" value="0.1085" />
         <entry key="player/src/main/res/drawable/ic_launcher_background.xml" value="0.126" />
         <entry key="player/src/main/res/layout/activity_player.xml" value="0.23802083333333332" />
+        <entry key="player/src/main/res/layout/dialog_track_selection.xml" value="0.2518518518518518" />
         <entry key="player/src/main/res/layout/exo_player_control_view.xml" value="0.16018518518518518" />
+        <entry key="player/src/main/res/layout/item_track.xml" value="0.3890625" />
+        <entry key="player/src/main/res/layout/item_track_selection.xml" value="0.335" />
       </map>
     </option>
   </component>

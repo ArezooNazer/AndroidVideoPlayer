@@ -12,5 +12,6 @@ ext {
             junit              : '4.13.2',
             coordinatorlayout  : '1.2.0',
             activity           : '1.4.0',
+            recyclerView       : '1.2.1'
     ]
 }
