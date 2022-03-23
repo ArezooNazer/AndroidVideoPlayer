@@ -58,8 +58,31 @@
     <com.arezoonazer.player.widget.MuteButton
         android:id="@+id/muteButton"
         style="@style/ExoMediaButton"
+        android:layout_marginHorizontal="8dp"
         app:layout_constraintBottom_toTopOf="@id/exo_progress"
+        app:layout_constraintEnd_toStartOf="@id/subtitleButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/subtitleButton"
+        style="@style/ExoMediaButton"
+        android:layout_marginHorizontal="8dp"
+        android:src="@drawable/ic_exo_subtitle"
+        android:tint="@color/disabled_button_color"
+        app:layout_constraintBottom_toTopOf="@id/exo_progress"
+        app:layout_constraintEnd_toStartOf="@id/qualityButton"
+        app:layout_constraintStart_toEndOf="@id/muteButton" />
+
+    <ImageButton
+        android:id="@+id/qualityButton"
+        style="@style/ExoMediaButton"
+        android:layout_marginHorizontal="8dp"
+        android:src="@drawable/ic_exo_quality"
+        android:tint="@color/disabled_button_color"
+        app:layout_constraintBottom_toTopOf="@id/exo_progress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/subtitleButton" />
 
     <TextView
         android:id="@id/exo_position"
