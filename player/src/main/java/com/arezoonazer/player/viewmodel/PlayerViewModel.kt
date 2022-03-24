@@ -41,7 +41,7 @@ class PlayerViewModel @AssistedInject constructor(
 
     fun onActivityCreate(context: Context) {
         viewModelScope.launch {
-            if (playerRepository.isPlayerInitialized().not()) {
+            if (_playerLiveData.value == null) {
                 setupPlayer(context)
             }
         }
@@ -72,7 +72,7 @@ class PlayerViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun setupPlayer(context: Context) {
+    private fun setupPlayer(context: Context) {
         with(playerRepository) {
             _playerLiveData.value = createPlayer(context)
             preparePlayer(createMediaItem(playerParams))
@@ -90,6 +90,7 @@ class PlayerViewModel @AssistedInject constructor(
     }
 
     internal fun getPlayerEventLister(): Player.Listener = object : Player.Listener {
+
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
             _playbackStateLiveData.value = when (reason) {
                 Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST,

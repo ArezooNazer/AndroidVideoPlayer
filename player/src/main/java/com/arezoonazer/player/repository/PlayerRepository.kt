@@ -47,10 +47,6 @@ class PlayerRepository @Inject constructor(
         player.seekToDefaultPosition()
     }
 
-    fun isPlayerInitialized(): Boolean {
-        return _player != null
-    }
-
     fun play() {
         player.playWhenReady = true
     }

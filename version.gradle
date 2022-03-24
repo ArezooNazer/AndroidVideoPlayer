@@ -15,6 +15,7 @@ ext {
             recyclerView       : '1.2.1',
             coreTesting        : '2.1.0',
             mockito            : '4.0.0',
-            robolectric        : '4.6.1'
+            robolectric        : '4.6.1',
+            coroutinesTest     : '1.5.2',
     ]
 }

@@ -38,4 +38,5 @@ dependencies {
     testImplementation "androidx.arch.core:core-testing:$library.coreTesting"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$library.mockito"
     testImplementation "org.robolectric:robolectric:$library.robolectric"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$library.coroutinesTest"
 }

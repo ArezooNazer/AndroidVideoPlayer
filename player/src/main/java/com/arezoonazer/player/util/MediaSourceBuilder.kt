@@ -9,7 +9,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
 
-suspend fun createMediaItem(playerParams: PlayerParams): MediaItem {
+fun createMediaItem(playerParams: PlayerParams): MediaItem {
     val uri = playerParams.url.toUri()
     return MediaItem.Builder()
         .setUri(uri)
