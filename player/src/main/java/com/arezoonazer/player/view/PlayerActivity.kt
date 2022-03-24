@@ -101,6 +101,11 @@ class PlayerActivity : AppCompatActivity() {
         hideSystemUI(binding.root)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        releasePlayerView()
+    }
+
     private fun initClickListeners() {
         with(exoBinding.exoControllerPlaceholder) {
             exoBackButton.setOnClickListener { onBackPressed() }
@@ -164,6 +169,13 @@ class PlayerActivity : AppCompatActivity() {
                 (previousDialog as TrackSelectionDialog).dismiss()
                 beginTransaction().remove(previousDialog)
             }
+        }
+    }
+
+    private fun releasePlayerView() {
+        with(binding.exoPlayerView) {
+            removeAllViews()
+            player = null
         }
     }
 
