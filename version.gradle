@@ -12,6 +12,9 @@ ext {
             junit              : '4.13.2',
             coordinatorlayout  : '1.2.0',
             activity           : '1.4.0',
-            recyclerView       : '1.2.1'
+            recyclerView       : '1.2.1',
+            coreTesting        : '2.1.0',
+            mockito            : '4.0.0',
+            robolectric        : '4.6.1'
     ]
 }

@@ -13,6 +13,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -31,4 +35,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$library.hilt"
 
     testImplementation "junit:junit:$library.junit"
+    testImplementation "androidx.arch.core:core-testing:$library.coreTesting"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$library.mockito"
+    testImplementation "org.robolectric:robolectric:$library.robolectric"
 }
