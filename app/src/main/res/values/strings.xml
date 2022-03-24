@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndroidVideoPlayer</string>
+    <string name="add_video_url">Video url</string>
+    <string name="add_vtt_format_subtitle_url">VTT format subtitle url (optional)</string>
+    <string name="play">Play</string>
+    <string name="play_default_media">Play default media</string>
 </resources>

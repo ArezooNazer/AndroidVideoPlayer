@@ -5,9 +5,9 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
-
 android {
     compileSdkVersion 31
+    buildFeatures.viewBinding true
 
     defaultConfig {
         applicationId "com.arezoonazer.androidvideoplayer"
