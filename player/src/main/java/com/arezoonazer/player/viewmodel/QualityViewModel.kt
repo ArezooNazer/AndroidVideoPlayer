@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.arezoonazer.player.R
 import com.arezoonazer.player.datasource.TrackSelectorDataSource
 import com.arezoonazer.player.repository.PlayerRepository
-import com.arezoonazer.player.util.track.QualityTrack
+import com.arezoonazer.player.util.track.MediaTrack
 import com.arezoonazer.player.util.track.TrackEntity
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Player
@@ -28,7 +28,7 @@ class QualityViewModel @Inject constructor(
 
     private val autoText = R.string.player_automatic
 
-    private var qualities = mutableListOf<QualityTrack>()
+    private var qualities = mutableListOf<MediaTrack>()
     private var selectedQuality: TrackEntity? = null
 
     var playerEventListener: Player.Listener? = getPlayerEventLister()

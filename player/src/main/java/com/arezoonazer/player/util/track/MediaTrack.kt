@@ -6,7 +6,7 @@ import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 
-class QualityTrack(
+class MediaTrack(
     val selectionOverride: DefaultTrackSelector.SelectionOverride,
     val trackGroupArray: TrackGroupArray,
     val format: Format,

@@ -2,7 +2,7 @@ package com.arezoonazer.player.datasource
 
 import android.content.Context
 import androidx.annotation.StringRes
-import com.arezoonazer.player.util.track.QualityTrack
+import com.arezoonazer.player.util.track.MediaTrack
 import com.arezoonazer.player.util.track.TrackEntity
 import com.arezoonazer.player.util.track.TrackMapper
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
@@ -25,9 +25,9 @@ class TrackSelectorDataSource @Inject constructor(
 
     fun updateSelectedTrack(
         index: Int,
-        tracks: List<QualityTrack>,
+        tracks: List<MediaTrack>,
         rendererIndex: Int
-    ): QualityTrack? {
+    ): MediaTrack? {
 
         val newSelectedTrack = if (index > 0 && index <= tracks.size) {
             tracks[index - 1]
@@ -51,8 +51,8 @@ class TrackSelectorDataSource @Inject constructor(
     }
 
     fun updateTrackEntities(
-        tracks: List<QualityTrack>,
-        selectedTrack: QualityTrack?,
+        tracks: List<MediaTrack>,
+        selectedTrack: MediaTrack?,
         @StringRes defaultTextRes: Int,
         onItemClick: (Int) -> Unit
     ): List<TrackEntity>? {

@@ -9,12 +9,12 @@ import com.google.android.exoplayer2.util.MimeTypes
 class TrackMapper(private val trackSelector: DefaultTrackSelector) {
 
     private var trackNameIndex = 0
-    private val tracks = LinkedHashMap<Int, QualityTrack>()
+    private val tracks = LinkedHashMap<Int, MediaTrack>()
 
     fun map(
         rendererType: Int,
         trackNames: List<String>? = null
-    ): List<QualityTrack> {
+    ): List<MediaTrack> {
         tracks.clear()
         val trackInfo = trackSelector.currentMappedTrackInfo ?: return emptyList()
         for (rendererIndex in 0 until trackInfo.rendererCount) {
@@ -48,7 +48,7 @@ class TrackMapper(private val trackSelector: DefaultTrackSelector) {
                     continue
                 }
 
-                val track = QualityTrack(
+                val track = MediaTrack(
                     DefaultTrackSelector.SelectionOverride(trackGroupsIndex, trackGroupIndex),
                     trackGroups,
                     format,
@@ -75,7 +75,7 @@ class TrackMapper(private val trackSelector: DefaultTrackSelector) {
         return (type == C.TRACK_TYPE_TEXT && format.sampleMimeType != MimeTypes.TEXT_VTT)
     }
 
-    private fun isTrackValidToBeAdded(track: QualityTrack, key: Int): Boolean {
+    private fun isTrackValidToBeAdded(track: MediaTrack, key: Int): Boolean {
         tracks[key]?.let { oldTrack ->
             if (oldTrack.format.height > track.format.height) {
                 return false

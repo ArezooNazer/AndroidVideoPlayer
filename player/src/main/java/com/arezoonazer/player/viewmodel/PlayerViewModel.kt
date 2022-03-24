@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.arezoonazer.player.argument.PlayerParams
-import com.arezoonazer.player.di.AssistedFactory
+import com.arezoonazer.player.di.PlayerViewModelAssistedFactory
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.CustomPlaybackState
 import com.arezoonazer.player.util.createMediaItem
@@ -139,7 +139,7 @@ class PlayerViewModel @AssistedInject constructor(
 
     companion object {
         fun provideFactory(
-            assistedFactory: AssistedFactory,
+            assistedFactory: PlayerViewModelAssistedFactory,
             playerParams: PlayerParams
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {

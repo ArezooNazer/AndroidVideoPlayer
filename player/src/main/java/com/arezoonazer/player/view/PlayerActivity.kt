@@ -8,7 +8,8 @@ import com.arezoonazer.player.R
 import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.databinding.ActivityPlayerBinding
 import com.arezoonazer.player.databinding.ExoPlayerViewBinding
-import com.arezoonazer.player.di.AssistedFactory
+import com.arezoonazer.player.di.PlayerViewModelAssistedFactory
+import com.arezoonazer.player.di.SubtitleViewModelAssistedFactory
 import com.arezoonazer.player.extension.gone
 import com.arezoonazer.player.extension.hideSystemUI
 import com.arezoonazer.player.extension.resolveSystemGestureConflict
@@ -19,6 +20,7 @@ import com.arezoonazer.player.util.track.TrackEntity
 import com.arezoonazer.player.view.track.TrackSelectionDialog
 import com.arezoonazer.player.viewmodel.PlayerViewModel
 import com.arezoonazer.player.viewmodel.QualityViewModel
+import com.arezoonazer.player.viewmodel.SubtitleViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -38,10 +40,17 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     @Inject
-    lateinit var playerViewModelFactory: AssistedFactory
+    lateinit var playerViewModelFactory: PlayerViewModelAssistedFactory
 
     private val viewModel: PlayerViewModel by viewModels {
         PlayerViewModel.provideFactory(playerViewModelFactory, playerParams)
+    }
+
+    @Inject
+    lateinit var subtitleViewModelFactory: SubtitleViewModelAssistedFactory
+
+    private val subtitleViewModel: SubtitleViewModel by viewModels {
+        SubtitleViewModel.provideFactory(subtitleViewModelFactory, playerParams.subtitles)
     }
 
     private val qualityViewModel: QualityViewModel by viewModels()
@@ -52,6 +61,7 @@ class PlayerActivity : AppCompatActivity() {
 
         viewModel.onActivityCreate(this)
         qualityViewModel.onActivityCreated()
+        subtitleViewModel.onActivityCrated()
         resolveSystemGestureConflict()
         initClickListeners()
 
@@ -72,8 +82,15 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         with(qualityViewModel) {
-            qualityEntitiesLiveData.observe(this@PlayerActivity, ::setupQualityButtons)
+            qualityEntitiesLiveData.observe(this@PlayerActivity, ::setupQualityButton)
             onQualitySelectedLiveData.observe(this@PlayerActivity) {
+                dismissTrackSelectionDialogIfExist()
+            }
+        }
+
+        with(subtitleViewModel) {
+            subtitleEntitiesLiveData.observe(this@PlayerActivity, ::setupSubtitleButton)
+            onSubtitleSelectedLiveData.observe(this@PlayerActivity) {
                 dismissTrackSelectionDialogIfExist()
             }
         }
@@ -117,11 +134,20 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupQualityButtons(qualities: List<TrackEntity>) {
+    private fun setupQualityButton(qualities: List<TrackEntity>) {
         exoBinding.exoControllerPlaceholder.qualityButton.apply {
             if (qualities.isNotEmpty()) {
                 setImageButtonTintColor(R.color.white)
                 setOnClickListener { openTrackSelectionDialog(qualities) }
+            }
+        }
+    }
+
+    private fun setupSubtitleButton(subtitles: List<TrackEntity>) {
+        exoBinding.exoControllerPlaceholder.subtitleButton.apply {
+            if (subtitles.isNotEmpty()) {
+                setImageButtonTintColor(R.color.white)
+                setOnClickListener { openTrackSelectionDialog(subtitles) }
             }
         }
     }
