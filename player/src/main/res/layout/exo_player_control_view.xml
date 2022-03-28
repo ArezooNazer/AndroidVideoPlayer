@@ -101,6 +101,8 @@
         android:id="@id/exo_progress"
         android:layout_width="0dp"
         android:layout_height="26dp"
+        app:played_color="@color/primary_color"
+        app:scrubber_color="@color/primary_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/exo_duration"
         app:layout_constraintStart_toEndOf="@id/exo_position" />
