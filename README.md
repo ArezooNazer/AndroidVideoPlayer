@@ -3,7 +3,7 @@ A video player based on [ExoPlayer](https://github.com/google/ExoPlayer)
 
 Player view | Quality
 :-------------------------:|:-------------------------:
-<img src="https://github.com/ArezooNazer/AndroidVideoPlayer/blob/refactor-v.1.1/demo/Screenshot_20220328_194400.png" width=200/> | <img src="https://github.com/ArezooNazer/AndroidVideoPlayer/blob/refactor-v.1.1/demo/Screenshot_20220328_194324.png" width=200/>
+<img src="https://github.com/ArezooNazer/AndroidVideoPlayer/blob/master/demo/Screenshot_20220328_194400.png" width=200/> | <img src="https://github.com/ArezooNazer/AndroidVideoPlayer/blob/master/demo/Screenshot_20220328_194324.png" width=200/>
 
 ## Features
  - Support different stream type including [Progressive, HLS, DASH, SmoothStreaming](https://exoplayer.dev/media-sources.html)
