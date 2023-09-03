@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
     buildFeatures.viewBinding true
 
     defaultConfig {
