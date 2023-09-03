@@ -36,9 +36,11 @@ class TrackSelectorDataSource @Inject constructor(
         }
 
         trackSelector.parameters = trackSelector.buildUponParameters()
+//            .clearOverridesOfType(rendererIndex)
             .clearSelectionOverrides(rendererIndex)
             .apply {
                 newSelectedTrack?.also { track ->
+//                    addOverride(TrackSelectionOverride(track.trackGroupArray.get(track.rendererIndex), track.rendererIndex))
                     setSelectionOverride(
                         track.rendererIndex,
                         track.trackGroupArray,
