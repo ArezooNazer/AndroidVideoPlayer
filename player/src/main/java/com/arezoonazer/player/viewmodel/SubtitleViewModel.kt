@@ -11,8 +11,8 @@ import com.arezoonazer.player.di.SubtitleViewModelAssistedFactory
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.track.MediaTrack
 import com.arezoonazer.player.util.track.TrackEntity
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Player
+import androidx.media3.common.C
+import androidx.media3.common.Player
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 

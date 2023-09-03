@@ -8,7 +8,7 @@ import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.viewmodel.PlayerViewModel
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Player
+import androidx.media3.common.Player
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

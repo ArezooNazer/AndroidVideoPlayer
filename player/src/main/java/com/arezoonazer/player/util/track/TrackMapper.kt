@@ -1,11 +1,12 @@
 package com.arezoonazer.player.util.track
 
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Format
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.util.MimeTypes
+import androidx.media3.common.C
+import androidx.media3.common.Format
+import androidx.media3.common.MimeTypes
+import androidx.media3.exoplayer.source.TrackGroupArray
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 
+@androidx.media3.common.util.UnstableApi
 class TrackMapper(private val trackSelector: DefaultTrackSelector) {
 
     private var trackNameIndex = 0

@@ -6,11 +6,11 @@ import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.CustomPlaybackState
 import com.arezoonazer.player.viewmodel.PlayerViewModel
 import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY
-import com.google.android.exoplayer2.Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS
-import com.google.android.exoplayer2.Player.PLAY_WHEN_READY_CHANGE_REASON_REMOTE
-import com.google.android.exoplayer2.Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST
+import androidx.media3.common.Player
+import androidx.media3.common.Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY
+import androidx.media3.common.Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS
+import androidx.media3.common.Player.PLAY_WHEN_READY_CHANGE_REASON_REMOTE
+import androidx.media3.common.Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

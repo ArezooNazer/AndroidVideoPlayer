@@ -2,9 +2,9 @@ package com.arezoonazer.player.extension
 
 import androidx.core.net.toUri
 import com.arezoonazer.player.argument.VideoSubtitle
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.util.MimeTypes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 
 /**
  * Subtitle MIME-type:

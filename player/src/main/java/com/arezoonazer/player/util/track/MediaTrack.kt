@@ -1,10 +1,10 @@
 package com.arezoonazer.player.util.track
 
 import android.util.SparseArray
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Format
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import androidx.media3.common.C
+import androidx.media3.common.Format
+import androidx.media3.exoplayer.source.TrackGroupArray
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 
 class MediaTrack(
     val selectionOverride: DefaultTrackSelector.SelectionOverride,

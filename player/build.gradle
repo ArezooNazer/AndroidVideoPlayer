@@ -31,10 +31,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$library.kotlin"
     implementation "androidx.activity:activity-ktx:$library.activity"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$library.lifecycle"
-    implementation "com.google.android.exoplayer:exoplayer:$library.exoplayer"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$library.coordinatorlayout"
     implementation "androidx.constraintlayout:constraintlayout:$library.constraintlayout"
     implementation "androidx.recyclerview:recyclerview:$library.recyclerView"
+
+    implementation "androidx.media3:media3-exoplayer:$library.exoplayer"
+    implementation "androidx.media3:media3-ui:$library.exoplayer"
 
     implementation "com.google.dagger:hilt-android:$library.hilt"
     kapt "com.google.dagger:hilt-compiler:$library.hilt"

@@ -2,16 +2,17 @@ package com.arezoonazer.player.datasource
 
 import android.content.Context
 import androidx.annotation.StringRes
+import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.arezoonazer.player.util.track.MediaTrack
 import com.arezoonazer.player.util.track.TrackEntity
 import com.arezoonazer.player.util.track.TrackMapper
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@androidx.media3.common.util.UnstableApi
 class TrackSelectorDataSource @Inject constructor(
     @ApplicationContext val context: Context
 ) {

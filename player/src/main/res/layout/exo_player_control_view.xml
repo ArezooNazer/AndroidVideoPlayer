@@ -69,20 +69,20 @@
         style="@style/ExoMediaButton"
         android:layout_marginHorizontal="8dp"
         android:src="@drawable/ic_exo_subtitle"
-        android:tint="@color/disabled_button_color"
         app:layout_constraintBottom_toTopOf="@id/exo_progress"
         app:layout_constraintEnd_toStartOf="@id/qualityButton"
-        app:layout_constraintStart_toEndOf="@id/muteButton" />
+        app:layout_constraintStart_toEndOf="@id/muteButton"
+        app:tint="@color/disabled_button_color" />
 
     <ImageButton
         android:id="@+id/qualityButton"
         style="@style/ExoMediaButton"
         android:layout_marginHorizontal="8dp"
         android:src="@drawable/ic_exo_quality"
-        android:tint="@color/disabled_button_color"
         app:layout_constraintBottom_toTopOf="@id/exo_progress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/subtitleButton" />
+        app:layout_constraintStart_toEndOf="@id/subtitleButton"
+        app:tint="@color/disabled_button_color" />
 
     <TextView
         android:id="@id/exo_position"
@@ -97,15 +97,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/exo_progress" />
 
-    <com.google.android.exoplayer2.ui.DefaultTimeBar
+    <androidx.media3.ui.DefaultTimeBar
         android:id="@id/exo_progress"
         android:layout_width="0dp"
         android:layout_height="26dp"
-        app:played_color="@color/primary_color"
-        app:scrubber_color="@color/primary_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/exo_duration"
-        app:layout_constraintStart_toEndOf="@id/exo_position" />
+        app:layout_constraintStart_toEndOf="@id/exo_position"
+        app:played_color="@color/primary_color"
+        app:scrubber_color="@color/primary_color" />
 
     <TextView
         android:id="@id/exo_duration"

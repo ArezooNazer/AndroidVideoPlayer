@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
+@androidx.media3.common.util.UnstableApi
 class PlayerActivity : AppCompatActivity() {
 
     private val binding: ActivityPlayerBinding by lazy(LazyThreadSafetyMode.NONE) {

@@ -6,18 +6,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.di.PlayerViewModelAssistedFactory
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.CustomPlaybackState
 import com.arezoonazer.player.util.createMediaItem
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 
+@androidx.media3.common.util.UnstableApi
 class PlayerViewModel @AssistedInject constructor(
     @Assisted private val playerParams: PlayerParams,
     private val playerRepository: PlayerRepository
