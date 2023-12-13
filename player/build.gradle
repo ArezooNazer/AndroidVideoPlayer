@@ -36,6 +36,8 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$library.recyclerView"
 
     implementation "androidx.media3:media3-exoplayer:$library.exoplayer"
+    implementation "androidx.media3:media3-exoplayer-hls:$library.exoplayer"
+    implementation "androidx.media3:media3-exoplayer-dash:$library.exoplayer"
     implementation "androidx.media3:media3-ui:$library.exoplayer"
 
     implementation "com.google.dagger:hilt-android:$library.hilt"
