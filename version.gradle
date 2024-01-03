@@ -1,7 +1,7 @@
 ext {
 
     library = [
-            androidGradlePlugin: '7.0.1',
+            androidGradlePlugin: '7.1.0',
             kotlin             : '1.6.10',
             core               : '1.7.0',
             appcompat          : '1.4.1',
