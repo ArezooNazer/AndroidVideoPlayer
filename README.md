@@ -1,5 +1,5 @@
 # AndroidVideoPlayer
-A video player based on [ExoPlayer](https://github.com/google/ExoPlayer)
+A video player based on [AndroidX Media](https://github.com/androidx/media)
 
 Player view | Quality
 :-------------------------:|:-------------------------:
@@ -13,10 +13,12 @@ Player view | Quality
  - Support portrait and landscape format
 
 ## Working on
-- Forward and rewind by double tap on screen
-- Migrate to [AndroidX Media](https://github.com/androidx/media)
+- Remove deprecated and unstable Exoplayer APIs
 
 ## Version notes
+
+#### V.3.0.0
+- Migrate to AndroidX Media (previous versions are available in separate branches)
 
 #### V.2.0.0
 - Refactor project and migrate to MVVM, Koltin, Coroutines and Hilt (previous versions are available in separate branches)
