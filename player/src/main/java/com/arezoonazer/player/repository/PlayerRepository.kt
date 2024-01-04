@@ -1,19 +1,22 @@
 package com.arezoonazer.player.repository
 
 import android.content.Context
+import androidx.annotation.OptIn
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
 import com.arezoonazer.player.datasource.TrackSelectorDataSource
 import com.arezoonazer.player.extension.getLiveStreamCurrentPosition
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
 @Singleton
+@OptIn(UnstableApi::class)
 class PlayerRepository @Inject constructor(
-    private val trackSelectorDataSource: TrackSelectorDataSource
+    private val trackSelectorDataSource: TrackSelectorDataSource,
 ) {
 
     private var _player: ExoPlayer? = null
@@ -21,12 +24,14 @@ class PlayerRepository @Inject constructor(
         get() = requireNotNull(_player)
 
     fun createPlayer(context: Context): ExoPlayer {
-        _player = ExoPlayer.Builder(context)
+        return ExoPlayer.Builder(context)
             .setTrackSelector(trackSelectorDataSource.trackSelector)
             .setSeekForwardIncrementMs(SEEK_INTERVAL)
             .setSeekBackIncrementMs(SEEK_INTERVAL)
             .build()
-        return player
+            .also {
+                _player = it
+            }
     }
 
     fun preparePlayer(mediaItem: MediaItem) {
@@ -123,7 +128,7 @@ class PlayerRepository @Inject constructor(
         player.release()
     }
 
-    companion object{
+    companion object {
         private const val SEEK_INTERVAL = 10000L
     }
 }

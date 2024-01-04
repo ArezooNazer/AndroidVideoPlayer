@@ -1,11 +1,14 @@
 package com.arezoonazer.player.util.track
 
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Format
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.util.MimeTypes
+import androidx.annotation.OptIn
+import androidx.media3.common.C
+import androidx.media3.common.Format
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.source.TrackGroupArray
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 
+@OptIn(UnstableApi::class)
 class TrackMapper(private val trackSelector: DefaultTrackSelector) {
 
     private var trackNameIndex = 0
@@ -13,7 +16,7 @@ class TrackMapper(private val trackSelector: DefaultTrackSelector) {
 
     fun map(
         rendererType: Int,
-        trackNames: List<String>? = null
+        trackNames: List<String>? = null,
     ): List<MediaTrack> {
         tracks.clear()
         val trackInfo = trackSelector.currentMappedTrackInfo ?: return emptyList()
@@ -37,7 +40,7 @@ class TrackMapper(private val trackSelector: DefaultTrackSelector) {
         trackGroups: TrackGroupArray,
         trackNames: List<String>?,
         index: Int,
-        type: Int
+        type: Int,
     ) {
         for (trackGroupsIndex in 0 until trackGroups.length) {
             val trackGroup = trackGroups.get(trackGroupsIndex)

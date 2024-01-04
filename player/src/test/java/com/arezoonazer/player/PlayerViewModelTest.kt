@@ -3,12 +3,12 @@ package com.arezoonazer.player
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlaybackException
+import androidx.media3.exoplayer.ExoPlayer
 import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.viewmodel.PlayerViewModel
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Player
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -74,7 +74,6 @@ class PlayerViewModelTest {
 
         verify(observer, times(1)).onChanged(mockedExoPlayer)
     }
-
 
     @Test
     fun `onPlayButtonClicked called without playback error then togglePlayingState `() {

@@ -1,7 +1,7 @@
 package com.arezoonazer.player.extension
 
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Timeline
+import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 
 private val timeLinePeriod = Timeline.Period()
 private const val NOT_DEFINED_TIME = -1L

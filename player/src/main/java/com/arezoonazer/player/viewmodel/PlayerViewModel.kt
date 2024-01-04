@@ -6,21 +6,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.di.PlayerViewModelAssistedFactory
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.CustomPlaybackState
 import com.arezoonazer.player.util.createMediaItem
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.launch
 
 class PlayerViewModel @AssistedInject constructor(
     @Assisted private val playerParams: PlayerParams,
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
 ) : ViewModel() {
 
     private val _playerLiveData = MutableLiveData<ExoPlayer>()
@@ -58,9 +58,11 @@ class PlayerViewModel @AssistedInject constructor(
             CustomPlaybackState.ERROR -> {
                 playerRepository.rePrepareAndPlay()
             }
+
             CustomPlaybackState.ENDED -> {
                 playerRepository.seekToDefaultPosition()
             }
+
             else -> return
         }
     }
@@ -94,15 +96,19 @@ class PlayerViewModel @AssistedInject constructor(
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
             _playbackStateLiveData.value = when (reason) {
                 Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST,
-                Player.PLAY_WHEN_READY_CHANGE_REASON_REMOTE -> {
+                Player.PLAY_WHEN_READY_CHANGE_REASON_REMOTE,
+                -> {
                     if (playWhenReady) {
                         CustomPlaybackState.PLAYING
                     } else {
                         CustomPlaybackState.PAUSED
                     }
                 }
+
                 Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS,
-                Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY -> CustomPlaybackState.PAUSED
+                Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY,
+                -> CustomPlaybackState.PAUSED
+
                 else -> return
             }
         }
@@ -117,6 +123,7 @@ class PlayerViewModel @AssistedInject constructor(
                         CustomPlaybackState.PAUSED
                     }
                 }
+
                 Player.STATE_BUFFERING -> CustomPlaybackState.LOADING
                 else -> return
             }
@@ -141,7 +148,7 @@ class PlayerViewModel @AssistedInject constructor(
     companion object {
         fun provideFactory(
             assistedFactory: PlayerViewModelAssistedFactory,
-            playerParams: PlayerParams
+            playerParams: PlayerParams,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(playerParams) as T

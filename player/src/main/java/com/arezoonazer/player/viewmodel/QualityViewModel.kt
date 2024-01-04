@@ -1,5 +1,6 @@
 package com.arezoonazer.player.viewmodel
 
+import androidx.annotation.OptIn
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,13 +9,15 @@ import com.arezoonazer.player.datasource.TrackSelectorDataSource
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.track.MediaTrack
 import com.arezoonazer.player.util.track.TrackEntity
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Player.STATE_READY
+import androidx.media3.common.C
+import androidx.media3.common.Player
+import androidx.media3.common.Player.STATE_READY
+import androidx.media3.common.util.UnstableApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
+@OptIn(UnstableApi::class)
 class QualityViewModel @Inject constructor(
     private val trackSelectorDataSource: TrackSelectorDataSource,
     private val playerRepository: PlayerRepository

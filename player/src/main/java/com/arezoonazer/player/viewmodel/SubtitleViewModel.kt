@@ -1,9 +1,13 @@
 package com.arezoonazer.player.viewmodel
 
+import androidx.annotation.OptIn
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.media3.common.C
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import com.arezoonazer.player.R
 import com.arezoonazer.player.argument.VideoSubtitle
 import com.arezoonazer.player.datasource.TrackSelectorDataSource
@@ -11,15 +15,14 @@ import com.arezoonazer.player.di.SubtitleViewModelAssistedFactory
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.track.MediaTrack
 import com.arezoonazer.player.util.track.TrackEntity
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Player
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
+@OptIn(UnstableApi::class)
 class SubtitleViewModel @AssistedInject constructor(
     @Assisted private val videoSubtitles: List<VideoSubtitle>,
     private val trackSelectorDataSource: TrackSelectorDataSource,
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
 ) : ViewModel() {
 
     private val _subtitleEntitiesLiveData = MutableLiveData<List<TrackEntity>>()
@@ -33,7 +36,7 @@ class SubtitleViewModel @AssistedInject constructor(
     private val subtitles = mutableListOf<MediaTrack>()
     private var selectedSubtitle: TrackEntity? = null
 
-    var playerEventListener: Player.Listener? = getPlayerEventLister()
+    private var playerEventListener: Player.Listener? = getPlayerEventLister()
         private set
 
     override fun onCleared() {
@@ -118,7 +121,7 @@ class SubtitleViewModel @AssistedInject constructor(
 
         fun provideFactory(
             assistedFactory: SubtitleViewModelAssistedFactory,
-            videoSubtitles: List<VideoSubtitle>
+            videoSubtitles: List<VideoSubtitle>,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(videoSubtitles) as T
