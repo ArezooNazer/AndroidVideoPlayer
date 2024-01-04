@@ -11,7 +11,7 @@ ext {
             lifecycle          : '2.6.2',
             junit              : '4.13.2',
             coordinatorlayout  : '1.2.0',
-            activity           : '1.5.0',
+            activity           : '1.8.2',
             recyclerView       : '1.2.1',
             coreTesting        : '2.1.0',
             mockito            : '4.0.0',
