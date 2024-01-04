@@ -3,24 +3,26 @@ package com.arezoonazer.player.viewmodel
 import androidx.annotation.OptIn
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import com.arezoonazer.player.R
+import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.argument.VideoSubtitle
 import com.arezoonazer.player.datasource.TrackSelectorDataSource
-import com.arezoonazer.player.di.SubtitleViewModelAssistedFactory
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.track.MediaTrack
 import com.arezoonazer.player.util.track.TrackEntity
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.arezoonazer.player.view.PlayerActivity.Companion.PLAYER_PARAMS_EXTRA
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @OptIn(UnstableApi::class)
-class SubtitleViewModel @AssistedInject constructor(
-    @Assisted private val videoSubtitles: List<VideoSubtitle>,
+@HiltViewModel
+class SubtitleViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val trackSelectorDataSource: TrackSelectorDataSource,
     private val playerRepository: PlayerRepository,
 ) : ViewModel() {
@@ -37,7 +39,9 @@ class SubtitleViewModel @AssistedInject constructor(
     private var selectedSubtitle: TrackEntity? = null
 
     private var playerEventListener: Player.Listener? = getPlayerEventLister()
-        private set
+
+    private val playerParams = savedStateHandle.get<PlayerParams>(PLAYER_PARAMS_EXTRA)
+    private val videoSubtitles: List<VideoSubtitle> = playerParams?.subtitles.orEmpty()
 
     override fun onCleared() {
         super.onCleared()
@@ -118,14 +122,5 @@ class SubtitleViewModel @AssistedInject constructor(
 
     companion object {
         private const val DEFAULT_SUBTITLE_INDEX = 0
-
-        fun provideFactory(
-            assistedFactory: SubtitleViewModelAssistedFactory,
-            videoSubtitles: List<VideoSubtitle>,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(videoSubtitles) as T
-            }
-        }
     }
 }

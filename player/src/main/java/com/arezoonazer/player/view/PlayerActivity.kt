@@ -5,11 +5,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.arezoonazer.player.R
-import com.arezoonazer.player.argument.PlayerParams
 import com.arezoonazer.player.databinding.ActivityPlayerBinding
 import com.arezoonazer.player.databinding.ExoPlayerViewBinding
-import com.arezoonazer.player.di.PlayerViewModelAssistedFactory
-import com.arezoonazer.player.di.SubtitleViewModelAssistedFactory
 import com.arezoonazer.player.extension.gone
 import com.arezoonazer.player.extension.hideSystemUI
 import com.arezoonazer.player.extension.resolveSystemGestureConflict
@@ -22,7 +19,6 @@ import com.arezoonazer.player.viewmodel.PlayerViewModel
 import com.arezoonazer.player.viewmodel.QualityViewModel
 import com.arezoonazer.player.viewmodel.SubtitleViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PlayerActivity : AppCompatActivity() {
@@ -35,23 +31,9 @@ class PlayerActivity : AppCompatActivity() {
         ExoPlayerViewBinding.bind(binding.root)
     }
 
-    private val playerParams: PlayerParams by lazy(LazyThreadSafetyMode.NONE) {
-        intent.getSerializableExtra(PLAYER_PARAMS_EXTRA) as PlayerParams
-    }
+    private val viewModel: PlayerViewModel by viewModels()
 
-    @Inject
-    lateinit var playerViewModelFactory: PlayerViewModelAssistedFactory
-
-    private val viewModel: PlayerViewModel by viewModels {
-        PlayerViewModel.provideFactory(playerViewModelFactory, playerParams)
-    }
-
-    @Inject
-    lateinit var subtitleViewModelFactory: SubtitleViewModelAssistedFactory
-
-    private val subtitleViewModel: SubtitleViewModel by viewModels {
-        SubtitleViewModel.provideFactory(subtitleViewModelFactory, playerParams.subtitles)
-    }
+    private val subtitleViewModel: SubtitleViewModel by viewModels()
 
     private val qualityViewModel: QualityViewModel by viewModels()
 
@@ -124,14 +106,18 @@ class PlayerActivity : AppCompatActivity() {
             playPauseButton.setState(playbackState)
             when (playbackState) {
                 CustomPlaybackState.PLAYING,
-                CustomPlaybackState.PAUSED -> {
+                CustomPlaybackState.PAUSED,
+                -> {
                     root.visible()
                     replayButton.gone()
                 }
+
                 CustomPlaybackState.ERROR,
-                CustomPlaybackState.ENDED -> {
+                CustomPlaybackState.ENDED,
+                -> {
                     replayButton.visible()
                 }
+
                 else -> {
                     replayButton.gone()
                 }

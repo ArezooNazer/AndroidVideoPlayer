@@ -1,25 +1,27 @@
 package com.arezoonazer.player.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.arezoonazer.player.argument.PlayerParams
-import com.arezoonazer.player.di.PlayerViewModelAssistedFactory
 import com.arezoonazer.player.repository.PlayerRepository
 import com.arezoonazer.player.util.CustomPlaybackState
 import com.arezoonazer.player.util.createMediaItem
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import com.arezoonazer.player.view.PlayerActivity.Companion.PLAYER_PARAMS_EXTRA
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PlayerViewModel @AssistedInject constructor(
-    @Assisted private val playerParams: PlayerParams,
+@HiltViewModel
+class PlayerViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val playerRepository: PlayerRepository,
 ) : ViewModel() {
 
@@ -29,10 +31,12 @@ class PlayerViewModel @AssistedInject constructor(
     private val _playbackStateLiveData = MutableLiveData(CustomPlaybackState.LOADING)
     val playbackStateLiveData: LiveData<CustomPlaybackState> = _playbackStateLiveData
 
-    private val _isMuteLiveData = MutableLiveData<Boolean>(false)
+    private val _isMuteLiveData = MutableLiveData(false)
     val isMuteLiveData: LiveData<Boolean> = _isMuteLiveData
 
     private var playerEventListener: Player.Listener? = getPlayerEventLister()
+
+    private val playerParams = savedStateHandle.get<PlayerParams>(PLAYER_PARAMS_EXTRA)
 
     override fun onCleared() {
         super.onCleared()
@@ -75,6 +79,10 @@ class PlayerViewModel @AssistedInject constructor(
     }
 
     private fun setupPlayer(context: Context) {
+        if (playerParams == null) {
+            Log.e(TAG, "setupPlayer: playerParams is null")
+            return
+        }
         with(playerRepository) {
             _playerLiveData.value = createPlayer(context)
             preparePlayer(createMediaItem(playerParams))
@@ -144,15 +152,6 @@ class PlayerViewModel @AssistedInject constructor(
             _playbackStateLiveData.value = CustomPlaybackState.ERROR
         }
     }
-
-    companion object {
-        fun provideFactory(
-            assistedFactory: PlayerViewModelAssistedFactory,
-            playerParams: PlayerParams,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(playerParams) as T
-            }
-        }
-    }
 }
+
+private const val TAG = "PlayerViewModel"
