@@ -3,6 +3,7 @@ package com.arezoonazer.player
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlaybackException
 import androidx.media3.exoplayer.ExoPlayer
@@ -36,6 +37,9 @@ class PlayerViewModelTest {
     private lateinit var context: Context
 
     @Mock
+    private lateinit var savedStateHandle: SavedStateHandle
+
+    @Mock
     private lateinit var playerParams: PlayerParams
 
     @Mock
@@ -43,7 +47,7 @@ class PlayerViewModelTest {
 
     private val viewModel: PlayerViewModel by lazy {
         PlayerViewModel(
-            playerParams,
+            savedStateHandle,
             playerRepository
         )
     }
@@ -53,6 +57,7 @@ class PlayerViewModelTest {
         val observer = mock<Observer<ExoPlayer>>()
         val mockedExoPlayer = mock<ExoPlayer>()
 
+        whenever(savedStateHandle.get<PlayerParams>(any())).doReturn(playerParams)
         whenever(playerRepository.createPlayer(context)).doReturn(mockedExoPlayer)
         viewModel.playerLiveData.observeForever(observer)
 
@@ -66,6 +71,7 @@ class PlayerViewModelTest {
         val observer = mock<Observer<ExoPlayer>>()
         val mockedExoPlayer = mock<ExoPlayer>()
 
+        whenever(savedStateHandle.get<PlayerParams>(any())).doReturn(playerParams)
         whenever(playerRepository.createPlayer(context)).doReturn(mockedExoPlayer)
         viewModel.onActivityCreate(context)
         viewModel.playerLiveData.observeForever(observer)

@@ -1,16 +1,16 @@
 package com.arezoonazer.player
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.arezoonazer.player.argument.PlayerParams
-import com.arezoonazer.player.repository.PlayerRepository
-import com.arezoonazer.player.util.CustomPlaybackState
-import com.arezoonazer.player.viewmodel.PlayerViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.Player
 import androidx.media3.common.Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY
 import androidx.media3.common.Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS
 import androidx.media3.common.Player.PLAY_WHEN_READY_CHANGE_REASON_REMOTE
 import androidx.media3.common.Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST
 import androidx.media3.exoplayer.ExoPlaybackException
+import com.arezoonazer.player.repository.PlayerRepository
+import com.arezoonazer.player.util.CustomPlaybackState
+import com.arezoonazer.player.viewmodel.PlayerViewModel
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,14 +25,14 @@ class PlayerViewModelListenerTest {
     val instanceTaskExecutorRule = InstantTaskExecutorRule()
 
     @Mock
-    private lateinit var playerParams: PlayerParams
+    private lateinit var savedStateHandle: SavedStateHandle
 
     @Mock
     private lateinit var playerRepository: PlayerRepository
 
     private val viewModel: PlayerViewModel by lazy {
         PlayerViewModel(
-            playerParams,
+            savedStateHandle,
             playerRepository
         )
     }
