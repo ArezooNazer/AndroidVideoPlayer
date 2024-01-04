@@ -2,7 +2,7 @@ ext {
 
     library = [
             androidGradlePlugin: '7.1.0',
-            kotlin             : '1.6.10',
+            kotlin             : '1.9.10',
             core               : '1.7.0',
             appcompat          : '1.4.1',
             hilt               : '2.44',
