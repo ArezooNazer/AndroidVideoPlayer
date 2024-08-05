@@ -1,6 +1,11 @@
 package com.arezoonazer.androidvideoplayer
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +19,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    lateinit var skb_brightness: SeekBar
+
     private val binding: ActivityMainBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -21,6 +28,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        skb_brightness = findViewById(R.id.seekBar)
+
+        Settings.System.putInt(
+            this.contentResolver,
+            Settings.System.SCREEN_BRIGHTNESS_MODE,
+            Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+        )
 
         with(binding) {
             playButton.setOnClickListener { startPlayer(getPlayerParam()) }
@@ -31,6 +46,27 @@ class MainActivity : AppCompatActivity() {
 
             customPlayButton.setOnClickListener { onCustomPlayButtonClicked() }
         }
+
+        skb_brightness.max = 255
+        skb_brightness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (canWriteSettings) {
+
+                    val lp = window.attributes
+                    lp.screenBrightness = progress.toFloat() / 255
+                    window.attributes = lp
+                } else {
+                    startManageWriteSettingsPermission()
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+            }
+        })
     }
 
     private fun getPlayerParam(): PlayerParams {
@@ -88,4 +124,38 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Toast.makeText(this, message, LENGTH_SHORT).show()
     }
+
+    private fun startManageWriteSettingsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent(
+                Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                Uri.parse("package:${this.packageName}")
+            ).let {
+                startActivityForResult(it, 5)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+            1 -> {
+                if (this.canWriteSettings) {
+                    // change the settings here ...
+                } else {
+                    Toast.makeText(
+                        applicationContext,
+                        "Write settings permission is not granted!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    val canWriteSettings: Boolean
+        get() = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.System.canWrite(this)
+
+
 }

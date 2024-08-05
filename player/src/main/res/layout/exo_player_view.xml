@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="false"
@@ -20,7 +22,10 @@
         <androidx.media3.ui.SubtitleView
             android:id="@id/exo_subtitles"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent" >
+
+
+        </androidx.media3.ui.SubtitleView>
 
     </androidx.media3.ui.AspectRatioFrameLayout>
 
@@ -32,6 +37,19 @@
         <include
             android:id="@id/exo_controller_placeholder"
             layout="@layout/exo_player_control_view" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+           android:layout_marginVertical="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="624dp"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="-16dp">
+        </SeekBar>
+
+
 
     </FrameLayout>
 
